@@ -3,9 +3,10 @@
   "id": "tc-uhc",
   "version": "1.0.0",
 
-  "name": "TC UHC in fabric",
-  "description": "",
+  "name": "TC UHC",
+  "description": "TC UHC in fabric",
   "authors": [
+    "Gamepiaynmo",
     "Fallen_Breath"
   ],
   "contact": {
@@ -13,7 +14,7 @@
     "sources": "https://github.com/"
   },
 
-  "icon": "assets/tcuhc/icon.png",
+  "icon": "assets/tc-uhc/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -23,12 +24,10 @@
   "mixins": [
     "tcuhc.mixins.json"
   ],
+  "accessWidener": "tcuhc.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.7.1",
-    "minecraft": "1.15.x"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "minecraft": "1.14.x"
   }
 }
