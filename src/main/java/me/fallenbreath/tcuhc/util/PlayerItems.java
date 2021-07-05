@@ -129,11 +129,11 @@ public class PlayerItems
 
 		private Builder(ItemStack itemStack)
 		{
-			this.itemStack = itemStack;
-			if (itemStack.isDamageable())
+			if (itemStack.isDamageable() && !(itemStack.getItem() instanceof ArmorItem))
 			{
 				itemStack.setDamage(itemStack.getMaxDamage());
 			}
+			this.itemStack = itemStack;
 		}
 
 		private static Builder create(Item item)

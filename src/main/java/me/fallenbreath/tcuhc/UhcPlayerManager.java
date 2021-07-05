@@ -311,7 +311,7 @@ public class UhcPlayerManager
 			else msg += source.getName() + byEnding;
 			player.sendMessage(new LiteralText(Formatting.RED + msg));
 			if (source.getAttacker() instanceof ServerPlayerEntity) {
-				source.getAttacker().sendMessage(new LiteralText(String.format("%sYou dealt %.2f damage to %s", Formatting.BLUE, amount, player.getName())));
+				source.getAttacker().sendMessage(new LiteralText(String.format("%sYou dealt %.2f damage to %s", Formatting.BLUE, amount, player.getEntityName())));
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import com.mojang.datafixers.Dynamic;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.enchantment.Enchantment;
@@ -15,6 +16,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -91,14 +93,23 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		{
 			return false;
 		}
+		boolean hasWater = worldIn.getFluidState(position).matches(FluidTags.WATER);
 		if (rand.nextFloat() < POSSIBILITY_MAP.get(biome) * chestChance)
 		{
 			boolean isEmptyChest = rand.nextDouble() < emptyChestChance;
 			Block chestBlock = isEmptyChest ? Blocks.TRAPPED_CHEST : Blocks.CHEST;
-			worldIn.setBlockState(position, chestBlock.getDefaultState().rotate(BlockRotation.random(rand)), 2);
+			worldIn.setBlockState(
+					position,
+					chestBlock.getDefaultState().
+							rotate(BlockRotation.random(rand)).
+							with(ChestBlock.WATERLOGGED, hasWater)
+					, 2
+			);
 			BlockEntity tileentity = worldIn.getBlockEntity(position);
 			if (!(tileentity instanceof ChestBlockEntity))
+			{
 				return false;
+			}
 			ChestBlockEntity chest = (ChestBlockEntity) tileentity;
 			chest.setCustomName(new LiteralText(isEmptyChest ? EMPTY_CHEST_NAME : BONUS_CHEST_NAME));
 			if (isEmptyChest)

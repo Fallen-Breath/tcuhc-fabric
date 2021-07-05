@@ -178,7 +178,7 @@ public class UhcGameManager extends Taskable {
 		if (files == null) return;
 		for (File file : files) {
 			if (file.isDirectory()) deleteFolder(file);
-			else file.delete();
+			else if (!file.getName().equals("carpet.conf")) file.delete();
 		}
 	}
 	

@@ -23,6 +23,11 @@ public abstract class CaveCarverMixin
 	)
 	private int customRandomizer(Random random, int bound)
 	{
-		return random.nextInt(this.getMaxCaveCount()) * random.nextInt(2);
+		int customBound = random.nextInt(this.getMaxCaveCount());
+		if (random.nextInt(2) == 0)
+		{
+			customBound = random.nextInt(customBound + 1);
+		}
+		return customBound;
 	}
 }
