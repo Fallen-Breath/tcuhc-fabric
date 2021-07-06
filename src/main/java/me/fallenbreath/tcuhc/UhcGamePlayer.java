@@ -13,8 +13,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,9 +27,9 @@ public class UhcGamePlayer extends Taskable {
 	private final String playerName;
 	
 	protected boolean isAlive;
-	private final WeakReference<ServerPlayerEntity> realPlayer;
 	private UhcGameTeam team;
-	private Optional<UhcGameColor> colorSelected = Optional.empty();
+	@Nullable
+	private UhcGameColor colorSelected = null;
 	
 	protected int deathTime;
 	private BlockPos deathPos = BlockPos.ORIGIN;
@@ -41,15 +41,14 @@ public class UhcGamePlayer extends Taskable {
 		playerUUID = realPlayer.getUuid();
 		playerName = realPlayer.getEntityName();
 		isAlive = true;
-		this.realPlayer = new WeakReference<>(realPlayer);
 	}
 	
 	public UhcGameTeam getTeam() { return team; }
 	protected void setTeam(UhcGameTeam team) { this.team = team; }
 	public int getDeathTime() { return deathTime; }
 	public BlockPos getDeathPos() { return deathPos; }
-	public void setColorSelected(UhcGameColor color) { colorSelected = Optional.ofNullable(color); }
-	public Optional<UhcGameColor> getColorSelected() { return colorSelected; }
+	public void setColorSelected(@Nullable UhcGameColor color) { colorSelected = color; }
+	public Optional<UhcGameColor> getColorSelected() { return Optional.ofNullable(colorSelected); }
 	public String getName() { return playerName; }
 	public boolean isAlive() { return isAlive; }
 	public PlayerStatistics getStat() { return statistics; }
@@ -92,7 +91,7 @@ public class UhcGamePlayer extends Taskable {
 		this.getRealPlayer().ifPresent(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 0, true, false)));
 	}
 
-	public static enum EnumStat {
+	public enum EnumStat {
 		PLAYER_KILLED("Player Killed"),
 		ENTITY_KILLED("Entity Killed"),
 		DAMAGE_TAKEN("Damage Taken"),
@@ -106,14 +105,14 @@ public class UhcGamePlayer extends Taskable {
 		
 		public final String name;
 		
-		private EnumStat(String name) {
+		EnumStat(String name) {
 			this.name = name;
 		}
 	}
 	
 	public static class PlayerStatistics {
 		
-		private Map<EnumStat, Float> stats = Maps.newEnumMap(EnumStat.class);
+		private final Map<EnumStat, Float> stats = Maps.newEnumMap(EnumStat.class);
 		
 		public PlayerStatistics() {
 			clear();

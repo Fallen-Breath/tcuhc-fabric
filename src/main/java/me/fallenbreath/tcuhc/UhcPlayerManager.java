@@ -40,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -160,7 +161,8 @@ public class UhcPlayerManager
 	
 	public void randomSpawnPosition(ServerPlayerEntity player) {
 		BlockPos pos = SpawnPlatform.getRandomSpawnPosition(UhcGameManager.rand);
-		player.teleport(pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5);
+		player.updatePosition(pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5);
+		player.requestTeleport(player.getPos().getX(), player.getPos().getY(), player.getPos().getZ());
 		player.fallDistance = 0.0f;
 	}
 	
@@ -169,7 +171,7 @@ public class UhcPlayerManager
 		player.getHungerManager().add(20, 20);
 	}
 	
-	public Iterable<UhcGamePlayer> getAllPlayers() {
+	public Collection<UhcGamePlayer> getAllPlayers() {
 		return allPlayerList;
 	}
 	
@@ -339,10 +341,13 @@ public class UhcPlayerManager
 			player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SPECTATOR));
 			if (gameManager.getOptions().getBooleanOptionValue("forceViewport"))
 				gameManager.addTask(new TaskKeepSpectate(player));
-			if (player.getTeam().getAliveCount() == 0) {
-				gameManager.checkWinner();
-			} else this.deadPotionEffects(player.getTeam());
-			gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got -1s.");
+			if (player.getTeam() != null) {
+				if (player.getTeam().getAliveCount() == 0) {
+					gameManager.checkWinner();
+				}
+				else this.deadPotionEffects(player.getTeam());
+				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got -1s.");
+			}
 		});
 	}
 	
@@ -354,7 +359,9 @@ public class UhcPlayerManager
 			player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SURVIVAL));
 			if (UhcGameManager.getGameMode() == EnumMode.GHOST)
 				player.addGhostModeEffect();
-			gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got +1s.");
+			if (player.getTeam() != null) {
+				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got +1s.");
+			}
 		});
 	}
 	
@@ -580,6 +587,7 @@ public class UhcPlayerManager
 			@Override
 			public void onFindPlayer(ServerPlayerEntity player) {
 				BlockPos newpos = homePos.add(UhcGameManager.rand.nextInt(5) - 2, 0, UhcGameManager.rand.nextInt(5) - 2);
+				player.updatePosition(newpos.getX() + 0.5, newpos.getY() + 0.5, newpos.getZ() + 0.5);
 				player.teleport(newpos.getX() + 0.5, newpos.getY() + 0.5, newpos.getZ() + 0.5);
 				player.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(health);
 				player.fallDistance = 0.0f;

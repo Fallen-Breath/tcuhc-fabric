@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 public class Options {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -122,6 +123,10 @@ public class Options {
 	
 	public Optional<Option> getOption(String option) {
 		return Optional.ofNullable(configOptions.get(option));
+	}
+
+	public Stream<String> getOptionIdStream() {
+		return configOptions.keySet().stream();
 	}
 	
 	public void setOptionValue(String option, Object value) {

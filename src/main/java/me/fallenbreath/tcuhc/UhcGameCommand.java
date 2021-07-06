@@ -14,6 +14,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -30,6 +31,11 @@ public class UhcGameCommand
 	private static boolean isOp(ServerCommandSource source)
 	{
 		return source.hasPermissionLevel(2);
+	}
+
+	private static Stream<String> getGamePlayerNameSuggestion()
+	{
+		return UhcGameManager.instance.getUhcPlayerManager().getAllPlayers().stream().map(UhcGamePlayer::getName);
 	}
 
 	public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher)
@@ -57,8 +63,9 @@ public class UhcGameCommand
 				then(literal("stop").executes(c -> executeStop(c.getSource()))).
 				then(literal("option").
 						then(argument("name", string()).
-								suggests((c, b) -> suggestMatching(new String[]{"add", "sub", "set"}, b)).
+								suggests((c, b) -> suggestMatching(UhcGameManager.instance.getOptions().getOptionIdStream(), b)).
 								then(argument("operation", string()).
+										suggests((c, b) -> suggestMatching(new String[]{"add", "sub", "set"}, b)).
 										executes(c -> manipulateOption(c.getSource(), getString(c, "name"), getString(c, "operation")))
 								)
 						)
@@ -68,11 +75,13 @@ public class UhcGameCommand
 						then(literal("end").executes(c -> removeAdjustBook(c.getSource()))).
 						then(literal("kill").
 								then(argument("player", string()).
+										suggests((c, b) -> suggestMatching(getGamePlayerNameSuggestion(), b)).
 										executes(c -> killPlayer(c.getSource(), getString(c, "player")))
 								)
 						).
 						then(literal("resu").
 								then(argument("player", string()).
+										suggests((c, b) -> suggestMatching(getGamePlayerNameSuggestion(), b)).
 										executes(c -> resurrentPlayer(c.getSource(), getString(c, "player")))
 								)
 						)
@@ -80,6 +89,7 @@ public class UhcGameCommand
 				then(literal("givemorals").
 						executes(c -> giveMorals(c.getSource(), null)).
 						then(argument("player", string()).
+								suggests((c, b) -> suggestMatching(PlayerItems.getAvailableNames(), b)).
 								executes(c -> giveMorals(c.getSource(), getString(c, "player")))
 						)
 				);
@@ -202,17 +212,36 @@ public class UhcGameCommand
 		return 1;
 	}
 
+	private static boolean ensureGameIsPlaying(ServerCommandSource source)
+	{
+		if (UhcGameManager.instance.isGamePlaying())
+		{
+			return true;
+		}
+		else
+		{
+			source.sendFeedback(new LiteralText(Formatting.RED + "Game has not started yet"), false);
+			return false;
+		}
+	}
+
 	private static int resurrentPlayer(ServerCommandSource source, String player) throws CommandSyntaxException
 	{
-		UhcGameManager.instance.getUhcPlayerManager().resurrentPlayer(player);
-		regiveAdjustBook(source, false);
+		if (ensureGameIsPlaying(source))
+		{
+			UhcGameManager.instance.getUhcPlayerManager().resurrentPlayer(player);
+			regiveAdjustBook(source, false);
+		}
 		return 1;
 	}
 
 	private static int killPlayer(ServerCommandSource source, String player) throws CommandSyntaxException
 	{
-		UhcGameManager.instance.getUhcPlayerManager().killPlayer(player);
-		regiveAdjustBook(source, false);
+		if (ensureGameIsPlaying(source))
+		{
+			UhcGameManager.instance.getUhcPlayerManager().killPlayer(player);
+			regiveAdjustBook(source, false);
+		}
 		return 1;
 	}
 

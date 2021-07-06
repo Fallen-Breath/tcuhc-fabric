@@ -23,6 +23,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.World;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -30,6 +31,11 @@ public class PlayerItems
 {
 	private static final Map<String, ItemStack> items = Maps.newLinkedHashMap();
 	private static final ItemStack DEFAULT_MORAL = new ItemStack(Items.PAPER);
+
+	public static Collection<String> getAvailableNames()
+	{
+		return items.keySet();
+	}
 
 	private static void setSingleLore(ItemStack itemStack, String lore)
 	{
