@@ -29,6 +29,7 @@
     "item.ChorusFruitMixin",
     "item.FoodComponentBuilderMixin",
     "item.ItemMixin",
+    "item.ItemStackMixin",
     "item.LivingEntityMixin",
     "item.StatusEffectInstanceAccessor",
     "loot.ItemEntryAccessor",
