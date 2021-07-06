@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "tc-uhc",
+  "id": "tcuhc",
   "version": "1.0.0",
 
   "name": "TC UHC",
@@ -14,7 +14,7 @@
     "sources": "https://github.com/"
   },
 
-  "icon": "assets/tc-uhc/icon.png",
+  "icon": "assets/tcuhc/icon.png",
 
   "environment": "*",
   "entrypoints": {

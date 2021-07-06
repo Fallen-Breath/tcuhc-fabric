@@ -17,7 +17,7 @@ public class LootTableUtil
 	public static <T> T getUhcLootData(String type, String dir, Class<T> class_)
 	{
 		Gson gson = LootManagerAccessor.getGSON();
-		String filePath = String.format("data/tc-uhc/%s/%s.json", type, dir);
+		String filePath = String.format("data/tcuhc/%s/%s.json", type, dir);
 		InputStream inputStream = LootTableUtil.class.getClassLoader().getResourceAsStream(filePath);
 		if (inputStream != null && gson != null)
 		{

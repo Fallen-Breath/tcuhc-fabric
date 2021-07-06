@@ -17,7 +17,7 @@ public class UhcRegistry
 
 	private static Identifier getIdentifier(String id)
 	{
-		return new Identifier("tc-uhc", id);
+		return new Identifier("tcuhc", id);
 	}
 
 	public static Set<Feature<?>> getFeatures()
