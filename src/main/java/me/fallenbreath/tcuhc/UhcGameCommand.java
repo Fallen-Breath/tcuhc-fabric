@@ -40,7 +40,7 @@ public class UhcGameCommand
 
 	public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher)
 	{
-		LiteralArgumentBuilder<ServerCommandSource> generalCommands = literal(PREFIX).
+		LiteralArgumentBuilder<ServerCommandSource> rootNode = literal(PREFIX).
 				executes(c -> sendVersionInfo(c.getSource())).
 				then(literal("version").executes(c -> sendVersionInfo(c.getSource()))).
 				then(literal("select").
@@ -48,20 +48,19 @@ public class UhcGameCommand
 								executes(c -> selectTeam(c.getSource(), getInteger(c, "team_id")))
 						)
 				).
-				then(literal("deathpos").executes(c -> sendDeathPos(c.getSource())));
-
-		LiteralArgumentBuilder<ServerCommandSource> opCommands = literal(PREFIX).
-				requires(UhcGameCommand::isOp).
-				then(literal("config").executes(c -> giveConfig(c.getSource()))).
+				then(literal("deathpos").executes(c -> sendDeathPos(c.getSource()))).
+				then(literal("config").requires(UhcGameCommand::isOp).executes(c -> giveConfig(c.getSource()))).
 				then(literal("reset").
+						requires(UhcGameCommand::isOp).
 						then(argument("value", integer(0, 1)).
 								executes(c -> executeReset(c.getSource(), getInteger(c, "value")))
 						)
 				).
-				then(literal("regen").executes(c -> executeRegen(c.getSource()))).
-				then(literal("start").executes(c -> executeStart(c.getSource()))).
-				then(literal("stop").executes(c -> executeStop(c.getSource()))).
+				then(literal("regen").requires(UhcGameCommand::isOp).executes(c -> executeRegen(c.getSource()))).
+				then(literal("start").requires(UhcGameCommand::isOp).executes(c -> executeStart(c.getSource()))).
+				then(literal("stop").requires(UhcGameCommand::isOp).executes(c -> executeStop(c.getSource()))).
 				then(literal("option").
+						requires(UhcGameCommand::isOp).
 						then(argument("name", string()).
 								suggests((c, b) -> suggestMatching(UhcGameManager.instance.getOptions().getOptionIdStream(), b)).
 								then(argument("operation", string()).
@@ -71,6 +70,7 @@ public class UhcGameCommand
 						)
 				).
 				then(literal("adjust").
+						requires(UhcGameCommand::isOp).
 						executes(c -> regiveAdjustBook(c.getSource(), true)).
 						then(literal("end").executes(c -> removeAdjustBook(c.getSource()))).
 						then(literal("kill").
@@ -87,14 +87,14 @@ public class UhcGameCommand
 						)
 				).
 				then(literal("givemorals").
+						requires(UhcGameCommand::isOp).
 						executes(c -> giveMorals(c.getSource(), null)).
 						then(argument("player", string()).
 								suggests((c, b) -> suggestMatching(PlayerItems.getAvailableNames(), b)).
 								executes(c -> giveMorals(c.getSource(), getString(c, "player")))
 						)
 				);
-		dispatcher.register(generalCommands);
-		dispatcher.register(opCommands);
+		dispatcher.register(rootNode);
 	}
 
 	private static int sendVersionInfo(ServerCommandSource sender) {
