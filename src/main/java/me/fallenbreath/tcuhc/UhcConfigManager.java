@@ -1,3 +1,7 @@
+/*
+ From Gamepiaynmo: https://github.com/Gamepiaynmo/TC-UHC
+ */
+
 package me.fallenbreath.tcuhc;
 
 import me.fallenbreath.tcuhc.options.Option;
@@ -6,7 +10,6 @@ import net.minecraft.text.LiteralText;
 
 public class UhcConfigManager
 {
-	
 	private UhcGamePlayer operator;
 	private boolean isConfiguring;
 	private boolean isInputting;

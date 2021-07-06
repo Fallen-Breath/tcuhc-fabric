@@ -1,3 +1,7 @@
+/*
+ From Gamepiaynmo: https://github.com/Gamepiaynmo/TC-UHC
+ */
+
 package me.fallenbreath.tcuhc;
 
 import net.minecraft.util.DyeColor;

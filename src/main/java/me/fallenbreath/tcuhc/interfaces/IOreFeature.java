@@ -1,4 +1,4 @@
-package me.fallenbreath.tcuhc.gen;
+package me.fallenbreath.tcuhc.interfaces;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;

@@ -1,6 +1,6 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.ore;
 
-import me.fallenbreath.tcuhc.gen.IOreFeature;
+import me.fallenbreath.tcuhc.interfaces.IOreFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
