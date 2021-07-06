@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Iterator;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class ServerPlayNetworkHandlerMixin
+public abstract class ServerPlayNetworkHandlerMixin
 {
 	@Shadow public ServerPlayerEntity player;
 
