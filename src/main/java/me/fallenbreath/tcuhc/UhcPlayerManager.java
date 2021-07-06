@@ -290,7 +290,7 @@ public class UhcPlayerManager
 	public void onPlayerDamaged(ServerPlayerEntity player, DamageSource source, float amount) {
 		if (gameManager.isGamePlaying()) {
 			String msg = String.format("You got %.2f damage from ", amount);
-			String byEnding = source.getAttacker() != null ? " by " + source.getAttacker().getName() : "";
+			String byEnding = source.getAttacker() != null ? " by " + source.getAttacker().getName().getString() : "";
 			if (source == DamageSource.IN_FIRE) msg += "fire";
 			else if (source == DamageSource.LIGHTNING_BOLT) msg += "lightning blot";
 			else if (source == DamageSource.ON_FIRE) msg += "fire";
