@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -25,6 +26,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 	@Shadow private int field_13998;
 
 	@Shadow private Entity cameraEntity;
+
+	@Shadow public abstract boolean isSpectator();
+
+	private Entity previousCameraEntity;
 	private float modifiedDamageAmount;
 
 	public ServerPlayerEntityMixin(World world, GameProfile profile)
@@ -104,6 +109,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 		}
 	}
 
+	@ModifyVariable(method = "setCameraEntity", at = @At("STORE"), ordinal = 1)
+	private Entity returnNullToAlwaysEnterIf(Entity entity2)
+	{
+		this.previousCameraEntity = entity2;
+		return null;
+	}
+
 	@Inject(
 			method = "setCameraEntity",
 			at = @At(
@@ -112,14 +124,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 					ordinal = 1
 			)
 	)
-	private void onSetCameraEntity(Entity entity, CallbackInfo ci)
+	private void modifyCameraEntity(CallbackInfo ci)
 	{
-		if (doSpectateCheck.get())
+		if (doSpectateCheck.get() && this.isSpectator())
 		{
-			this.cameraEntity = UhcGameManager.instance.onPlayerSpectate((ServerPlayerEntity) (Object) this, this.cameraEntity, entity);
+			this.cameraEntity = UhcGameManager.instance.onPlayerSpectate((ServerPlayerEntity) (Object) this, this.cameraEntity, this.previousCameraEntity);
 		}
+		// Regular calls are always with it true
 		doSpectateCheck.set(true);
-		// TODO: force tp check? (remove if)
 	}
 
 	@Intrinsic

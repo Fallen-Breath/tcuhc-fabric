@@ -4,7 +4,8 @@ import me.fallenbreath.tcuhc.options.Option;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 
-public class ConfigManager {
+public class UhcConfigManager
+{
 	
 	private UhcGamePlayer operator;
 	private boolean isConfiguring;

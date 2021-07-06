@@ -18,14 +18,22 @@ public class TaskKeepSpectate extends TaskTimer {
 	@Override
 	public void onTimer() {
 		if (!UhcGameManager.instance.isGamePlaying() || gamePlayer.getTeam().getAliveCount() == 0 || gamePlayer.isAlive())
+		{
 			this.setCanceled();
+			return;
+		}
 		gamePlayer.getRealPlayer().ifPresent(player -> {
-			Entity target = player.getCameraEntity();
-//			if (!SpectateTargetUtil.isCapableTarget(gamePlayer, target))
-//				target = SpectateTargetUtil.getCapableTarget(gamePlayer, target);
-			if (target != null) player.setCameraEntity(target);
-			if (player.world != target.world) {
-				player.networkHandler.onSpectatorTeleport(new SpectatorTeleportC2SPacket(target.getUuid()));
+			if (player.isSpectator())
+			{
+				Entity target = player.getCameraEntity();
+				if (target != null)
+				{
+					player.setCameraEntity(target);
+					if (player.world != target.world)
+					{
+						player.networkHandler.onSpectatorTeleport(new SpectatorTeleportC2SPacket(target.getUuid()));
+					}
+				}
 			}
 		});
 	}

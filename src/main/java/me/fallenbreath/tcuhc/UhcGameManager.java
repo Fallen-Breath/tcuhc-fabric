@@ -37,15 +37,15 @@ import java.util.Random;
 
 public class UhcGameManager extends Taskable {
 
-	public static final Logger LOG = LogManager.getLogger();
+	public static final Logger LOG = LogManager.getLogger("TC UHC");
 	public static UhcGameManager instance;
 	public static final Random rand = new Random();
 	
-	private MinecraftServer mcServer;
+	private final MinecraftServer mcServer;
 
-	private UhcPlayerManager playerManager;
-	private ConfigManager configManager = new ConfigManager();
-	private Options uhcOptions;
+	private final UhcPlayerManager playerManager;
+	private final UhcConfigManager configManager = new UhcConfigManager();
+	private final Options uhcOptions;
 	
 	private boolean isGamePlaying;
 	private boolean isGameEnded;
@@ -68,7 +68,7 @@ public class UhcGameManager extends Taskable {
 	public MinecraftServer getMinecraftServer() { return mcServer; }
 	public PlayerManager getServerPlayerManager() { return mcServer.getPlayerManager(); }
 	public UhcPlayerManager getUhcPlayerManager() { return playerManager; }
-	public ConfigManager getConfigManager() { return configManager; }
+	public UhcConfigManager getConfigManager() { return configManager; }
 	public Options getOptions() { return uhcOptions; }
 	public boolean isGamePlaying() { return isGamePlaying; }
 	public boolean isConfiguring() { return configManager.isConfiguring(); }

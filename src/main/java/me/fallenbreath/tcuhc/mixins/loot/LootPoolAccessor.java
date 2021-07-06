@@ -10,4 +10,7 @@ public interface LootPoolAccessor
 {
 	@Accessor
 	LootEntry[] getEntries();
+
+	@Accessor
+	void setEntries(LootEntry[] entries);
 }

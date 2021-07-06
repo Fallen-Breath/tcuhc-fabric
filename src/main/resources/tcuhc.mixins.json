@@ -6,6 +6,7 @@
   "mixins": [
     "MinecraftServerMixin",
     "block.ChestBlockEntityMixin",
+    "block.LootManagerMixin",
     "block.OreBlockMixin",
     "core.CommandManagerMixin",
     "core.MinecraftServerMixin",
@@ -32,7 +33,6 @@
     "item.StatusEffectInstanceAccessor",
     "loot.ItemEntryAccessor",
     "loot.LootManagerAccessor",
-    "loot.LootManagerMixin",
     "loot.LootPoolAccessor",
     "loot.LootTableAccessor",
     "network.ServerPlayNetworkHandlerMixin",
