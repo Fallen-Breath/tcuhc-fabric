@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "tcuhc",
-  "version": "1.0.0",
+  "version": "${version}",
 
   "name": "TC UHC",
   "description": "TC UHC in fabric",
