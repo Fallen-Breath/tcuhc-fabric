@@ -51,7 +51,7 @@ public class TaskNetherCave extends TaskTimer {
 	@Override
 	public void onTimer() {
 		if (this.hasFinished()) return;
-		if (!UhcGameManager.instance.isGamePlaying()) this.setCanceled();
+		if (!UhcGameManager.instance.isGamePlaying() || UhcGameManager.instance.hasGameEnded()) this.setCanceled();
 		int timeRemaining = UhcGameManager.instance.getGameTimeRemaining();
 		int timePast = gameTime - timeRemaining;
 //		if (timeRemaining == 0) this.setCanceled();

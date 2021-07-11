@@ -4,7 +4,7 @@
 
 package me.fallenbreath.tcuhc.gen;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.block.Blocks;
@@ -63,7 +63,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 				for (int z = pos.getZ() - 1; z <= pos.getZ() + 1; z++) {
 					worldIn.setBlockState(new BlockPos(x, pos.getY(), z), Blocks.STONE_BRICKS.getDefaultState(), 2);
 					if (x != pos.getX() || z != pos.getZ())
-						worldIn.setBlockState(new BlockPos(x, pos.getY() + 1, z), Blocks.IRON_BARS.getDefaultState(), 2);
+						worldIn.setBlockState(new BlockPos(x, pos.getY() + 1, z), Blocks.IRON_BARS.getDefaultState(), 3);
 					worldIn.setBlockState(new BlockPos(x, pos.getY() + 3, z), Blocks.STONE_BRICKS.getDefaultState(), 2);
 				}
 			worldIn.setBlockState(pos.up(4), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 2);
@@ -90,22 +90,24 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 	}
 
 	static {
-		staticRecipeList = Lists.newArrayList();
-		staticRecipeList.add(new UHCRecipe(Items.GOLDEN_APPLE, Items.APPLE, 1, 1, 18, 30, true));
-		staticRecipeList.add(new UHCRecipe(Items.DIAMOND_CHESTPLATE, Items.IRON_CHESTPLATE, 1, 1, 36, 48, true));
-		staticRecipeList.add(new UHCRecipe(Items.DIAMOND_LEGGINGS, Items.IRON_LEGGINGS, 1, 1, 30, 42, true));
-		staticRecipeList.add(new UHCRecipe(Items.DIAMOND_HELMET, Items.IRON_HELMET, 1, 1, 22, 30, true));
-		staticRecipeList.add(new UHCRecipe(Items.DIAMOND_BOOTS, Items.IRON_BOOTS, 1, 1, 18, 24, true));
-		randRecipeList = Lists.newArrayList();
-		randRecipeList.add(new UHCRecipe(Items.EXPERIENCE_BOTTLE, 2, 4, 1, 1, true));
-		randRecipeList.add(new UHCRecipe(Items.NETHER_WART, Items.BLAZE_POWDER, 1, 2, 2, 4, true));
-		randRecipeList.add(new UHCRecipe(Items.COAL, 3, 6, 1, 1, false));
-		randRecipeList.add(new UHCRecipe(Items.REDSTONE, 3, 6, 1, 1, false));
-		randRecipeList.add(new UHCRecipe(Items.IRON_INGOT, 1, 2, 1, 1, false));
-		randRecipeList.add(new UHCRecipe(Items.GOLD_INGOT, 1, 1, 1, 2, false));
-		randRecipeList.add(new UHCRecipe(Items.ENDER_PEARL, 1, 1, 10, 20, false));
-		randRecipeList.add(new UHCRecipe(Items.EMERALD, 1, 1, 3, 6, false));
-		randRecipeList.add(new UHCRecipe(Items.DIAMOND, 1, 1, 2, 4, false));
+		staticRecipeList = new ImmutableList.Builder<UHCRecipe>().
+				add(new UHCRecipe(Items.GOLDEN_APPLE, Items.APPLE, 1, 1, 18, 30, true)).
+				add(new UHCRecipe(Items.DIAMOND_CHESTPLATE, Items.IRON_CHESTPLATE, 1, 1, 36, 48, true)).
+				add(new UHCRecipe(Items.DIAMOND_LEGGINGS, Items.IRON_LEGGINGS, 1, 1, 30, 42, true)).
+				add(new UHCRecipe(Items.DIAMOND_HELMET, Items.IRON_HELMET, 1, 1, 22, 30, true)).
+				add(new UHCRecipe(Items.DIAMOND_BOOTS, Items.IRON_BOOTS, 1, 1, 18, 24, true)).
+				build();
+		randRecipeList = new ImmutableList.Builder<UHCRecipe>().
+				add(new UHCRecipe(Items.EXPERIENCE_BOTTLE, 2, 4, 1, 1, true)).
+				add(new UHCRecipe(Items.NETHER_WART, Items.BLAZE_POWDER, 1, 2, 2, 4, true)).
+				add(new UHCRecipe(Items.COAL, 3, 6, 1, 1, false)).
+				add(new UHCRecipe(Items.REDSTONE, 3, 6, 1, 1, false)).
+				add(new UHCRecipe(Items.IRON_INGOT, 1, 2, 1, 1, false)).
+				add(new UHCRecipe(Items.GOLD_INGOT, 1, 1, 1, 2, false)).
+				add(new UHCRecipe(Items.ENDER_PEARL, 1, 1, 10, 20, false)).
+				add(new UHCRecipe(Items.EMERALD, 1, 1, 3, 6, false)).
+				add(new UHCRecipe(Items.DIAMOND, 1, 1, 2, 4, false)).
+				build();
 	}
 
 	public static class UHCRecipe {
