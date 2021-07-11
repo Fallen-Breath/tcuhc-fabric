@@ -39,7 +39,6 @@
     "recipe.RegistryMixin",
     "recipe.SynchronizeRecipesS2CPacketMixin",
     "task.DyeColorAccessor",
-    "task.MinecraftServerMixin",
     "task.PlayerListHeaderS2CPacketAccessor",
     "util.SheepEntityAccessor",
     "worldgen.feature.DefaultBiomeFeaturesMixin",

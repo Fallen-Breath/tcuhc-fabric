@@ -114,7 +114,7 @@ public class TaskPregenerate extends Task
 		{
 			genOneChunk();
 		}
-		while (((IMinecraftServer)this.mcServer).hasTimeLeft());
+		while (UhcGameManager.instance.msptRecorder.getThisTickMspt() < 50);
 	}
 
 	@Override
@@ -142,10 +142,5 @@ public class TaskPregenerate extends Task
 			{
 			}
 		}
-	}
-
-	public interface IMinecraftServer
-	{
-		boolean hasTimeLeft();
 	}
 }
