@@ -138,17 +138,19 @@ public class TaskNetherCave extends TaskTimer {
 			for (UhcGamePlayer player : combatPlayers) {
 				player.getRealPlayer().ifPresent(playermp -> {
 					if (glow) playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 0, false, false));
-					if (playermp.getPos().getY() < minY || playermp.getPos().getY() > maxY)
-						playermp.damage(DamageSource.IN_WALL, 1.0f);
+					if (playermp.getEntityWorld().getDimension().getType() == DimensionType.OVERWORLD) {
+						if (playermp.getPos().getY() < minY || playermp.getPos().getY() > maxY)
+							playermp.damage(DamageSource.IN_WALL, 1.0f);
 
-					double particleY = -1;
-					if (playermp.getPos().getY() < minY + 5)
-						particleY = minY + 3;
-					if (playermp.getPos().getY() > maxY - 5)
-						particleY = maxY - 2;
-					if (particleY > 0) {
-						playermp.getServerWorld().spawnParticles(playermp, ParticleTypes.PORTAL, false,
-								playermp.getPos().getX(), particleY, playermp.getPos().getZ(), 100, 2, 0, 2, 0);
+						double particleY = -1;
+						if (playermp.getPos().getY() < minY + 5)
+							particleY = minY + 3;
+						if (playermp.getPos().getY() > maxY - 5)
+							particleY = maxY - 2;
+						if (particleY > 0) {
+							playermp.getServerWorld().spawnParticles(playermp, ParticleTypes.PORTAL, false,
+									playermp.getPos().getX(), particleY, playermp.getPos().getZ(), 100, 2, 0, 2, 0);
+						}
 					}
 				});
 			}
