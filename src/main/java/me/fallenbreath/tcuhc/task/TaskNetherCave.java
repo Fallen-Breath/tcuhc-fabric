@@ -137,7 +137,7 @@ public class TaskNetherCave extends TaskTimer {
 
 			for (UhcGamePlayer player : combatPlayers) {
 				player.getRealPlayer().ifPresent(playermp -> {
-					if (glow) playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 1, false, false));
+					if (glow) playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 0, false, false));
 					if (playermp.getPos().getY() < minY || playermp.getPos().getY() > maxY)
 						playermp.damage(DamageSource.IN_WALL, 1.0f);
 
