@@ -42,9 +42,9 @@ public class UhcRegistry
 	/**
 	 * Like net.minecraft.recipe.RecipeSerializer#register(java.lang.String, net.minecraft.recipe.RecipeSerializer)
 	 */
-	public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S registerRecipeSerializer(String id, S serializer)
+	public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S registerRecipeSerializer(String name, S serializer)
 	{
 		RECIPE_SERIALIZERS.add(serializer);
-		return Registry.register(Registry.RECIPE_SERIALIZER, getIdentifier(id), serializer);
+		return Registry.register(Registry.RECIPE_SERIALIZER, getIdentifier(name), serializer);
 	}
 }

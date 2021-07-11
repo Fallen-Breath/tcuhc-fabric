@@ -50,7 +50,7 @@ public class UhcGameManager extends Taskable {
 	private final UhcPlayerManager playerManager;
 	private final UhcConfigManager configManager = new UhcConfigManager();
 	private final Options uhcOptions;
-	
+
 	private boolean isGamePlaying;
 	private boolean isGameEnded;
 	
@@ -59,6 +59,8 @@ public class UhcGameManager extends Taskable {
 	
 	public LastWinnerList winnerList;
 	private Optional<ServerBossBar> bossInfo = Optional.empty();
+
+	public final MsptRecorder msptRecorder = new MsptRecorder();
 	
 	public UhcGameManager(MinecraftServer server)
 	{
@@ -142,9 +144,9 @@ public class UhcGameManager extends Taskable {
 		TaskScoreboard.hideScoreboard();
 		if (!preloaded) {
 			int borderStart = uhcOptions.getIntegerOptionValue("borderStart");
-			borderStart = borderStart / 32 + 5;
-			this.addTask(new TaskPregenerate(mcServer, borderStart, getOverWorld()));
-			this.addTask(new TaskPregenerate(mcServer, borderStart, mcServer.getWorld(DimensionType.THE_NETHER)));
+			int radius = borderStart / 32;
+			this.addTask(new TaskPregenerate(mcServer, radius + 5, getOverWorld()));
+			this.addTask(new TaskPregenerate(mcServer, radius / 8 + 10, mcServer.getWorld(DimensionType.THE_NETHER)));
 			isPregenerating = true;
 		}
 		SpawnPlatform.generatePlatform(this, getOverWorld());
@@ -171,6 +173,7 @@ public class UhcGameManager extends Taskable {
 	
 	public static void tryUpdateSaveFolder(Path saveFolder) {
 		if (!saveFolder.resolve("preload").toFile().exists()) {
+			LOG.warn("Deleting {} for UHC world regenerate", saveFolder);
 			deleteFolder(saveFolder.toFile());
 		} else {
 			preloaded = true;
@@ -297,7 +300,7 @@ public class UhcGameManager extends Taskable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void winnerParticles() {
 		for (ServerPlayerEntity player : getServerPlayerManager().getPlayerList()) {
 			if (player.age % 2 == 0 && winnerList.isWinner(player.getEntityName())) {

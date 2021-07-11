@@ -4,7 +4,6 @@
   "package": "me.fallenbreath.tcuhc.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MinecraftServerMixin",
     "block.ChestBlockEntityMixin",
     "block.LootManagerMixin",
     "block.OreBlockMixin",

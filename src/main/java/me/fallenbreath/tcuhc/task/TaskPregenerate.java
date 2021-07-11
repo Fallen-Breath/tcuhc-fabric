@@ -10,14 +10,16 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class TaskPregenerate extends Task
 {
-	public static final ChunkTicketType<ChunkPos> PRE_GENERATE = ChunkTicketType.method_20628("pre_generate", Comparator.comparingLong(ChunkPos::toLong), 10);
+	public static final ChunkTicketType<ChunkPos> PRE_GENERATE = ChunkTicketType.method_20628("pre_generate", Comparator.comparingLong(ChunkPos::toLong), 5);
 
 	private int size;
 	private int x;
@@ -27,16 +29,21 @@ public class TaskPregenerate extends Task
 	private MinecraftServer mcServer;
 	private ServerWorld world;
 	private ServerChunkManager provider;
-	static int lastRatio = 0;
+	private int lastRatio = 0;
 
 	public TaskPregenerate(MinecraftServer mcServer, int borderSize, ServerWorld worldServer)
 	{
 		this.mcServer = mcServer;
-		size = borderSize;
-		world = worldServer;
-		inited = false;
-		x = z = -size;
-		provider = world.getChunkManager();
+		this.world = worldServer;
+		this.size = borderSize;
+		this.inited = false;
+		this.x = this.z = -size;
+		this.provider = this.world.getChunkManager();
+	}
+
+	private String getWorldName()
+	{
+		return Objects.requireNonNull(DimensionType.getId(world.getDimension().getType())).getPath();
 	}
 
 	private void generateChunk(int x, int z)
@@ -51,7 +58,6 @@ public class TaskPregenerate extends Task
 		if (this.hasFinished())
 			return;
 
-		this.provider.getLightingProvider().setTaskBatchSize(500);
 		if (!inited)
 		{
 			if (x > size)
@@ -78,10 +84,10 @@ public class TaskPregenerate extends Task
 			x = -size + 1;
 			z++;
 			float ratio = (float) (z + size) * 100 / (2 * size + 1);
-			UhcGameManager.LOG.info(String.format("%.2f%% chunks of %s loaded.", (float) (z + size) * 100 / (2 * size + 1), world.getDimension().getType().toString()));
+			UhcGameManager.LOG.info(String.format("%.2f%% chunks of %s loaded.", (float) (z + size) * 100 / (2 * size + 1), getWorldName()));
 			if (ratio + 1e-4 > lastRatio)
 			{
-				UhcGameManager.instance.broadcastMessage(String.format("Chunk generate progress: %d%%", lastRatio));
+				UhcGameManager.instance.broadcastMessage(String.format("Chunk generate of %s progress: %d%%", getWorldName(), lastRatio));
 				lastRatio += 10;
 			}
 		}
@@ -106,16 +112,20 @@ public class TaskPregenerate extends Task
 	@Override
 	public void onFinish()
 	{
+		UhcGameManager.LOG.info(String.format("Pre-generating of %s finished.", getWorldName()));
 		this.provider.getLightingProvider().setTaskBatchSize(5);
-		try
+		if (this.world == UhcGameManager.instance.getOverWorld())
 		{
-			File preload = mcServer.getLevelStorage().resolveFile(mcServer.getLevelName(), "preload");
-			if (!preload.exists())
-				preload.createNewFile();
-			UhcGameManager.instance.setPregenerateComplete();
-		}
-		catch (IOException ignored)
-		{
+			try
+			{
+				File preload = mcServer.getLevelStorage().resolveFile(mcServer.getLevelName(), "preload");
+				if (!preload.exists())
+					preload.createNewFile();
+				UhcGameManager.instance.setPregenerateComplete();
+			}
+			catch (IOException ignored)
+			{
+			}
 		}
 	}
 

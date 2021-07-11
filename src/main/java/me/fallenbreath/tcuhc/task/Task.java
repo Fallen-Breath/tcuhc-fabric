@@ -5,11 +5,12 @@
 package me.fallenbreath.tcuhc.task;
 
 public class Task {
-	
+
+	public void onAdd() {}
 	public void onUpdate() {}
 	public boolean hasFinished() { return true; }
 	public void onFinish() {}
-	
+
 	public static class TaskTimer extends Task {
 		
 		private int delay, interval;

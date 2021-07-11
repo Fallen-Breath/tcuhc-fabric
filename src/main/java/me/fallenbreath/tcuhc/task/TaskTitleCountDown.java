@@ -18,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
@@ -51,6 +52,7 @@ public class TaskTitleCountDown extends TaskTimer {
 				player.setInvulnerable(false);
 				player.clearStatusEffects();
 				UhcGameManager.instance.getUhcPlayerManager().resetHealthAndFood(player);
+				player.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));  // no free phantom
 				player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 4));  // 10s Resistance V
 
 				// give invisibility and shiny potion to player for ghost mode

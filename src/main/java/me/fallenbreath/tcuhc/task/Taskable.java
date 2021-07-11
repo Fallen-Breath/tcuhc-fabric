@@ -10,19 +10,19 @@ import java.util.List;
 
 public class Taskable {
 	
-	private List<Task> tasks = Lists.newArrayList(),
-			toRemove = Lists.newArrayList();
+	private final List<Task> tasks = Lists.newArrayList();
+	private final List<Task> toRemove = Lists.newArrayList();
 	
 	public Taskable addTask(Task task) {
 		tasks.add(task);
+		task.onAdd();
 		return this;
 	}
 	
 	public void updateTasks() {
-		for (int i = 0; i < tasks.size(); i++)
-			tasks.get(i).onUpdate();
-		tasks.stream().filter(task -> task.hasFinished()).forEach(toRemove::add);
-		toRemove.forEach(task -> task.onFinish());
+		tasks.forEach(Task::onUpdate);
+		tasks.stream().filter(Task::hasFinished).forEach(toRemove::add);
+		toRemove.forEach(Task::onFinish);
 		tasks.removeAll(toRemove);
 		toRemove.clear();
 	}
