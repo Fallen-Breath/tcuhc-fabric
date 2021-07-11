@@ -1,0 +1,14 @@
+{
+    "package": "me.jellysquid.mods.lithium.mixin",
+    "required": true,
+    "compatibilityLevel": "JAVA_8",
+    "plugin": "me.jellysquid.mods.lithium.mixin.LithiumMixinPlugin",
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "client": [
+    ],
+    "mixins": [
+        "world.tick_scheduler.ServerWorldMixin"
+    ]
+}
