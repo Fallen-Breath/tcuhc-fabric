@@ -63,7 +63,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 				for (int z = pos.getZ() - 1; z <= pos.getZ() + 1; z++) {
 					worldIn.setBlockState(new BlockPos(x, pos.getY(), z), Blocks.STONE_BRICKS.getDefaultState(), 2);
 					if (x != pos.getX() || z != pos.getZ())
-						worldIn.setBlockState(new BlockPos(x, pos.getY() + 1, z), Blocks.IRON_BARS.getDefaultState(), 3);
+						worldIn.setBlockState(new BlockPos(x, pos.getY() + 1, z), Blocks.IRON_BARS.getDefaultState(), 2);
 					worldIn.setBlockState(new BlockPos(x, pos.getY() + 3, z), Blocks.STONE_BRICKS.getDefaultState(), 2);
 				}
 			worldIn.setBlockState(pos.up(4), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 2);

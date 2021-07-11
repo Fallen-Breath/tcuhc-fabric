@@ -4,6 +4,7 @@
 
 package me.fallenbreath.tcuhc.task;
 
+import com.google.common.collect.Queues;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkTicketType;
@@ -16,20 +17,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Queue;
 
 public class TaskPregenerate extends Task
 {
-	public static final ChunkTicketType<ChunkPos> PRE_GENERATE = ChunkTicketType.method_20628("pre_generate", Comparator.comparingLong(ChunkPos::toLong), 5);
+	public static final ChunkTicketType<ChunkPos> PRE_GENERATE = ChunkTicketType.create("pre_generate", Comparator.comparingLong(ChunkPos::toLong));
 
 	private int size;
 	private int x;
 	private int z;
 
 	private boolean inited;
-	private MinecraftServer mcServer;
-	private ServerWorld world;
-	private ServerChunkManager provider;
 	private int lastRatio = 0;
+	private final MinecraftServer mcServer;
+	private final ServerWorld world;
+	private final ServerChunkManager provider;
+	private final Queue<Object> ticketedPos = Queues.newArrayDeque();
 
 	public TaskPregenerate(MinecraftServer mcServer, int borderSize, ServerWorld worldServer)
 	{
@@ -51,6 +54,17 @@ public class TaskPregenerate extends Task
 		ChunkPos chunkPos = new ChunkPos(x, z);
 		this.provider.addTicket(PRE_GENERATE, chunkPos, 0, chunkPos);
 		this.world.getChunk(x, z);
+		this.ticketedPos.add(chunkPos);
+		this.removeTickets(64);
+	}
+
+	private void removeTickets(int tolerance)
+	{
+		while (this.ticketedPos.size() > tolerance)
+		{
+			ChunkPos chunkPos = (ChunkPos)this.ticketedPos.remove();
+			this.provider.removeTicket(PRE_GENERATE, chunkPos, 0, chunkPos);
+		}
 	}
 
 	private void genOneChunk()
@@ -112,6 +126,7 @@ public class TaskPregenerate extends Task
 	@Override
 	public void onFinish()
 	{
+		this.removeTickets(0);
 		UhcGameManager.LOG.info(String.format("Pre-generating of %s finished.", getWorldName()));
 		this.provider.getLightingProvider().setTaskBatchSize(5);
 		if (this.world == UhcGameManager.instance.getOverWorld())

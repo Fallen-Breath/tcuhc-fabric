@@ -107,7 +107,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 					chestBlock.getDefaultState().
 							rotate(BlockRotation.random(rand)).
 							with(ChestBlock.WATERLOGGED, hasWater)
-					, 2
+					, 3
 			);
 			BlockEntity tileentity = worldIn.getBlockEntity(position);
 			if (!(tileentity instanceof ChestBlockEntity))
