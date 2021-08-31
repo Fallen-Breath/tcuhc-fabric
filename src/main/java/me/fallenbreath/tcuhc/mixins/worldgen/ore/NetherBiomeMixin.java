@@ -2,26 +2,31 @@ package me.fallenbreath.tcuhc.mixins.worldgen.ore;
 
 import me.fallenbreath.tcuhc.gen.UhcFeatures;
 import net.minecraft.world.biome.NetherBiome;
+import net.minecraft.world.gen.feature.Feature;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(NetherBiome.class)
 public abstract class NetherBiomeMixin
 {
-	@ModifyArgs(
+	@Redirect(
 			method = "<init>",
+			slice = @Slice(
+					from = @At(
+							value = "FIELD",
+							target = "Lnet/minecraft/block/Blocks;NETHER_QUARTZ_ORE:Lnet/minecraft/block/Block;"
+					)
+			),
 			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/world/biome/NetherBiome;configureFeature(Lnet/minecraft/world/gen/feature/Feature;Lnet/minecraft/world/gen/feature/FeatureConfig;Lnet/minecraft/world/gen/decorator/Decorator;Lnet/minecraft/world/gen/decorator/DecoratorConfig;)Lnet/minecraft/world/gen/feature/ConfiguredFeature;"
+					value = "FIELD",
+					target = "Lnet/minecraft/world/gen/feature/Feature;ORE:Lnet/minecraft/world/gen/feature/Feature;",
+					ordinal = 0
 			)
 	)
-	private void modifyOreFeature(Args args)
+	private Feature<?> modifyOreFeature()
 	{
-		if (UhcFeatures.shouldModifyToValuableOre(args.get(0), args.get(1)))
-		{
-			args.set(0, UhcFeatures.VALUABLE_ORE);
-		}
+		return UhcFeatures.VALUABLE_ORE;
 	}
 }

@@ -43,16 +43,17 @@ public abstract class MobEntityMixin extends LivingEntity
 		return 200;
 	}
 
-	@Redirect(
-			method = "tickNewAi",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/entity/mob/MobEntity;checkDespawn()V"
-			)
-	)
-	private void modifyImmediateDespawnChance(MobEntity mobEntity)
-	{
-		// don't check despawn here
-		// do nothing
-	}
+	// no need in 1.15.2
+//	@Redirect(
+//			method = "tickNewAi",
+//			at = @At(
+//					value = "INVOKE",
+//					target = "Lnet/minecraft/entity/mob/MobEntity;checkDespawn()V"
+//			)
+//	)
+//	private void modifyImmediateDespawnChance(MobEntity mobEntity)
+//	{
+//		// don't check despawn here
+//		// do nothing
+//	}
 }

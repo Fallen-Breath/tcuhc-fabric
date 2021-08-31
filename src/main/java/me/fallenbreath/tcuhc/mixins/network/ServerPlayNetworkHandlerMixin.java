@@ -62,7 +62,7 @@ public abstract class ServerPlayNetworkHandlerMixin
 	private void modifyTeleportTarget(ServerPlayerEntity playerEntity, ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch)
 	{
 		Entity entity = this.entityToSpectate;
-		playerEntity.teleport(targetWorld, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+		playerEntity.teleport(targetWorld, entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 	}
 
 	@Inject(

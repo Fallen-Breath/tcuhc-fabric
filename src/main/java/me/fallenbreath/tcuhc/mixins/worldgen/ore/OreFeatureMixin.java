@@ -21,7 +21,7 @@ public abstract class OreFeatureMixin implements IOreFeature
 	)
 	private boolean setBlockStateIfPosValid(IWorld iWorld, BlockPos pos, BlockState state, int flags)
 	{
-		if (isValidPositionForValuableOre(iWorld, pos))
+		if (isValidPositionForValuableOre(iWorld, pos, state))
 		{
 			return iWorld.setBlockState(pos, state, flags);
 		}

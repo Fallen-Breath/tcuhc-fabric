@@ -55,7 +55,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 	{
 		Entity sourceEntity = cause.getSource();
 		if (!(sourceEntity instanceof PlayerEntity)) sourceEntity = cause.getAttacker();
-		if (!(sourceEntity instanceof PlayerEntity)) sourceEntity = this.method_6124();
+		if (!(sourceEntity instanceof PlayerEntity)) sourceEntity = this.getAttacker();
 		if (sourceEntity instanceof PlayerEntity)
 		{
 			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((PlayerEntity)sourceEntity).getStat().addStat(UhcGamePlayer.EnumStat.PLAYER_KILLED, 1);

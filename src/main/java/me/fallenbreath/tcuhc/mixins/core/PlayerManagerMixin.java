@@ -22,7 +22,7 @@ public abstract class PlayerManagerMixin
 			method = "onPlayerConnect",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/server/world/ServerWorld;method_18213(Lnet/minecraft/server/network/ServerPlayerEntity;)V"
+					target = "Lnet/minecraft/server/world/ServerWorld;onPlayerConnected(Lnet/minecraft/server/network/ServerPlayerEntity;)V"
 			)
 	)
 	private void playerJoinHook(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci)

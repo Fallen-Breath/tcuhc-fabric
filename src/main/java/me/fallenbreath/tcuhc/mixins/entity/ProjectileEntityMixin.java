@@ -19,7 +19,7 @@ public abstract class ProjectileEntityMixin
 			method = "onEntityHit",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/entity/Entity;method_20803(I)V"
+					target = "Lnet/minecraft/entity/Entity;setFireTicks(I)V"
 			)
 	)
 	private void cancelCritical(CallbackInfo ci)

@@ -52,7 +52,7 @@ public class RecipeGoldenApple extends SpecialCraftingRecipe
 			ItemStack res = new ItemStack(Items.GOLDEN_APPLE);
 			if (level != 4)
 			{
-				res.getOrCreateTag().put("level", new IntTag(level));
+				res.getOrCreateTag().put("level", IntTag.of(level));
 			}
 			return res;
 		}

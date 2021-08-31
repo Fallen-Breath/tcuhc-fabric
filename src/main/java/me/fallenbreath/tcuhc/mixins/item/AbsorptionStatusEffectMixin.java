@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(AbsorptionStatusEffect.class)
 public abstract class AbsorptionStatusEffectMixin
 {
-	@ModifyConstant(method = {"method_5562", "method_5555"}, constant = @Constant(intValue = 4))
+	@ModifyConstant(method = {"onRemoved", "onApplied"}, constant = @Constant(intValue = 4))
 	private int modifyBaseAbsorption(int value)
 	{
 		return 1;

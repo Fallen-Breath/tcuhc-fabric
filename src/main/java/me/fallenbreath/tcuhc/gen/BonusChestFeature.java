@@ -82,7 +82,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 			return false;
 		int posX = rand.nextInt(16) + position.getX() - 8;
 		int posZ = rand.nextInt(16) + position.getZ() - 8;
-		int posY = worldIn.getTop(Heightmap.Type.OCEAN_FLOOR, posX, posZ);
+		int posY = worldIn.getTopY(Heightmap.Type.OCEAN_FLOOR, posX, posZ);
 		position = new BlockPos(posX, posY, posZ);
 		while (!worldIn.getBlockState(position).isSimpleFullBlock(worldIn, position) && position.getY() > 0)
 		{

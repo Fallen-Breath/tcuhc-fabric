@@ -67,8 +67,8 @@ public class TaskTitleCountDown extends TaskTimer {
 						if (this.getGamePlayer().isKing()) {
 							DyeColor dyeColor = this.getGamePlayer().getTeam().getTeamColor().dyeColor;
 							ItemStack kingsHelmet = new ItemStack(Items.LEATHER_HELMET).setCustomName(new LiteralText(String.format("%s crown", dyeColor.getName())));
-							kingsHelmet.getOrCreateTag().put("KingsCrown", new ByteTag((byte)1));
-							kingsHelmet.getOrCreateTag().put("Unbreakable", new ByteTag((byte)1));
+							kingsHelmet.getOrCreateTag().put("KingsCrown", ByteTag.of((byte)1));
+							kingsHelmet.getOrCreateTag().put("Unbreakable", ByteTag.of((byte)1));
 							((DyeableItem)Items.LEATHER_HELMET).setColor(kingsHelmet, ((DyeColorAccessor)(Object)dyeColor).getColor());
 							kingsHelmet.addEnchantment(Enchantments.PROTECTION, 6);
 							kingsHelmet.addEnchantment(Enchantments.BINDING_CURSE, 1);

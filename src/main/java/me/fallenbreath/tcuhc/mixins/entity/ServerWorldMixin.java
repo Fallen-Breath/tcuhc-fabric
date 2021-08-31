@@ -27,6 +27,10 @@ public abstract class ServerWorldMixin
 	)
 	private void checkMobDespawn(BooleanSupplier shouldKeepTicking, CallbackInfo ci, Profiler profiler, ObjectIterator<?> objectIterator, Int2ObjectMap.Entry<Entity> entry, Entity entity2, Entity entity3)
 	{
+		if (true)  // no need in 1.15+
+		{
+			return;
+		}
 		if (entity2 instanceof MobEntity)
 		{
 			profiler.push("checkDespawn");

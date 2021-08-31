@@ -26,7 +26,7 @@ import java.util.Optional;
 public class BookNBT {
 	
 	public static ListTag appendPageText(ListTag nbt, BaseText text) {
-		nbt.add(new StringTag(BaseText.Serializer.toJson(text)));
+		nbt.add(StringTag.of(BaseText.Serializer.toJson(text)));
 		return nbt;
 	}
 	
@@ -48,8 +48,8 @@ public class BookNBT {
 	
 	public static ItemStack createWrittenBook(String author, String title, Tag pages) {
 		ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
-		book.getOrCreateTag().put("author", new StringTag(author));
-		book.getOrCreateTag().put("title", new StringTag(title));
+		book.getOrCreateTag().put("author", StringTag.of(author));
+		book.getOrCreateTag().put("title", StringTag.of(title));
 		book.getOrCreateTag().put("pages", pages);
 		return book;
 	}

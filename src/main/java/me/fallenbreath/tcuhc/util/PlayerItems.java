@@ -40,7 +40,7 @@ public class PlayerItems
 	private static void setSingleLore(ItemStack itemStack, String lore)
 	{
 		ListTag loreList = new ListTag();
-		loreList.add(new StringTag(lore));
+		loreList.add(StringTag.of(lore));
 		itemStack.getOrCreateSubTag("display").put("Lore", loreList);
 	}
 
