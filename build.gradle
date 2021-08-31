@@ -3,6 +3,15 @@ plugins {
 	id 'maven-publish'
 }
 
+repositories {
+	maven {
+		url 'https://masa.dy.fi/maven'
+	}
+	maven {
+		url 'https://jitpack.io'
+	}
+}
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -18,6 +27,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modRuntime "carpet:fabric-carpet:${project.minecraft_version}-1.4.8+v200811"
+	modRuntime 'com.github.caffeinemc:lithium-fabric:1.15.x~fabric-SNAPSHOT'
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

@@ -18,8 +18,7 @@
 
   "environment": "server",
   "mixins": [
-    "tcuhc.mixins.json",
-    "lithium.mixins.json"
+    "tcuhc.mixins.json"
   ],
   "accessWidener": "tcuhc.accesswidener",
 
