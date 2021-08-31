@@ -5,7 +5,6 @@
 package me.fallenbreath.tcuhc.task;
 
 import me.fallenbreath.tcuhc.UhcGameManager;
-import me.fallenbreath.tcuhc.mixins.task.PlayerListHeaderS2CPacketAccessor;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,15 +30,11 @@ public class TaskHUDInfo extends Task.TaskTimer
 		return text;
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Override
 	public void onTimer()
 	{
 		this.mcServer.getPlayerManager().getPlayerList().forEach(player -> {
-			PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
-			PlayerListHeaderS2CPacketAccessor accessor = (PlayerListHeaderS2CPacketAccessor)packet;
-			accessor.setHeader(new LiteralText(""));
-			accessor.setFooter(this.getHUDTexts(player));
+			PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(new LiteralText(""), this.getHUDTexts(player));
 			player.networkHandler.sendPacket(packet);
 		});
 	}

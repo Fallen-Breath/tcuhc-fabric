@@ -273,7 +273,7 @@ public class UhcGameManager extends Taskable {
 	
 	private void removeWorldBorder() {
 		for (ServerWorld world : mcServer.getWorlds()) {
-			world.getWorldBorder().setSize(world.getWorldBorder().getMaxWorldBorderRadius());
+			world.getWorldBorder().setSize(world.getWorldBorder().getMaxRadius());
 		}
 	}
 	
@@ -324,7 +324,7 @@ public class UhcGameManager extends Taskable {
 	
 	public void startConfiguration(ServerPlayerEntity operator) {
 		configManager.startConfiguring(playerManager.getGamePlayer(operator));
-		operator.inventory.insertStack(BookNBT.getConfigBook(this));
+		operator.getInventory().insertStack(BookNBT.getConfigBook(this));
 		if (!UhcGameManager.instance.isGamePlaying()) SpawnPlatform.generateSafePlatform(getOverWorld());
 	}
 	

@@ -13,8 +13,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -39,9 +39,9 @@ public class PlayerItems
 
 	private static void setSingleLore(ItemStack itemStack, String lore)
 	{
-		ListTag loreList = new ListTag();
-		loreList.add(StringTag.of(lore));
-		itemStack.getOrCreateSubTag("display").put("Lore", loreList);
+		NbtList loreList = new NbtList();
+		loreList.add(NbtString.of(lore));
+		itemStack.getOrCreateSubNbt("display").put("Lore", loreList);
 	}
 
 	public static ItemStack getPlayerItem(String playerName, boolean onFire)
@@ -92,11 +92,11 @@ public class PlayerItems
 	{
 		if (targetName == null)
 		{
-			items.keySet().forEach(name -> player.inventory.insertStack(getPlayerItem(name)));
+			items.keySet().forEach(name -> player.getInventory().insertStack(getPlayerItem(name)));
 		}
 		else
 			{
-			player.inventory.insertStack(getPlayerItem(targetName));
+			player.getInventory().insertStack(getPlayerItem(targetName));
 		}
 	}
 

@@ -65,6 +65,28 @@ public abstract class DefaultBiomeFeaturesMixin
 			slice = @Slice(
 					from = @At(
 							value = "CONSTANT",
+							args = "stringValue=ore_emerald"
+					),
+					to = @At(
+							value = "CONSTANT",
+							args = "stringValue=ore_clay"
+					)
+			),
+			at = @At(
+					value = "FIELD",
+					target = "Lnet/minecraft/world/gen/feature/Feature;ORE:Lnet/minecraft/world/gen/feature/Feature;"
+			)
+	)
+	private static Feature<OreFeatureConfig> modifyOverworldOreFeature2()
+	{
+		return UhcFeatures.VALUABLE_ORE;
+	}
+
+	@Redirect(
+			method = "<clinit>",
+			slice = @Slice(
+					from = @At(
+							value = "CONSTANT",
 							args = "stringValue=ore_gold_deltas"
 					),
 					to = @At(
@@ -160,9 +182,9 @@ public abstract class DefaultBiomeFeaturesMixin
 		return 20;
 	}
 
-	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_lapis")), constant = @Constant(intValue = 16, ordinal = 1))
-	private static int lapisSpread(int value)
-	{
-		return 10;
-	}
+//	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_lapis")), constant = @Constant(intValue = 16, ordinal = 1))
+//	private static int lapisSpread(int value)
+//	{
+//		return 10;
+//	}
 }

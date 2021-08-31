@@ -5,6 +5,7 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+// unused since 1.17
 @Mixin(PlayerListHeaderS2CPacket.class)
 public interface PlayerListHeaderS2CPacketAccessor
 {

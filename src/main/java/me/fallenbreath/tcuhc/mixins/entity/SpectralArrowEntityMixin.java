@@ -42,7 +42,7 @@ public abstract class SpectralArrowEntityMixin extends PersistentProjectileEntit
 			this.explode();
 		}
 
-		if (!this.removed)
+		if (!this.isRemoved())
 		{
 			super.onCollision(hitResult);
 		}
@@ -59,11 +59,11 @@ public abstract class SpectralArrowEntityMixin extends PersistentProjectileEntit
 	@Unique
 	private void explode()
 	{
-		if (!this.isCritical() || this.removed)
+		if (!this.isCritical() || this.isRemoved())
 		{
 			return;
 		}
-		this.remove();
+		this.discard();
 		this.world.createExplosion(this, this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), 1.0F, Explosion.DestructionType.DESTROY);
 		BlockPos arrowpos = new BlockPos(this.getPos());
 		if (getExplosionResistance(world, arrowpos) > 6.01f)

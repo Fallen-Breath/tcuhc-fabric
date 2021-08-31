@@ -19,9 +19,9 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import java.util.List;
 import java.util.Random;
@@ -37,8 +37,11 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random rand, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context)
 	{
+		StructureWorldAccess worldIn = context.getWorld();
+		BlockPos position = context.getOrigin();
+		Random rand = context.getRandom();
 		int chunkX = position.getX() >> 4;
 		int chunkZ = position.getZ() >> 4;
 		if (Math.abs(chunkX) < 2 || Math.abs(chunkZ) < 2)

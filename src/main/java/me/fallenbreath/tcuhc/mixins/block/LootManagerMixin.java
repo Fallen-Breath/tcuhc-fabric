@@ -2,9 +2,9 @@ package me.fallenbreath.tcuhc.mixins.block;
 
 import com.google.common.collect.Lists;
 import me.fallenbreath.tcuhc.UhcGameManager;
+import me.fallenbreath.tcuhc.interfaces.LootPoolAccessor;
+import me.fallenbreath.tcuhc.interfaces.LootTableAccessor;
 import me.fallenbreath.tcuhc.mixins.loot.ItemEntryAccessor;
-import me.fallenbreath.tcuhc.mixins.loot.LootPoolAccessor;
-import me.fallenbreath.tcuhc.mixins.loot.LootTableAccessor;
 import me.fallenbreath.tcuhc.util.LootTableUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

@@ -46,7 +46,7 @@ public abstract class MinecraftServerMixin
 	}
 
 	@Inject(
-			method = "method_16208",
+			method = "runTasksTillTickEnd",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/server/MinecraftServer;runTasks(Ljava/util/function/BooleanSupplier;)V"

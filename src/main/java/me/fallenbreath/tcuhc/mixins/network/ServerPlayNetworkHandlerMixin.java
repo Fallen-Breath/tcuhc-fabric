@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin
@@ -62,7 +64,7 @@ public abstract class ServerPlayNetworkHandlerMixin
 	private void modifyTeleportTarget(ServerPlayerEntity playerEntity, ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch)
 	{
 		Entity entity = this.entityToSpectate;
-		playerEntity.teleport(targetWorld, entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+		playerEntity.teleport(targetWorld, entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
 	}
 
 	@Inject(
@@ -83,17 +85,18 @@ public abstract class ServerPlayNetworkHandlerMixin
 	}
 
 	@Redirect(
-			method = "method_31286",
+			method = "handleMessage",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+					target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
 			)
 	)
-	private void optioalChatting(PlayerManager playerManager, Text text, MessageType messageType, UUID senderUuid, /* parent method parameters -> */ String string)
+	private void optioalChatting(PlayerManager playerManager, Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType playerMessageType, UUID sender, /* parent method parameters -> */ TextStream.Message message)
 	{
+		String string = message.getFiltered();
 		if (UhcGameManager.instance.onPlayerChat(player, string))
 		{
-			playerManager.broadcastChatMessage(text, messageType, senderUuid);
+			playerManager.broadcast(serverMessage, playerMessageFactory, playerMessageType, sender);
 		}
 	}
 }

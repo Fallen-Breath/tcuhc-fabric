@@ -31,7 +31,7 @@ public abstract class PlayerEntityMixin
 	)
 	private ItemStack kingsCrownWillNeverVanish(ItemStack itemStack)
 	{
-		if (itemStack.getTag() != null && itemStack.getTag().contains("KingsCrown"))
+		if (itemStack.getNbt() != null && itemStack.getNbt().contains("KingsCrown"))
 		{
 			return ItemStack.EMPTY;
 		}

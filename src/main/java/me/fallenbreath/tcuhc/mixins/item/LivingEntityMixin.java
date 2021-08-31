@@ -34,9 +34,9 @@ public abstract class LivingEntityMixin
 	)
 	private void modifyEffects(ItemStack stack, World world, LivingEntity targetEntity, CallbackInfo ci)
 	{
-		if (stack.getItem() == Items.GOLDEN_APPLE && stack.getTag() != null)
+		if (stack.getItem() == Items.GOLDEN_APPLE && stack.getNbt() != null)
 		{
-			this.goldenAppleLevel = stack.getTag().getInt("level");
+			this.goldenAppleLevel = stack.getNbt().getInt("level");
 		}
 		else
 		{

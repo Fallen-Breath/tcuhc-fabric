@@ -1,6 +1,7 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -16,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class NetherFortressFeatureMixin
 {
 	@Inject(method = "shouldStartAt", at = @At("HEAD"), cancellable = true)
-	private void fortressGenerateIffXZAre0(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, CallbackInfoReturnable<Boolean> cir)
+	private void fortressGenerateIffXZAre0(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView, CallbackInfoReturnable<Boolean> cir)
 	{
-		cir.setReturnValue(i == 0 && j == 0);
+		cir.setReturnValue(chunkPos.equals(new ChunkPos(0, 0)));
 	}
 }

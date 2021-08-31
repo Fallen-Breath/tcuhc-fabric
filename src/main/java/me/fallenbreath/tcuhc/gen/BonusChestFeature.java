@@ -27,9 +27,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import java.util.List;
 import java.util.Map;
@@ -65,8 +65,11 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random random, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context)
 	{
+		StructureWorldAccess worldIn = context.getWorld();
+		BlockPos position = context.getOrigin();
+		Random rand = context.getRandom();
 		if (!dataGenerated)
 		{
 			generateData();

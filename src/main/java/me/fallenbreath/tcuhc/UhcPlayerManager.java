@@ -85,7 +85,7 @@ public class UhcPlayerManager
 		if (gameManager.isGamePlaying()) {
 			if (combatPlayerList.contains(gamePlayer)) {
 				if (gamePlayer.isAlive()) {
-					player.setGameMode(GameMode.SURVIVAL);
+					player.changeGameMode(GameMode.SURVIVAL);
 					// on game player rejoins, adds:
 					// - 5s WEAKNESS II
 					// - 5s SLOWNESS II
@@ -94,9 +94,9 @@ public class UhcPlayerManager
 					player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 1));
 					player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
 				}
-				else player.setGameMode(GameMode.SPECTATOR);
+				else player.changeGameMode(GameMode.SPECTATOR);
 			} else {
-				player.setGameMode(GameMode.SPECTATOR);
+				player.changeGameMode(GameMode.SPECTATOR);
 				if (!observePlayerList.contains(gamePlayer))
 					observePlayerList.add(gamePlayer);
 			}
@@ -104,10 +104,10 @@ public class UhcPlayerManager
 			randomSpawnPosition(player);
 			resetHealthAndFood(player);
 			if (gameManager.hasGameEnded())
-				player.setGameMode(GameMode.SPECTATOR);
+				player.changeGameMode(GameMode.SPECTATOR);
 			else {
 				player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(20);
-				player.setGameMode(GameMode.ADVENTURE);
+				player.changeGameMode(GameMode.ADVENTURE);
 				regiveConfigItems(player);
 				if (gameManager.getConfigManager().isConfiguring())
 					player.setInvulnerable(true);
@@ -117,7 +117,7 @@ public class UhcPlayerManager
 	
 	public void regiveConfigItems(ServerPlayerEntity player) {
 		if (!gameManager.isGamePlaying()) 
-			player.inventory.clear();
+			player.getInventory().clear();
 		if (gameManager.getConfigManager().isConfiguring()) {
 			this.getGamePlayer(player).getColorSelected().ifPresent(color -> {
 				ItemStack teamItem = getTeamItem(color);
@@ -125,23 +125,23 @@ public class UhcPlayerManager
 				player.equipStack(slot, teamItem);
 			});
 			if (gameManager.getConfigManager().isOperator(player))
-				player.inventory.insertStack(BookNBT.getConfigBook(gameManager));
-			player.inventory.insertStack(BookNBT.getPlayerBook(gameManager));
+				player.getInventory().insertStack(BookNBT.getConfigBook(gameManager));
+			player.getInventory().insertStack(BookNBT.getPlayerBook(gameManager));
 		}
 	}
 	
 	public void regiveAdjustBook(ServerPlayerEntity player, boolean force) {
-		Item current = player.inventory.getMainHandStack().getItem();
+		Item current = player.getInventory().getMainHandStack().getItem();
 		ItemStack book = BookNBT.getAdjustBook(gameManager);
 		if (current == Items.WRITTEN_BOOK)
-			player.inventory.setStack(player.inventory.selectedSlot, book);
-		else if (force) player.inventory.insertStack(book);
+			player.getInventory().setStack(player.getInventory().selectedSlot, book);
+		else if (force) player.getInventory().insertStack(book);
 	}
 	
 	public void removeAdjustBook(ServerPlayerEntity player) {
-		Item current = player.inventory.getMainHandStack().getItem();
+		Item current = player.getInventory().getMainHandStack().getItem();
 		if (current == Items.WRITTEN_BOOK)
-			player.inventory.setStack(player.inventory.selectedSlot, ItemStack.EMPTY);
+			player.getInventory().setStack(player.getInventory().selectedSlot, ItemStack.EMPTY);
 	}
 	
 	public void refreshConfigBook() {
@@ -222,7 +222,7 @@ public class UhcPlayerManager
 			UhcGamePlayer gamePlayer = getGamePlayer(player);
 			if (combatPlayerList.contains(gamePlayer) && gamePlayer.isAlive()) {
 				gamePlayer.setDead(gameManager.getGameTimeRemaining());
-				player.setGameMode(GameMode.SPECTATOR);
+				player.changeGameMode(GameMode.SPECTATOR);
 				if (gameManager.getOptions().getBooleanOptionValue("forceViewport")) {
 					gameManager.addTask(new TaskKeepSpectate(gamePlayer));
 				}
@@ -338,7 +338,7 @@ public class UhcPlayerManager
 	public void killPlayer(String playerName) {
 		getPlayerByName(playerName).ifPresent(player -> {
 			player.setDead(gameManager.getGameTimeRemaining());
-			player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SPECTATOR));
+			player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SPECTATOR));
 			if (gameManager.getOptions().getBooleanOptionValue("forceViewport"))
 				gameManager.addTask(new TaskKeepSpectate(player));
 			if (player.getTeam() != null) {
@@ -356,7 +356,7 @@ public class UhcPlayerManager
 			player.deathTime = 0;
 			player.isAlive = true;
 			player.getStat().setStat(EnumStat.ALIVE_TIME, 0);
-			player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SURVIVAL));
+			player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SURVIVAL));
 			if (UhcGameManager.getGameMode() == EnumMode.GHOST)
 				player.addGhostModeEffect();
 			if (player.getTeam() != null) {
@@ -591,7 +591,7 @@ public class UhcPlayerManager
 				player.teleport(newpos.getX() + 0.5, newpos.getY() + 0.5, newpos.getZ() + 0.5);
 				player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(health);
 				player.fallDistance = 0.0f;
-				player.inventory.clear();
+				player.getInventory().clear();
 			}
 		}
 		
@@ -624,7 +624,7 @@ public class UhcPlayerManager
 		}
 		
 		for (UhcGamePlayer player : observePlayerList) {
-			player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SPECTATOR));
+			player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SPECTATOR));
 		}
 	}
 	

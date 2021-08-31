@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import me.fallenbreath.tcuhc.util.UhcRegistry;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,6 +17,8 @@ import java.util.List;
 @Mixin(SynchronizeRecipesS2CPacket.class)
 public abstract class SynchronizeRecipesS2CPacketMixin
 {
+	@Mutable
+	@Final
 	@Shadow private List<Recipe<?>> recipes;
 
 	@Inject(method = "<init>(Ljava/util/Collection;)V", at = @At("TAIL"))

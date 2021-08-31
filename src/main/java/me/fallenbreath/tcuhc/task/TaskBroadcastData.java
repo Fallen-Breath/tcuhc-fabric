@@ -33,7 +33,7 @@ public class TaskBroadcastData extends TaskTimer {
 		UhcGameManager gameManager = UhcGameManager.instance;
 		if (round == 0) {
 			for (UhcGamePlayer player : gameManager.getUhcPlayerManager().getAllPlayers())
-				player.getRealPlayer().ifPresent(playermp -> playermp.setGameMode(GameMode.SPECTATOR));
+				player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SPECTATOR));
 		}
 
 		while (true) {

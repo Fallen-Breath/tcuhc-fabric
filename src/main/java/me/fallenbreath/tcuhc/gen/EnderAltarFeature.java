@@ -16,9 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import java.util.Random;
 import java.util.Set;
@@ -50,8 +50,11 @@ public class EnderAltarFeature extends Feature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random rand, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context)
 	{
+		StructureWorldAccess worldIn = context.getWorld();
+		BlockPos position = context.getOrigin();
+		Random rand = context.getRandom();
 		if (altarPoses.contains(new ChunkPos(position))) {
 			BlockPos top = worldIn.getTopPosition(Heightmap.Type.MOTION_BLOCKING, position.add(rand.nextInt(16), 0, rand.nextInt(16))).down();
 			BlockState floor = Blocks.OBSIDIAN.getDefaultState();

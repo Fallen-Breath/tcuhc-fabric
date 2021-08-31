@@ -33,7 +33,7 @@ public class SpectateTargetUtil {
 		if (isCapableTarget(player, origin)) return origin;
 		for (UhcGamePlayer target : player.getTeam().getPlayers()) {
 			if (target.isAlive() && target.getRealPlayer().isPresent()) {
-				if (origin instanceof ArmorStandEntity) origin.remove();
+				if (origin instanceof ArmorStandEntity) origin.discard();
 				return target.getRealPlayer().get();
 			}
 		}
