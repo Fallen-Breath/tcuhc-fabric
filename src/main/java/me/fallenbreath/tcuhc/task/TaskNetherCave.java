@@ -23,9 +23,9 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.ServerWorldProperties;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +65,7 @@ public class TaskNetherCave extends TaskTimer {
 		} else if (netherTime < 0) {
 			for (UhcGamePlayer player : combatPlayers) {
 				player.getRealPlayer().ifPresent(playermp -> {
-					if (playermp.dimension != DimensionType.OVERWORLD)
+					if (playermp.getServerWorld().getRegistryKey() != World.OVERWORLD)
 						playermp.damage(DamageSource.IN_WALL, 1.0f);
 				});
 			}
@@ -99,7 +99,7 @@ public class TaskNetherCave extends TaskTimer {
 							heights.add(y);
 							break;
 						}
-						if (state.getFluidState().matches(FluidTags.WATER)) {
+						if (state.getFluidState().isIn(FluidTags.WATER)) {
 							heights.add(Math.max(1, y - 4));
 							break;
 						}
@@ -111,7 +111,7 @@ public class TaskNetherCave extends TaskTimer {
 			finalMinY = heights.get(4);
 			finalMaxY = heights.get(heights.size() - 4) + 12;
 
-			LevelProperties worldinfo = world.getLevelProperties();
+			ServerWorldProperties worldinfo = (ServerWorldProperties) world.getLevelProperties();
 			worldinfo.setClearWeatherTime(gameTime * 20);
 			worldinfo.setRainTime(0);
 			worldinfo.setThunderTime(0);
@@ -138,7 +138,7 @@ public class TaskNetherCave extends TaskTimer {
 			for (UhcGamePlayer player : combatPlayers) {
 				player.getRealPlayer().ifPresent(playermp -> {
 					if (glow) playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 0, false, false));
-					if (playermp.getEntityWorld().getDimension().getType() == DimensionType.OVERWORLD) {
+					if (playermp.getEntityWorld().getRegistryKey() == World.OVERWORLD) {
 						if (playermp.getPos().getY() < minY || playermp.getPos().getY() > maxY)
 							playermp.damage(DamageSource.IN_WALL, 1.0f);
 

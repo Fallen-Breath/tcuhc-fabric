@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -41,7 +42,7 @@ public abstract class PlayerEntityMixin
 	 * TC Plugin: Kill entity hook
 	 */
 	@Inject(method = "onKilledOther", at = @At("TAIL"))
-	private void onKill(LivingEntity other, CallbackInfo ci)
+	private void onKill(ServerWorld serverWorld, LivingEntity livingEntity, CallbackInfo ci)
 	{
 		UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((PlayerEntity)(Object)this).getStat().addStat(UhcGamePlayer.EnumStat.ENTITY_KILLED, 1);
 	}

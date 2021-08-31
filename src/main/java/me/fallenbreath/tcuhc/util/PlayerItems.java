@@ -10,8 +10,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -51,8 +51,8 @@ public class PlayerItems
 		if (onFire)
 		{
 			World world = UhcGameManager.instance.getOverWorld();
-			Inventory inventory = new BasicInventory(1);
-			inventory.setInvStack(0, stack);
+			Inventory inventory = new SimpleInventory(1);
+			inventory.setStack(0, stack);
 			Recipe<?> recipe = world.getRecipeManager().getFirstMatch(RecipeType.SMELTING, inventory, world).orElse(null);
 			if (recipe != null)
 			{

@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,25 +24,24 @@ import static me.fallenbreath.tcuhc.helpers.ServerPlayerEntityHelper.doSpectateC
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity
 {
-	@Shadow private int field_13998;
+	@Shadow private int joinInvulnerabilityTicks;
 
 	@Shadow private Entity cameraEntity;
 
 	@Shadow public abstract boolean isSpectator();
-
 	private Entity previousCameraEntity;
 	private float modifiedDamageAmount;
 
-	public ServerPlayerEntityMixin(World world, GameProfile profile)
+	public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile)
 	{
-		super(world, profile);
+		super(world, pos, yaw, profile);
 	}
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void modifyInvulnerableDuration( CallbackInfo ci)
 	{
 		// TC Plugin: modified invulnerable time from 60gt to 20gt
-		this.field_13998 = 20;
+		this.joinInvulnerabilityTicks = 20;
 	}
 
 	@Inject(

@@ -41,7 +41,7 @@ public class TaskBorderReminder extends TaskTimer {
 		for (ServerPlayerEntity player : UhcGameManager.instance.getServerPlayerManager().getPlayerList()) {
 			if (border.getDistanceInsideBorder(player) < 5 && !(Math.abs(player.getX()) < borderEnd / 2.0 && Math.abs(player.getZ()) < borderEnd / 2.0)
 					&& !player.isCreative() && !player.isSpectator() && UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(player).borderRemindCooldown()) {
-				player.sendMessage(new LiteralText(Formatting.DARK_RED + "You will fall behind the world border!"));
+				player.sendMessage(new LiteralText(Formatting.DARK_RED + "You will fall behind the world border!"), false);
 			}
 		}
 	}

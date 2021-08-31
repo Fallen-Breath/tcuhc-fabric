@@ -17,7 +17,7 @@ public abstract class BiomeLayersMixin
 	 * net.minecraft.world.gen.layer.GenLayer#initializeAllBiomeGenerators in 1.12 MCP
 	 */
 	@Redirect(
-			method = "build(Lnet/minecraft/world/level/LevelGeneratorType;Lnet/minecraft/world/gen/chunk/OverworldChunkGeneratorConfig;Ljava/util/function/LongFunction;)Lnet/minecraft/world/biome/layer/util/LayerFactory;",
+			method = "build(ZIILjava/util/function/LongFunction;)Lnet/minecraft/world/biome/layer/util/LayerFactory;",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/world/biome/layer/ContinentLayer;create(Lnet/minecraft/world/biome/layer/util/LayerSampleContext;)Lnet/minecraft/world/biome/layer/util/LayerFactory;"

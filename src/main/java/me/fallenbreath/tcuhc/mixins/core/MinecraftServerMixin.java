@@ -2,6 +2,8 @@ package me.fallenbreath.tcuhc.mixins.core;
 
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -9,14 +11,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.io.File;
-
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin
 {
-	@Shadow public abstract String getLevelName();
-
-	@Shadow @Final private File gameDir;
+	@Shadow @Final protected LevelStorage.Session session;
 
 	private UhcGameManager uhcGameManager;
 	private boolean serverInited = false;
@@ -25,11 +23,11 @@ public abstract class MinecraftServerMixin
 	private void constructUhcGameManager(CallbackInfo ci)
 	{
 		this.uhcGameManager = new UhcGameManager((MinecraftServer)(Object)this);
-		UhcGameManager.tryUpdateSaveFolder(this.gameDir.toPath().resolve(this.getLevelName()));
+		UhcGameManager.tryUpdateSaveFolder(this.session.getDirectory(WorldSavePath.ROOT));
 	}
 
 	@Inject(
-			method = "run",
+			method = "runServer",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/server/MinecraftServer;setFavicon(Lnet/minecraft/server/ServerMetadata;)V"

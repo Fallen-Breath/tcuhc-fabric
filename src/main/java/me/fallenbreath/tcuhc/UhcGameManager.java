@@ -5,6 +5,8 @@
 package me.fallenbreath.tcuhc;
 
 import me.fallenbreath.tcuhc.UhcGamePlayer.EnumStat;
+import me.fallenbreath.tcuhc.mixins.access.MinecraftServerAccessor;
+import me.fallenbreath.tcuhc.mixins.access.SessionAccessor;
 import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.*;
 import me.fallenbreath.tcuhc.util.*;
@@ -30,7 +32,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,7 +84,7 @@ public class UhcGameManager extends Taskable {
 
 	public ServerWorld getOverWorld()
 	{
-		return mcServer.getWorld(DimensionType.OVERWORLD);
+		return mcServer.getWorld(World.OVERWORLD);
 	}
 	
 	public void onPlayerJoin(ServerPlayerEntity player) {
@@ -146,7 +147,7 @@ public class UhcGameManager extends Taskable {
 			int borderStart = uhcOptions.getIntegerOptionValue("borderStart");
 			int radius = borderStart / 32;
 			this.addTask(new TaskPregenerate(mcServer, radius + 5, getOverWorld()));
-			this.addTask(new TaskPregenerate(mcServer, radius / 8 + 10, mcServer.getWorld(DimensionType.THE_NETHER)));
+			this.addTask(new TaskPregenerate(mcServer, radius / 8 + 10, mcServer.getWorld(World.NETHER)));
 			isPregenerating = true;
 		}
 		SpawnPlatform.generatePlatform(this, getOverWorld());
@@ -188,16 +189,20 @@ public class UhcGameManager extends Taskable {
 			else if (!file.getName().equals("carpet.conf")) file.delete();
 		}
 	}
+
+	public static File getPreloadFile() {
+		return ((SessionAccessor)((MinecraftServerAccessor)instance.mcServer).getSession()).getDirectory().resolve("preload").toFile();
+	}
 	
 	public static void regenerateTerrain() {
-		File preload = instance.mcServer.getLevelStorage().resolveFile(instance.mcServer.getLevelName(), "preload");
+		File preload = getPreloadFile();
 		if (preload.exists()) preload.delete();
 		instance.mcServer.stop(false);  // TODO: Check param
 	}
 	
 	public void startGame(ServerPlayerEntity operator) {
 		if (isGamePlaying || !configManager.isConfiguring()) {
-			operator.sendMessage(new LiteralText("It's not time to start."));
+			operator.sendMessage(new LiteralText("It's not time to start."), false);
 			return;
 		}
 		boolean autoTeams = uhcOptions.getBooleanOptionValue("randomTeams");
@@ -295,7 +300,7 @@ public class UhcGameManager extends Taskable {
 			for (UhcGamePlayer player : playerManager.getAllPlayers()) {
 				player.tick();
 			}
-			bossInfo.ifPresent(info -> playerManager.getBossPlayer().getRealPlayer().ifPresent(player -> info.setPercent(player.getHealth() / player.getMaximumHealth())));
+			bossInfo.ifPresent(info -> playerManager.getBossPlayer().getRealPlayer().ifPresent(player -> info.setPercent(player.getHealth() / player.getMaxHealth())));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -325,7 +330,7 @@ public class UhcGameManager extends Taskable {
 	
 	public void broadcastMessage(String msg) {
 		BaseText text = new LiteralText(msg);
-		getServerPlayerManager().getPlayerList().forEach(player -> player.sendMessage(text));
+		getServerPlayerManager().getPlayerList().forEach(player -> player.sendMessage(text, false));
 		LOG.info(msg);
 	}
 	

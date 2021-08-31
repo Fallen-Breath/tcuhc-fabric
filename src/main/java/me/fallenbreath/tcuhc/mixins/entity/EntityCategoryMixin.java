@@ -1,20 +1,20 @@
 package me.fallenbreath.tcuhc.mixins.entity;
 
 import me.fallenbreath.tcuhc.options.Options;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.SpawnGroup;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(EntityCategory.class)
+@Mixin(SpawnGroup.class)
 public abstract class EntityCategoryMixin
 {
 	@SuppressWarnings("ConstantConditions")
-	@Inject(method = "getSpawnCap", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "getCapacity", at = @At("HEAD"), cancellable = true)
 	private void modifyMobCap(CallbackInfoReturnable<Integer> cir)
 	{
-		if (((Object)this) == EntityCategory.MONSTER)
+		if (((Object)this) == SpawnGroup.MONSTER)
 		{
 			cir.setReturnValue(Options.instance.getIntegerOptionValue("mobCount"));
 		}

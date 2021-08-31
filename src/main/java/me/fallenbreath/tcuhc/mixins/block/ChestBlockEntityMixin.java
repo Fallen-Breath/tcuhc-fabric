@@ -21,7 +21,7 @@ public abstract class ChestBlockEntityMixin extends LootableContainerBlockEntity
 		super(blockEntityType);
 	}
 
-	@Inject(method = "onInvOpen", at = @At("HEAD"))
+	@Inject(method = "onOpen", at = @At("HEAD"))
 	private void playerOpenChestHook(PlayerEntity player, CallbackInfo ci)
 	{
 		if (!player.isCreative() && !player.isSpectator() && this.getCustomName() != null) {
@@ -42,7 +42,7 @@ public abstract class ChestBlockEntityMixin extends LootableContainerBlockEntity
 		}
 	}
 
-	@Inject(method = "onInvClose", at = @At("HEAD"))
+	@Inject(method = "onClose", at = @At("HEAD"))
 	private void playerCloseChestHook(PlayerEntity player, CallbackInfo ci)
 	{
 		if (!player.isCreative() && !player.isSpectator() && this.getCustomName() != null)

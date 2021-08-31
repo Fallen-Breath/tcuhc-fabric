@@ -1,24 +1,22 @@
 package me.fallenbreath.tcuhc.gen;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import me.fallenbreath.tcuhc.interfaces.IOreFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.OreFeature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 
-import java.util.function.Function;
-
 public class ValuableOreFeature extends OreFeature implements IOreFeature
 {
-	public ValuableOreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configFactory)
+	public ValuableOreFeature(Codec<OreFeatureConfig> codec)
 	{
-		super(configFactory);
+		super(codec);
 	}
 
 	@Override
-	public boolean isValidPositionForValuableOre(IWorld world, BlockPos pos, BlockState oreState)
+	public boolean isValidPositionForValuableOre(WorldAccess world, BlockPos pos, BlockState oreState)
 	{
 		if (!UhcFeatures.isValuableOreBlock(oreState.getBlock()))
 		{

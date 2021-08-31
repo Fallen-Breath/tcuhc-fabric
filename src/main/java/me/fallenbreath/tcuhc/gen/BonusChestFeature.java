@@ -6,7 +6,7 @@ package me.fallenbreath.tcuhc.gen;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -14,8 +14,8 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.InfoEnchantment;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,11 +25,9 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -37,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig>
@@ -45,7 +42,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 	public static final String BONUS_CHEST_NAME = "Bonus Chest";
 	public static final String EMPTY_CHEST_NAME = "Empty Chest";
 
-	private static Map<Biome, Double> POSSIBILITY_MAP;
+	private static Map<Biome.Category, Double> POSSIBILITY_MAP;
 	private static final Enchantment[] POSSIBLE_ENCHANTMENTS = {
 			Enchantments.POWER, Enchantments.SHARPNESS, Enchantments.UNBREAKING, Enchantments.EFFICIENCY,
 			Enchantments.FIRE_ASPECT, Enchantments.PROTECTION, Enchantments.PROJECTILE_PROTECTION
@@ -62,13 +59,13 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 
 	private static boolean dataGenerated = false;
 
-	public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configDeserializer)
+	public BonusChestFeature(Codec<DefaultFeatureConfig> configCodec)
 	{
-		super(configDeserializer);
+		super(configCodec);
 	}
 
 	@Override
-	public boolean generate(IWorld worldIn, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random random, BlockPos position, DefaultFeatureConfig config)
 	{
 		if (!dataGenerated)
 		{
@@ -84,7 +81,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		int posZ = rand.nextInt(16) + position.getZ() - 8;
 		int posY = worldIn.getTopY(Heightmap.Type.OCEAN_FLOOR, posX, posZ);
 		position = new BlockPos(posX, posY, posZ);
-		while (!worldIn.getBlockState(position).isSimpleFullBlock(worldIn, position) && position.getY() > 0)
+		while (!worldIn.getBlockState(position).isSolidBlock(worldIn, position) && position.getY() > 0)
 		{
 			position = position.down();
 		}
@@ -93,12 +90,12 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 			return false;
 		}
 		Biome biome = worldIn.getBiome(position);
-		if (!POSSIBILITY_MAP.containsKey(biome))
+		if (!POSSIBILITY_MAP.containsKey(biome.getCategory()))
 		{
 			return false;
 		}
-		boolean hasWater = worldIn.getFluidState(position).matches(FluidTags.WATER);
-		if (rand.nextFloat() < POSSIBILITY_MAP.get(biome) * chestChance)
+		boolean hasWater = worldIn.getFluidState(position).isIn(FluidTags.WATER);
+		if (rand.nextFloat() < POSSIBILITY_MAP.get(biome.getCategory()) * chestChance)
 		{
 			boolean isEmptyChest = rand.nextDouble() < emptyChestChance;
 			Block chestBlock = isEmptyChest ? Blocks.TRAPPED_CHEST : Blocks.CHEST;
@@ -134,7 +131,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		for (RandomItem item : itemList)
 		{
 			Optional<ItemStack> itemstack = item.getItemStack();
-			itemstack.ifPresent(stack -> chest.setInvStack(rand.nextInt(chest.getInvSize()), stack));
+			itemstack.ifPresent(stack -> chest.setStack(rand.nextInt(chest.size()), stack));
 			if (valuable && itemstack.isPresent()) break;
 		}
 	}
@@ -209,84 +206,24 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		double swamplandChance = 0.1;
 		double miscChance = 0.0;
 
-		POSSIBILITY_MAP = new ImmutableMap.Builder<Biome, Double>().
-				put(Biomes.OCEAN, oceanChance).
-				// Biomes.DEFAULT == Biomes.OCEAN
-				// put(Biomes.DEFAULT, miscChance).
-				put(Biomes.PLAINS, plainChance).
-				put(Biomes.DESERT, desertChance).
-				put(Biomes.MOUNTAINS, exHillsChance).
-				put(Biomes.FOREST, forestChance).
-				put(Biomes.TAIGA, taigaChance).
-				put(Biomes.SWAMP, swamplandChance).
-				put(Biomes.RIVER, riverChance).
-				put(Biomes.NETHER, miscChance).
-				put(Biomes.THE_END, miscChance).
-				put(Biomes.FROZEN_OCEAN, oceanChance).
-				put(Biomes.FROZEN_RIVER, riverChance).
-				put(Biomes.SNOWY_TUNDRA, plainChance).
-				put(Biomes.SNOWY_MOUNTAINS, iceMountainChance).
-				put(Biomes.MUSHROOM_FIELDS, mushroomChance).
-				put(Biomes.MUSHROOM_FIELD_SHORE, mushroomChance).
-				put(Biomes.BEACH, beachChance).
-				put(Biomes.DESERT_HILLS, desertChance).
-				put(Biomes.WOODED_HILLS, forestChance).
-				put(Biomes.TAIGA_HILLS, taigaChance).
-				put(Biomes.MOUNTAIN_EDGE, exHillsChance).
-				put(Biomes.JUNGLE, jungleChance).
-				put(Biomes.JUNGLE_HILLS, jungleChance).
-				put(Biomes.JUNGLE_EDGE, jungleChance).
-				put(Biomes.DEEP_OCEAN, oceanChance).
-				put(Biomes.STONE_SHORE, forestChance).
-				put(Biomes.SNOWY_BEACH, beachChance).
-				put(Biomes.BIRCH_FOREST, forestChance).
-				put(Biomes.BIRCH_FOREST_HILLS, forestChance).
-				put(Biomes.DARK_FOREST, rforestChance).
-				put(Biomes.SNOWY_TAIGA, taigaChance).
-				put(Biomes.SNOWY_TAIGA_HILLS, taigaChance).
-				put(Biomes.GIANT_TREE_TAIGA, taigaChance).
-				put(Biomes.GIANT_TREE_TAIGA_HILLS, taigaChance).
-				put(Biomes.WOODED_MOUNTAINS, exHillsChance).
-				put(Biomes.SAVANNA, savannaChance).
-				put(Biomes.SAVANNA_PLATEAU, savannaChance).
-				put(Biomes.BADLANDS, mesaChance).
-				put(Biomes.WOODED_BADLANDS_PLATEAU, mesaChance).
-				put(Biomes.BADLANDS_PLATEAU, mesaChance).
-				put(Biomes.SMALL_END_ISLANDS, miscChance).
-				put(Biomes.END_MIDLANDS, miscChance).
-				put(Biomes.END_HIGHLANDS, miscChance).
-				put(Biomes.END_BARRENS, miscChance).
-				put(Biomes.WARM_OCEAN, oceanChance).
-				put(Biomes.LUKEWARM_OCEAN, oceanChance).
-				put(Biomes.COLD_OCEAN, oceanChance).
-				put(Biomes.DEEP_WARM_OCEAN, oceanChance).
-				put(Biomes.DEEP_LUKEWARM_OCEAN, oceanChance).
-				put(Biomes.DEEP_COLD_OCEAN, oceanChance).
-				put(Biomes.DEEP_FROZEN_OCEAN, oceanChance).
-				put(Biomes.THE_VOID, miscChance).
-				put(Biomes.SUNFLOWER_PLAINS, plainChance).
-				put(Biomes.DESERT_LAKES, desertChance).
-				put(Biomes.GRAVELLY_MOUNTAINS, exHillsChance).
-				put(Biomes.FLOWER_FOREST, forestChance).
-				put(Biomes.TAIGA_MOUNTAINS, taigaChance).
-				put(Biomes.SWAMP_HILLS, swamplandChance).
-				put(Biomes.ICE_SPIKES, icePlainChance).
-				put(Biomes.MODIFIED_JUNGLE, jungleChance).
-				put(Biomes.MODIFIED_JUNGLE_EDGE, jungleChance).
-				put(Biomes.TALL_BIRCH_FOREST, forestChance).
-				put(Biomes.TALL_BIRCH_HILLS, forestChance).
-				put(Biomes.DARK_FOREST_HILLS, rforestChance).
-				put(Biomes.SNOWY_TAIGA_MOUNTAINS, iceMountainChance).
-				put(Biomes.GIANT_SPRUCE_TAIGA, taigaChance).
-				put(Biomes.GIANT_SPRUCE_TAIGA_HILLS, taigaChance).
-				put(Biomes.MODIFIED_GRAVELLY_MOUNTAINS, exHillsChance).
-				put(Biomes.SHATTERED_SAVANNA, savannaChance).
-				put(Biomes.SHATTERED_SAVANNA_PLATEAU, savannaChance).
-				put(Biomes.ERODED_BADLANDS, mesaChance).
-				put(Biomes.MODIFIED_WOODED_BADLANDS_PLATEAU, mesaChance).
-				put(Biomes.MODIFIED_BADLANDS_PLATEAU, mesaChance).
-				put(Biomes.BAMBOO_JUNGLE, jungleChance).
-				put(Biomes.BAMBOO_JUNGLE_HILLS, jungleChance).
+		POSSIBILITY_MAP = new ImmutableMap.Builder<Biome.Category, Double>().
+				put(Biome.Category.NONE, miscChance).
+				put(Biome.Category.TAIGA, taigaChance).
+				put(Biome.Category.EXTREME_HILLS, exHillsChance).
+				put(Biome.Category.JUNGLE, jungleChance).
+				put(Biome.Category.MESA, mesaChance).
+				put(Biome.Category.PLAINS, plainChance).
+				put(Biome.Category.SAVANNA, savannaChance).
+				put(Biome.Category.ICY, icePlainChance).
+				put(Biome.Category.THEEND, miscChance).
+				put(Biome.Category.BEACH, beachChance).
+				put(Biome.Category.FOREST, forestChance).
+				put(Biome.Category.OCEAN, oceanChance).
+				put(Biome.Category.DESERT, desertChance).
+				put(Biome.Category.RIVER, riverChance).
+				put(Biome.Category.SWAMP, swamplandChance).
+				put(Biome.Category.MUSHROOM, mushroomChance).
+				put(Biome.Category.NETHER, miscChance).
 				build();
 
 		valuableItemList.add(new RandomItem(16, new ItemSupplier(Items.DIAMOND_SWORD)));
@@ -295,7 +232,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		valuableItemList.add(new RandomItem(8, new ItemSupplier(Items.DIAMOND)));
 		valuableItemList.add(new RandomItem(16, () -> {
 			ItemStack item = new ItemStack(Items.ENCHANTED_BOOK);
-			EnchantedBookItem.addEnchantment(item, new InfoEnchantment(POSSIBLE_ENCHANTMENTS[rand.nextInt(POSSIBLE_ENCHANTMENTS.length)], rand.nextInt(4) == 0 ? 2 : 1));
+			EnchantedBookItem.addEnchantment(item, new EnchantmentLevelEntry(POSSIBLE_ENCHANTMENTS[rand.nextInt(POSSIBLE_ENCHANTMENTS.length)], rand.nextInt(4) == 0 ? 2 : 1));
 			return item;
 		}));
 

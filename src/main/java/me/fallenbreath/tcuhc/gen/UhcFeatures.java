@@ -11,10 +11,10 @@ import net.minecraft.world.gen.feature.OreFeatureConfig;
 
 public class UhcFeatures
 {
-	public static final Feature<OreFeatureConfig> VALUABLE_ORE = UhcRegistry.registerFeature("valuable_ore", new ValuableOreFeature(OreFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> MERCHANTS = UhcRegistry.registerFeature("merchants", new MerchantsFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> BONUS_CHEST = UhcRegistry.registerFeature("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> ENDER_ALTAR = UhcRegistry.registerFeature("ender_altar", new EnderAltarFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<OreFeatureConfig> VALUABLE_ORE = UhcRegistry.registerFeature("valuable_ore", new ValuableOreFeature(OreFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> MERCHANTS = UhcRegistry.registerFeature("merchants", new MerchantsFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> BONUS_CHEST = UhcRegistry.registerFeature("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> ENDER_ALTAR = UhcRegistry.registerFeature("ender_altar", new EnderAltarFeature(DefaultFeatureConfig.CODEC));
 
 	public static boolean isValuableOreBlock(Block block)
 	{

@@ -5,33 +5,31 @@
 package me.fallenbreath.tcuhc.gen;
 
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.options.Options;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 
 public class EnderAltarFeature extends Feature<DefaultFeatureConfig>
 {
 	static Set<ChunkPos> altarPoses = Sets.newHashSet();
 
-	public EnderAltarFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configDeserializer)
+	public EnderAltarFeature(Codec<DefaultFeatureConfig> configCodec)
 	{
-		super(configDeserializer);
+		super(configCodec);
 		calcAltarPosition();
 	}
 
@@ -52,7 +50,7 @@ public class EnderAltarFeature extends Feature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean generate(IWorld worldIn, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random rand, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random rand, BlockPos position, DefaultFeatureConfig config)
 	{
 		if (altarPoses.contains(new ChunkPos(position))) {
 			BlockPos top = worldIn.getTopPosition(Heightmap.Type.MOTION_BLOCKING, position.add(rand.nextInt(16), 0, rand.nextInt(16))).down();
@@ -91,14 +89,14 @@ public class EnderAltarFeature extends Feature<DefaultFeatureConfig>
 				for (int z = -radius; z <= radius; z++) {
 					BlockPos pos = top.add(x, 0, z);
 					pos = worldIn.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).down();
-					if (!worldIn.getBlockState(pos).isSimpleFullBlock(worldIn, pos))
+					if (!worldIn.getBlockState(pos).isSolidBlock(worldIn, pos))
 						continue;
 					float chance = 64.0f / (x * x + z * z);
 					if (rand.nextFloat() < chance)
 						worldIn.setBlockState(pos, floor, 2);
 				}
 			}
-			EnderCrystalEntity crystal = new EnderCrystalEntity(worldIn.getWorld(), top.getX() + 0.5, top.getY() + 2, top.getZ() + 0.5);
+			EndCrystalEntity crystal = new EndCrystalEntity(worldIn.toServerWorld(), top.getX() + 0.5, top.getY() + 2, top.getZ() + 0.5);
 			crystal.setShowBottom(false);
 			worldIn.spawnEntity(crystal);
 			for (int x = -1; x <= 1; x++)

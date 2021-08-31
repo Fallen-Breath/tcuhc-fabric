@@ -1,7 +1,7 @@
 package me.fallenbreath.tcuhc.mixins.loot;
 
 import net.minecraft.loot.LootPool;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface LootPoolAccessor
 {
 	@Accessor
-	LootEntry[] getEntries();
+	LootPoolEntry[] getEntries();
 
 	@Accessor
-	void setEntries(LootEntry[] entries);
+	void setEntries(LootPoolEntry[] entries);
 }

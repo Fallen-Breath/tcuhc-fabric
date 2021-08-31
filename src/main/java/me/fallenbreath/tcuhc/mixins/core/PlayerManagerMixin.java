@@ -7,13 +7,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Optional;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin
@@ -34,11 +36,11 @@ public abstract class PlayerManagerMixin
 			method = "respawnPlayer",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/world/World;getLevelProperties()Lnet/minecraft/world/level/LevelProperties;"
+					target = "Lnet/minecraft/world/World;getLevelProperties()Lnet/minecraft/world/WorldProperties;"
 			),
 			locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void playerRespawnHook(ServerPlayerEntity player, DimensionType dimension, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> cir, BlockPos blockPos, boolean bl, ServerPlayerInteractionManager serverPlayerInteractionManager2, ServerPlayerEntity serverPlayerEntity, ServerWorld serverWorld)
+	private void playerRespawnHook(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> cir, BlockPos blockPos, float f, boolean bl, ServerWorld serverWorld, Optional<Vec3d> optional2, ServerPlayerInteractionManager serverPlayerInteractionManager2, ServerWorld serverWorld2, ServerPlayerEntity serverPlayerEntity, boolean bl2)
 	{
 		UhcGameManager.instance.onPlayerRespawn(serverPlayerEntity);
 	}

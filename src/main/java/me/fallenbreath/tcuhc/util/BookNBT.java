@@ -32,9 +32,9 @@ public class BookNBT {
 	
 	public static BaseText createTextEvent(String text, String cmd, String hover, Formatting color) {
 		BaseText res = new LiteralText(text);
-		if (color != null) res.getStyle().setColor(color);
-		if (cmd != null) res.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd));
-		if (hover != null) res.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hover)));
+		if (color != null) res.setStyle(res.getStyle().withColor(color));
+		if (cmd != null) res.setStyle(res.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd)));
+		if (hover != null) res.setStyle(res.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hover))));
 		return res;
 	}
 	

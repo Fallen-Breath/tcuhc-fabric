@@ -45,7 +45,7 @@ public class UhcConfigManager
 		if (isConfiguring && operator.isSamePlayer(player) && isInputting) {
 			curOption.setStringValue(msg);
 			UhcGameManager.instance.getUhcPlayerManager().refreshConfigBook();
-			player.sendMessage(new LiteralText("Set " + curOption.getName() + " to " + curOption.getStringValue()));
+			player.sendMessage(new LiteralText("Set " + curOption.getName() + " to " + curOption.getStringValue()), false);
 			isInputting = false;
 			return false;
 		}

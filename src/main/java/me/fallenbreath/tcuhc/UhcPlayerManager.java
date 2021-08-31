@@ -106,7 +106,7 @@ public class UhcPlayerManager
 			if (gameManager.hasGameEnded())
 				player.setGameMode(GameMode.SPECTATOR);
 			else {
-				player.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20);
+				player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(20);
 				player.setGameMode(GameMode.ADVENTURE);
 				regiveConfigItems(player);
 				if (gameManager.getConfigManager().isConfiguring())
@@ -134,14 +134,14 @@ public class UhcPlayerManager
 		Item current = player.inventory.getMainHandStack().getItem();
 		ItemStack book = BookNBT.getAdjustBook(gameManager);
 		if (current == Items.WRITTEN_BOOK)
-			player.inventory.setInvStack(player.inventory.selectedSlot, book);
+			player.inventory.setStack(player.inventory.selectedSlot, book);
 		else if (force) player.inventory.insertStack(book);
 	}
 	
 	public void removeAdjustBook(ServerPlayerEntity player) {
 		Item current = player.inventory.getMainHandStack().getItem();
 		if (current == Items.WRITTEN_BOOK)
-			player.inventory.setInvStack(player.inventory.selectedSlot, ItemStack.EMPTY);
+			player.inventory.setStack(player.inventory.selectedSlot, ItemStack.EMPTY);
 	}
 	
 	public void refreshConfigBook() {
@@ -167,7 +167,7 @@ public class UhcPlayerManager
 	}
 	
 	public void resetHealthAndFood(ServerPlayerEntity player) {
-		player.setHealth(player.getMaximumHealth());
+		player.setHealth(player.getMaxHealth());
 		player.getHungerManager().add(20, 20);
 	}
 	
@@ -207,7 +207,7 @@ public class UhcPlayerManager
 			return;
 		}
 		String message = chatMessage(player, msg, true);
-		gamePlayer.getTeam().getPlayers().forEach(other -> other.getRealPlayer().ifPresent(playermp -> playermp.sendMessage(new LiteralText(message))));
+		gamePlayer.getTeam().getPlayers().forEach(other -> other.getRealPlayer().ifPresent(playermp -> playermp.sendMessage(new LiteralText(message), false)));
 	}
 	
 	private String chatMessage(PlayerEntity player, String msg, boolean secret) {
@@ -310,14 +310,14 @@ public class UhcPlayerManager
 			else if (source == DamageSource.ANVIL) msg += "anvil";
 			else if (source == DamageSource.FALLING_BLOCK) msg += "falling block";
 			else if (source == DamageSource.DRAGON_BREATH) msg += "dragon breath";
-			else if (source == DamageSource.FIREWORKS) msg += "fireworks";
+			else if (source == DamageSource.SWEET_BERRY_BUSH) msg += "sweet berry bush";
 			else if (source.getName().startsWith("explosion")) msg += "explosion" + byEnding;
 			else if (source instanceof ProjectileDamageSource) msg += source.getSource().getName().getString() + byEnding;
 			else if (source instanceof EntityDamageSource) msg += source.getAttacker().getName().getString();
 			else msg += source.getName() + byEnding;
-			player.sendMessage(new LiteralText(Formatting.RED + msg));
+			player.sendMessage(new LiteralText(Formatting.RED + msg), false);
 			if (source.getAttacker() instanceof ServerPlayerEntity) {
-				source.getAttacker().sendMessage(new LiteralText(String.format("%sYou dealt %.2f damage to %s", Formatting.BLUE, amount, player.getEntityName())));
+				((ServerPlayerEntity)source.getAttacker()).sendMessage(new LiteralText(String.format("%sYou dealt %.2f damage to %s", Formatting.BLUE, amount, player.getEntityName())), false);
 			}
 		}
 	}
@@ -376,8 +376,8 @@ public class UhcPlayerManager
 		for (UhcGamePlayer gamePlayer : getAllPlayers()) {
 			UhcGameColor color = gamePlayer.getColorSelected().orElse(null);
 			if (color == null) {
-				gamePlayer.getRealPlayer().ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Please select a team to join, others are waiting for you !")));
-				operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + gamePlayer.getName())));
+				gamePlayer.getRealPlayer().ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Please select a team to join, others are waiting for you !"), false));
+				operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + gamePlayer.getName()), false));
 				alright = false;
 			} else {
 				if (color == UhcGameColor.WHITE) observePlayerList.add(gamePlayer);
@@ -386,7 +386,7 @@ public class UhcPlayerManager
 		}
 		
 		if (!alright) {
-			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice.")));
+			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice."), false));
 			return false;
 		}
 		
@@ -439,8 +439,8 @@ public class UhcPlayerManager
 		for (UhcGamePlayer gamePlayer : getAllPlayers()) {
 			UhcGameColor color = gamePlayer.getColorSelected().orElse(null);
 			if (color == null) {
-				gamePlayer.getRealPlayer().ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Please select a team to join, others are waiting for you !")));
-				operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + gamePlayer.getName())));
+				gamePlayer.getRealPlayer().ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Please select a team to join, others are waiting for you !"), false));
+				operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + gamePlayer.getName()), false));
 				alright = false;
 			} else {
 				if (color == UhcGameColor.WHITE) observePlayerList.add(gamePlayer);
@@ -449,7 +449,7 @@ public class UhcPlayerManager
 		}
 		
 		if (!alright) {
-			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice.")));
+			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice."), false));
 			return false;
 		}
 		
@@ -512,13 +512,13 @@ public class UhcPlayerManager
 					if (player.getColorSelected().orElse(UhcGameColor.BLUE) == UhcGameColor.RED) {
 						if (boss == null) boss = player;
 						else {
-							player.getRealPlayer().ifPresent(playermp -> playermp.sendMessage(new LiteralText(Formatting.DARK_RED + "There cannot be more than one boss.")));
+							player.getRealPlayer().ifPresent(playermp -> playermp.sendMessage(new LiteralText(Formatting.DARK_RED + "There cannot be more than one boss."), false));
 							alright = false;
 						}
 					}
 				}
 				if (!alright) {
-					operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "There are more than one boss.")));
+					operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "There are more than one boss."), false));
 					return false;
 				}
 				teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.RED).addPlayer(boss));
@@ -568,10 +568,10 @@ public class UhcPlayerManager
 		BlockEntity te = world.getBlockEntity(pos);
 		if (!(te instanceof ChestBlockEntity)) return;
 		ChestBlockEntity chest = (ChestBlockEntity) te;
-		chest.setInvStack(0, new ItemStack(Items.WOODEN_AXE));
-		chest.setInvStack(1, new ItemStack(Items.WOODEN_SWORD));
+		chest.setStack(0, new ItemStack(Items.WOODEN_AXE));
+		chest.setStack(1, new ItemStack(Items.WOODEN_SWORD));
 		if (gameManager.getOptions().getBooleanOptionValue("greenhandProtect"))
-			chest.setInvStack(2, new ItemStack(Items.GOLDEN_APPLE, playerCnt));
+			chest.setStack(2, new ItemStack(Items.GOLDEN_APPLE, playerCnt));
 	}
 	
 	public void spreadPlayers() {
@@ -589,7 +589,7 @@ public class UhcPlayerManager
 				BlockPos newpos = homePos.add(UhcGameManager.rand.nextInt(5) - 2, 0, UhcGameManager.rand.nextInt(5) - 2);
 				player.updatePosition(newpos.getX() + 0.5, newpos.getY() + 0.5, newpos.getZ() + 0.5);
 				player.teleport(newpos.getX() + 0.5, newpos.getY() + 0.5, newpos.getZ() + 0.5);
-				player.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(health);
+				player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(health);
 				player.fallDistance = 0.0f;
 				player.inventory.clear();
 			}

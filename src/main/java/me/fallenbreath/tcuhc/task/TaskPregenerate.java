@@ -11,12 +11,10 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Queue;
 
 public class TaskPregenerate extends Task
@@ -46,7 +44,7 @@ public class TaskPregenerate extends Task
 
 	private String getWorldName()
 	{
-		return Objects.requireNonNull(DimensionType.getId(world.getDimension().getType())).getPath();
+		return world.getRegistryKey().getValue().getPath();
 	}
 
 	private void generateChunk(int x, int z)
@@ -133,7 +131,7 @@ public class TaskPregenerate extends Task
 		{
 			try
 			{
-				File preload = mcServer.getLevelStorage().resolveFile(mcServer.getLevelName(), "preload");
+				File preload = UhcGameManager.getPreloadFile();
 				if (!preload.exists())
 					preload.createNewFile();
 				UhcGameManager.instance.setPregenerateComplete();

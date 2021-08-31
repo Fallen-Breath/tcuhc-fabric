@@ -3,7 +3,7 @@ package me.fallenbreath.tcuhc.util;
 import com.google.gson.Gson;
 import me.fallenbreath.tcuhc.mixins.loot.LootManagerAccessor;
 import net.minecraft.loot.LootPool;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.util.JsonHelper;
 
 import java.io.BufferedReader;
@@ -35,8 +35,8 @@ public class LootTableUtil
 		return getUhcLootData("lootpools", name, LootPool.class);
 	}
 
-	public static LootEntry getUhcLootEntry(String name)
+	public static LootPoolEntry getUhcLootEntry(String name)
 	{
-		return getUhcLootData("lootentries", name, LootEntry.class);
+		return getUhcLootData("lootentries", name, LootPoolEntry.class);
 	}
 }

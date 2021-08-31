@@ -5,7 +5,7 @@
 package me.fallenbreath.tcuhc.gen;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -16,36 +16,29 @@ import net.minecraft.item.Items;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 
 public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 {
 	private static final List<UHCRecipe> randRecipeList;
 	private static final List<UHCRecipe> staticRecipeList;
 
-	public MerchantsFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configDeserializer)
+	public MerchantsFeature(Codec<DefaultFeatureConfig> configCodec)
 	{
-		super(configDeserializer);
+		super(configCodec);
 	}
 
 	@Override
-	public boolean generate(IWorld worldIn, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random rand, BlockPos position, DefaultFeatureConfig config)
+	public boolean generate(StructureWorldAccess worldIn, ChunkGenerator chunkGenerator, Random rand, BlockPos position, DefaultFeatureConfig config)
 	{
-		Biome biome = worldIn.getBiome(position);
-		if (biome == Biomes.OCEAN || biome == Biomes.DEEP_OCEAN || biome == Biomes.FROZEN_OCEAN)  // TODO: remove or complete
-			return false;
 		int chunkX = position.getX() >> 4;
 		int chunkZ = position.getZ() >> 4;
 		if (Math.abs(chunkX) < 2 || Math.abs(chunkZ) < 2)
@@ -53,9 +46,9 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 		float merchantChance = UhcGameManager.instance.getOptions().getFloatOptionValue("merchantFrequency");
 		if (chunkX % 4 == 0 && chunkZ % 4 == 0 && rand.nextFloat() < 0.3 * merchantChance) {
 			BlockPos pos = worldIn.getTopPosition(Heightmap.Type.OCEAN_FLOOR, position.add(rand.nextInt(16) - 8, 0, rand.nextInt(16) - 8)).down();
-			if (worldIn.getBlockState(pos).getFluidState().matches(FluidTags.WATER))
+			if (worldIn.getBlockState(pos).getFluidState().isIn(FluidTags.WATER))
 				return false;
-			VillagerEntity villager = new VillagerEntity(EntityType.VILLAGER, worldIn.getWorld());
+			VillagerEntity villager = new VillagerEntity(EntityType.VILLAGER, worldIn.toServerWorld());
 			villager.setAiDisabled(true);
 			villager.setInvulnerable(true);
 			villager.updatePosition(pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5);
@@ -68,7 +61,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 				}
 			worldIn.setBlockState(pos.up(4), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 2);
 			int recipeCnt = rand.nextInt(3) + 2;
-			TraderOfferList recipes = new TraderOfferList();
+			TradeOfferList recipes = new TradeOfferList();
 			for (int i = 0; i < recipeCnt; i++)
 				recipes.add(getRandomRecipe(rand));
 			addStaticRecipes(recipes, rand);
@@ -83,7 +76,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 		return randRecipeList.get(rand.nextInt(randRecipeList.size())).getRecipe(rand);
 	}
 
-	private void addStaticRecipes(TraderOfferList list, Random rand) {
+	private void addStaticRecipes(TradeOfferList list, Random rand) {
 		for (UHCRecipe recipe : staticRecipeList) {
 			list.add(recipe.getRecipe(rand));
 		}

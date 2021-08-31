@@ -25,9 +25,9 @@ public class RecipeArmorRepair extends SpecialCraftingRecipe
 	public ItemStack craft(CraftingInventory inv)
 	{
 		ItemStack armor = null;
-		for (int i = 0; i < inv.getInvSize(); ++i)
+		for (int i = 0; i < inv.size(); ++i)
 		{
-			ItemStack itemstack = inv.getInvStack(i);
+			ItemStack itemstack = inv.getStack(i);
 			if (itemstack.getItem() instanceof ArmorItem)
 			{
 				if (armor == null)
@@ -46,9 +46,9 @@ public class RecipeArmorRepair extends SpecialCraftingRecipe
 		}
 		ArmorItem armorItem = (ArmorItem)armor.getItem();
 		int repairCnt = 0;
-		for (int i = 0; i < inv.getInvSize(); ++i)
+		for (int i = 0; i < inv.size(); ++i)
 		{
-			ItemStack itemstack = inv.getInvStack(i);
+			ItemStack itemstack = inv.getStack(i);
 			if (!itemstack.isEmpty() && !(itemstack.getItem() instanceof ArmorItem))
 			{
 				if (armorItem.canRepair(armor, itemstack))

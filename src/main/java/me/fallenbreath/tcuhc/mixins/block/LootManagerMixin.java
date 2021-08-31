@@ -14,7 +14,7 @@ import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Logger;
@@ -30,17 +30,17 @@ import java.util.Map;
 @Mixin(LootManager.class)
 public abstract class LootManagerMixin
 {
-	@Shadow private Map<Identifier, LootTable> suppliers;
+	@Shadow private Map<Identifier, LootTable> tables;
 
 	@Inject(method = "apply", at = @At("TAIL"))
 	private void uhcBlockLootAdjust(CallbackInfo ci)
 	{
 		Logger logger = UhcGameManager.LOG;
 		LootPool uhcAppleDrop = LootTableUtil.getUhcLootPool("apple");
-		LootEntry uhcGlowStoneDrop = LootTableUtil.getUhcLootEntry("glowstone");
-		LootEntry uhcLapisOreDrop = LootTableUtil.getUhcLootEntry("lapis_ore");
+		LootPoolEntry uhcGlowStoneDrop = LootTableUtil.getUhcLootEntry("glowstone");
+		LootPoolEntry uhcLapisOreDrop = LootTableUtil.getUhcLootEntry("lapis_ore");
 
-		this.suppliers.forEach((id, table) -> {
+		this.tables.forEach((id, table) -> {
 			Block block = Registry.BLOCK.get(new Identifier(id.getNamespace(), id.getPath().replace("blocks/", "")));
 			LootTableAccessor tableAccessor = (LootTableAccessor)table;
 			if (block instanceof LeavesBlock)
@@ -49,7 +49,7 @@ public abstract class LootManagerMixin
 				boolean modified = false;
 				for (int i = 0; i < lootPools.size(); i++)
 				{
-					LootEntry[] lootEntries = ((LootPoolAccessor)lootPools.get(i)).getEntries();
+					LootPoolEntry[] lootEntries = ((LootPoolAccessor)lootPools.get(i)).getEntries();
 					if (lootEntries.length == 1 && lootEntries[0] instanceof ItemEntry && ((ItemEntryAccessor)lootEntries[0]).getItem() == Items.APPLE)
 					{
 						lootPools.set(i, uhcAppleDrop);
@@ -68,8 +68,8 @@ public abstract class LootManagerMixin
 			{
 				if (tableAccessor.getPools().length == 1)
 				{
-					LootEntry lootEntry = block == Blocks.GLOWSTONE ? uhcGlowStoneDrop : uhcLapisOreDrop;
-					((LootPoolAccessor)tableAccessor.getPools()[0]).setEntries(new LootEntry[]{lootEntry});
+					LootPoolEntry lootEntry = block == Blocks.GLOWSTONE ? uhcGlowStoneDrop : uhcLapisOreDrop;
+					((LootPoolAccessor)tableAccessor.getPools()[0]).setEntries(new LootPoolEntry[]{lootEntry});
 				}
 				logger.info("Modified drop of {}", block);
 			}

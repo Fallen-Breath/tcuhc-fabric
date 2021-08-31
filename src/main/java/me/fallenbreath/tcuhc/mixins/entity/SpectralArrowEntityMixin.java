@@ -4,7 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.hit.HitResult;
@@ -19,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SpectralArrowEntity.class)
-public abstract class SpectralArrowEntityMixin extends ProjectileEntity
+public abstract class SpectralArrowEntityMixin extends PersistentProjectileEntity
 {
-	protected SpectralArrowEntityMixin(EntityType<? extends ProjectileEntity> type, World world)
+	protected SpectralArrowEntityMixin(EntityType<? extends PersistentProjectileEntity> entityType, World world)
 	{
-		super(type, world);
+		super(entityType, world);
 	}
 
 	@Inject(method = "onHit", at = @At("TAIL"))
@@ -34,7 +34,7 @@ public abstract class SpectralArrowEntityMixin extends ProjectileEntity
 
 	@Intrinsic
 	@Override
-	protected void onHit(HitResult hitResult)
+	protected void onCollision(HitResult hitResult)
 	{
 		if (hitResult.getType() == HitResult.Type.BLOCK && this.isCritical())
 		{
@@ -44,7 +44,7 @@ public abstract class SpectralArrowEntityMixin extends ProjectileEntity
 
 		if (!this.removed)
 		{
-			super.onHit(hitResult);
+			super.onCollision(hitResult);
 		}
 	}
 
@@ -65,7 +65,7 @@ public abstract class SpectralArrowEntityMixin extends ProjectileEntity
 		}
 		this.remove();
 		this.world.createExplosion(this, this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), 1.0F, Explosion.DestructionType.DESTROY);
-		BlockPos arrowpos = new BlockPos(this);
+		BlockPos arrowpos = new BlockPos(this.getPos());
 		if (getExplosionResistance(world, arrowpos) > 6.01f)
 		{
 			return;

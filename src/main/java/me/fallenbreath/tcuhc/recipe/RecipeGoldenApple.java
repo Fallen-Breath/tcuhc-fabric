@@ -27,9 +27,9 @@ public class RecipeGoldenApple extends SpecialCraftingRecipe
 	{
 		boolean hasApple = false;
 		int goldCnt = 0;
-		for (int i = 0; i < inv.getInvSize(); ++i)
+		for (int i = 0; i < inv.size(); ++i)
 		{
-			ItemStack itemstack = inv.getInvStack(i);
+			ItemStack itemstack = inv.getStack(i);
 			if (itemstack.getItem() == Items.APPLE)
 			{
 				if (!hasApple)

@@ -3,14 +3,13 @@ package me.fallenbreath.tcuhc.mixins.network;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.helpers.ServerPlayerEntityHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin
@@ -83,22 +83,17 @@ public abstract class ServerPlayNetworkHandlerMixin
 	}
 
 	@Redirect(
-			method = "onChatMessage",
+			method = "method_31286",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"
+					target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
 			)
 	)
-	private void optioalChatting(PlayerManager playerManager, Text text, boolean system, /* parent method parameters -> */ ChatMessageC2SPacket packet)
+	private void optioalChatting(PlayerManager playerManager, Text text, MessageType messageType, UUID senderUuid, /* parent method parameters -> */ String string)
 	{
-		// vanilla copy
-		String string = packet.getChatMessage();
-		string = StringUtils.normalizeSpace(string);
-		// vanilla copy ends
-
 		if (UhcGameManager.instance.onPlayerChat(player, string))
 		{
-			playerManager.broadcastChatMessage(text, system);
+			playerManager.broadcastChatMessage(text, messageType, senderUuid);
 		}
 	}
 }

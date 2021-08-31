@@ -94,7 +94,7 @@ public class TaskScoreboard extends TaskTimer {
 						}
 					}
 					if (target != null)
-						playermp.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(target.getBlockPos()));
+						playermp.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(target.getBlockPos(), 0));
 				}
 			}
 		}
