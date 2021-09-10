@@ -17,11 +17,15 @@ public abstract class DefaultBiomeFeaturesMixin
 {
 	private static void addSurfaceFeature(GenerationSettings.Builder builder, Feature<DefaultFeatureConfig> feature)
 	{
-		builder.feature(GenerationStep.Feature.SURFACE_STRUCTURES, feature.configure(FeatureConfig.DEFAULT));
+		builder.feature(
+				GenerationStep.Feature.SURFACE_STRUCTURES,
+				feature.configure(FeatureConfig.DEFAULT).
+						decorate(ConfiguredFeaturesDecoratorsAccessor.getTOP_SOLID_HEIGHTMAP())
+		);
 	}
 
-	@Inject(method = "addDefaultOres", at = @At("TAIL"))
-	private static void addUhcFeatures(GenerationSettings.Builder builder, CallbackInfo ci)
+	@Inject(method = "addDefaultOres(Lnet/minecraft/world/biome/GenerationSettings$Builder;Z)V", at = @At("TAIL"))
+	private static void addUhcFeatures(GenerationSettings.Builder builder, boolean largeCopperOreBlob, CallbackInfo ci)
 	{
 		addSurfaceFeature(builder, UhcFeatures.MERCHANTS);
 		addSurfaceFeature(builder, UhcFeatures.BONUS_CHEST);

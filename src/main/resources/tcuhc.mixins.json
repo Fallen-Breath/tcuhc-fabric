@@ -42,13 +42,13 @@
     "recipe.SynchronizeRecipesS2CPacketMixin",
     "task.PlayerListHeaderS2CPacketAccessor",
     "util.SheepEntityAccessor",
+    "worldgen.feature.ConfiguredFeaturesDecoratorsAccessor",
     "worldgen.feature.DefaultBiomeFeaturesMixin",
     "worldgen.feature.NetherFortressFeatureMixin",
     "worldgen.ore.DefaultBiomeFeaturesMixin",
     "worldgen.ore.OreFeatureMixin",
-    "worldgen.world.BiomeLayersMixin",
     "worldgen.world.CaveCarverMixin",
-    "worldgen.world.IncreaseEdgeCurvatureLayerMixin"
+    "worldgen.world.VanillaBiomeParametersMixin"
   ],
   "client": [
   ],

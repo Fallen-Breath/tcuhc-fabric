@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.9-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -28,8 +28,8 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntime "carpet:fabric-carpet:${project.minecraft_version}-1.4.45+v210825"
-	modRuntime "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
+	modRuntime "carpet:fabric-carpet:1.18_experimental-snapshot-4-1.4.45+v210825"
+//	modRuntime "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
@@ -38,8 +38,8 @@ dependencies {
 	include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
 }
 
-minecraft {
-	accessWidener = file("src/main/resources/tcuhc.accesswidener")
+loom {
+	accessWidenerPath = file("src/main/resources/tcuhc.accesswidener")
 }
 
 processResources {

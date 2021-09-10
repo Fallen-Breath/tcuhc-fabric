@@ -84,11 +84,11 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		int posZ = rand.nextInt(16) + position.getZ() - 8;
 		int posY = worldIn.getTopY(Heightmap.Type.OCEAN_FLOOR, posX, posZ);
 		position = new BlockPos(posX, posY, posZ);
-		while (!worldIn.getBlockState(position).isSolidBlock(worldIn, position) && position.getY() > 0)
+		while (!worldIn.getBlockState(position).isSolidBlock(worldIn, position) && position.getY() > worldIn.getBottomY())
 		{
 			position = position.down();
 		}
-		if (position.getY() == 0)
+		if (position.getY() == worldIn.getBottomY())
 		{
 			return false;
 		}
@@ -126,7 +126,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 				this.genChestItem(chest, valuableItemList, true);
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private void genChestItem(ChestBlockEntity chest, List<RandomItem> itemList, boolean valuable)
