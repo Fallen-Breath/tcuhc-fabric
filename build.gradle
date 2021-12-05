@@ -1,6 +1,9 @@
 plugins {
-	id 'fabric-loom' version '0.9-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+
+	// https://github.com/Juuxel/LoomQuiltflower
+	id 'io.github.juuxel.loom-quiltflower-mini' version '1.1.0'
 }
 
 repositories {
@@ -28,14 +31,14 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntime "carpet:fabric-carpet:1.18_experimental-snapshot-4-1.4.45+v210825"
+	modRuntimeOnly "carpet:fabric-carpet:1.18-1.4.56+v211130"
 //	modRuntime "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 
-	modImplementation "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
-	include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
+	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 }
 
 loom {
@@ -73,13 +76,7 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 
