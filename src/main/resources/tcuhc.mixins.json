@@ -10,6 +10,7 @@
     "block.LootManagerMixin",
     "block.OreBlockMixin",
     "core.CommandManagerMixin",
+    "core.LevelStorageMixin",
     "core.MinecraftServerMixin",
     "core.PlayerManagerMixin",
     "entity.AbstractMinecartEntityMixin",
@@ -42,13 +43,12 @@
     "recipe.SynchronizeRecipesS2CPacketMixin",
     "task.PlayerListHeaderS2CPacketAccessor",
     "util.SheepEntityAccessor",
-    "worldgen.feature.ConfiguredFeaturesDecoratorsAccessor",
     "worldgen.feature.DefaultBiomeFeaturesMixin",
     "worldgen.feature.NetherFortressFeatureMixin",
     "worldgen.ore.DefaultBiomeFeaturesMixin",
     "worldgen.ore.OreFeatureMixin",
     "worldgen.world.CaveCarverMixin",
-    "worldgen.world.VanillaBiomeParametersMixin"
+    "worldgen.world.NoiseColumnSamplerMixin"
   ],
   "client": [
   ],

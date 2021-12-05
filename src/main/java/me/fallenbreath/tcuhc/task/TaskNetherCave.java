@@ -65,12 +65,13 @@ public class TaskNetherCave extends TaskTimer {
 		} else if (netherTime < 0) {
 			for (UhcGamePlayer player : combatPlayers) {
 				player.getRealPlayer().ifPresent(playermp -> {
-					if (playermp.getServerWorld().getRegistryKey() != World.OVERWORLD)
+					if (playermp.getWorld().getRegistryKey() != World.OVERWORLD)
 						playermp.damage(DamageSource.IN_WALL, 1.0f);
 				});
 			}
 		}
-		
+
+		ServerWorld world = UhcGameManager.instance.getOverWorld();
 		int caveTime = caveCloseTime - timePast;
 		if (caveTime > 0 && caveTime <= 120 && caveTime % 30 == 0) {
 			UhcGameManager.instance.broadcastMessage(Formatting.DARK_RED + "Caves will be closed in " + caveTime + " seconds.");
@@ -87,13 +88,12 @@ public class TaskNetherCave extends TaskTimer {
 			finalTime = Math.max(gameTime - caveCloseTime, finalSize * 2 - borderFinal);
 			border.interpolateSize(border.getSize(), borderFinal, finalTime * 1000L);
 
-			ServerWorld world = UhcGameManager.instance.getOverWorld();
 			List<Integer> heights = Lists.newArrayList();
 			int sampleSize = borderFinal / 2;
 			int step = Math.max(1, sampleSize / 4);
 			for (int x = finalX - sampleSize; x <= finalX + sampleSize; x += step) {
 				for (int z = finalZ - sampleSize; z <= finalZ + sampleSize; z += step) {
-					for (int y = 255; y > 0; y--) {
+					for (int y = world.getTopY(); y > world.getBottomY(); y--) {
 						BlockState state = world.getBlockState(new BlockPos(x, y, z));
 						if (state.getBlock() == Blocks.STONE && state.getMaterial() == Material.STONE) {
 							heights.add(y);
@@ -126,7 +126,7 @@ public class TaskNetherCave extends TaskTimer {
 			boolean glow = caveTime % 60 == 0;
 			float partial = caveTime <= finalTime ? (float) caveTime / finalTime : 1;
 			float minY = finalMinY * partial;
-			float maxY = 255 - partial * (255 - finalMaxY);
+			float maxY = world.getTopY() - partial * (world.getTopY() - finalMaxY);
 
 			Scoreboard scoreboard = UhcGameManager.instance.getMainScoreboard();
 			ScoreboardObjective objective = scoreboard.getObjective(TaskScoreboard.scoreName);
@@ -148,7 +148,7 @@ public class TaskNetherCave extends TaskTimer {
 						if (playermp.getPos().getY() > maxY - 5)
 							particleY = maxY - 2;
 						if (particleY > 0) {
-							playermp.getServerWorld().spawnParticles(playermp, ParticleTypes.PORTAL, false,
+							playermp.getWorld().spawnParticles(playermp, ParticleTypes.PORTAL, false,
 									playermp.getPos().getX(), particleY, playermp.getPos().getZ(), 100, 2, 0, 2, 0);
 						}
 					}

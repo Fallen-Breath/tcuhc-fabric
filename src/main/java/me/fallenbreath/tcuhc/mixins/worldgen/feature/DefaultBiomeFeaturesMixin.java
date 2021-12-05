@@ -4,9 +4,7 @@ import me.fallenbreath.tcuhc.gen.UhcFeatures;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,13 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DefaultBiomeFeatures.class)
 public abstract class DefaultBiomeFeaturesMixin
 {
-	private static void addSurfaceFeature(GenerationSettings.Builder builder, Feature<DefaultFeatureConfig> feature)
+	private static void addSurfaceFeature(GenerationSettings.Builder builder, PlacedFeature feature)
 	{
-		builder.feature(
-				GenerationStep.Feature.SURFACE_STRUCTURES,
-				feature.configure(FeatureConfig.DEFAULT).
-						decorate(ConfiguredFeaturesDecoratorsAccessor.getTOP_SOLID_HEIGHTMAP())
-		);
+		builder.feature(GenerationStep.Feature.SURFACE_STRUCTURES, feature);
 	}
 
 	@Inject(method = "addDefaultOres(Lnet/minecraft/world/biome/GenerationSettings$Builder;Z)V", at = @At("TAIL"))

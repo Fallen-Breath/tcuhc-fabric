@@ -2,7 +2,6 @@ package me.fallenbreath.tcuhc.mixins.core;
 
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +22,6 @@ public abstract class MinecraftServerMixin
 	private void constructUhcGameManager(CallbackInfo ci)
 	{
 		this.uhcGameManager = new UhcGameManager((MinecraftServer)(Object)this);
-		UhcGameManager.tryUpdateSaveFolder(this.session.getDirectory(WorldSavePath.ROOT));
 	}
 
 	@Inject(
