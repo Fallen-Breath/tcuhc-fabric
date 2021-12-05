@@ -14,7 +14,7 @@ public abstract class CaveCarverMixin
 	@Shadow protected abstract int getMaxCaveCount();
 
 	@Redirect(
-			method = "carve",
+			method = "carve(Lnet/minecraft/world/gen/carver/CarverContext;Lnet/minecraft/world/gen/carver/CaveCarverConfig;Lnet/minecraft/world/chunk/Chunk;Ljava/util/function/Function;Ljava/util/Random;Lnet/minecraft/world/gen/chunk/AquiferSampler;Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/world/gen/carver/CarvingMask;)Z",
 			at = @At(
 					value = "INVOKE",
 					target = "Ljava/util/Random;nextInt(I)I",
