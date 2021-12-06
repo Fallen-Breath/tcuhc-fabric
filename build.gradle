@@ -1,6 +1,18 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+
+	// https://github.com/Juuxel/LoomQuiltflower
+	id 'io.github.juuxel.loom-quiltflower-mini' version '1.1.0'
+}
+
+repositories {
+	maven {
+		url 'https://masa.dy.fi/maven'
+	}
+	maven {
+		url 'https://www.cursemaven.com'
+	}
 }
 
 repositories {
@@ -28,18 +40,18 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntime "carpet:fabric-carpet:${project.minecraft_version}-1.4.8+v200811"
-	modRuntime 'com.github.caffeinemc:lithium-fabric:1.15.x~fabric-SNAPSHOT'
+	modRuntimeOnly "carpet:fabric-carpet:1.15.2-1.4.8+v200811"
+	modRuntimeOnly 'com.github.caffeinemc:lithium-fabric:1.15.x~fabric-SNAPSHOT'
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 
-	modImplementation "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
-	include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
+	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 }
 
 minecraft {
-	accessWidener = file("src/main/resources/tcuhc.accesswidener")
+	accessWidenerPath = file("src/main/resources/tcuhc.accesswidener")
 }
 
 processResources {
@@ -73,13 +85,7 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 
