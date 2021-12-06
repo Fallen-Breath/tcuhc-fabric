@@ -17,7 +17,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity
 		super(entityType, world);
 	}
 
-	@Inject(method = "prepareRecipesFor", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "prepareOffersFor", at = @At("HEAD"), cancellable = true)
 	private void dontPrepareIfYouAreAUhcMerchant(CallbackInfo ci)
 	{
 		if (this.isInvulnerable())

@@ -273,7 +273,7 @@ public class UhcGameManager extends Taskable {
 	
 	private void removeWorldBorder() {
 		for (ServerWorld world : mcServer.getWorlds()) {
-			world.getWorldBorder().setSize(world.getWorldBorder().getMaxWorldBorderRadius());
+			world.getWorldBorder().setSize(world.getWorldBorder().getMaxRadius());
 		}
 	}
 	

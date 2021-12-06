@@ -15,7 +15,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.NbtByte;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -67,8 +67,8 @@ public class TaskTitleCountDown extends TaskTimer {
 						if (this.getGamePlayer().isKing()) {
 							DyeColor dyeColor = this.getGamePlayer().getTeam().getTeamColor().dyeColor;
 							ItemStack kingsHelmet = new ItemStack(Items.LEATHER_HELMET).setCustomName(new LiteralText(String.format("%s crown", dyeColor.getName())));
-							kingsHelmet.getOrCreateTag().put("KingsCrown", ByteTag.of((byte)1));
-							kingsHelmet.getOrCreateTag().put("Unbreakable", ByteTag.of((byte)1));
+							kingsHelmet.getOrCreateTag().put("KingsCrown", NbtByte.of((byte)1));
+							kingsHelmet.getOrCreateTag().put("Unbreakable", NbtByte.of((byte)1));
 							((DyeableItem)Items.LEATHER_HELMET).setColor(kingsHelmet, ((DyeColorAccessor)(Object)dyeColor).getColor());
 							kingsHelmet.addEnchantment(Enchantments.PROTECTION, 6);
 							kingsHelmet.addEnchantment(Enchantments.BINDING_CURSE, 1);

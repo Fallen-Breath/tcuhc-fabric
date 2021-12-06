@@ -3,7 +3,7 @@ package me.fallenbreath.tcuhc.recipe;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.NbtInt;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
@@ -52,7 +52,7 @@ public class RecipeGoldenApple extends SpecialCraftingRecipe
 			ItemStack res = new ItemStack(Items.GOLDEN_APPLE);
 			if (level != 4)
 			{
-				res.getOrCreateTag().put("level", IntTag.of(level));
+				res.getOrCreateTag().put("level", NbtInt.of(level));
 			}
 			return res;
 		}

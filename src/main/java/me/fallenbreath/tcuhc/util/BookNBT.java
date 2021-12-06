@@ -12,9 +12,9 @@ import me.fallenbreath.tcuhc.options.Option;
 import me.fallenbreath.tcuhc.options.Options;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -25,8 +25,8 @@ import java.util.Optional;
 
 public class BookNBT {
 	
-	public static ListTag appendPageText(ListTag nbt, BaseText text) {
-		nbt.add(StringTag.of(BaseText.Serializer.toJson(text)));
+	public static NbtList appendPageText(NbtList nbt, BaseText text) {
+		nbt.add(NbtString.of(BaseText.Serializer.toJson(text)));
 		return nbt;
 	}
 	
@@ -46,10 +46,10 @@ public class BookNBT {
 				.append("\n")).orElse(new LiteralText("Unknown Option"));
 	}
 	
-	public static ItemStack createWrittenBook(String author, String title, Tag pages) {
+	public static ItemStack createWrittenBook(String author, String title, NbtElement pages) {
 		ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
-		book.getOrCreateTag().put("author", StringTag.of(author));
-		book.getOrCreateTag().put("title", StringTag.of(title));
+		book.getOrCreateTag().put("author", NbtString.of(author));
+		book.getOrCreateTag().put("title", NbtString.of(title));
 		book.getOrCreateTag().put("pages", pages);
 		return book;
 	}
@@ -60,7 +60,7 @@ public class BookNBT {
 	
 	public static ItemStack getConfigBook(UhcGameManager gameManager) {
 		Options options = gameManager.getOptions();
-		ListTag pages = new ListTag();
+		NbtList pages = new NbtList();
 		
 		appendPageText(pages, (BaseText) new LiteralText("General Settings\n\n")
 				.append(createOptionText(options.getOption("gameMode")))
@@ -135,7 +135,7 @@ public class BookNBT {
 				}
 			}
 		}
-		ListTag pages = new ListTag();
+		NbtList pages = new NbtList();
 		appendPageText(pages, text);
 		
 		return createWrittenBook("sbGP", "UHC Team Selection", pages);
@@ -151,7 +151,7 @@ public class BookNBT {
 	
 	public static ItemStack getAdjustBook(UhcGameManager gameManager) {
 		Options options = gameManager.getOptions();
-		ListTag pages = new ListTag();
+		NbtList pages = new NbtList();
 		
 		switch ((UhcGameManager.EnumMode) options.getOptionValue("gameMode")) {
 			case BOSS:
