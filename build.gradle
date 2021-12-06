@@ -37,20 +37,14 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
 	modRuntimeOnly "carpet:fabric-carpet:1.15.2-1.4.8+v200811"
 	modRuntimeOnly 'com.github.caffeinemc:lithium-fabric:1.15.x~fabric-SNAPSHOT'
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
 
 	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 }
 
-minecraft {
+loom {
 	accessWidenerPath = file("src/main/resources/tcuhc.accesswidener")
 }
 
