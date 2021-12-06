@@ -56,7 +56,7 @@ public class EnderAltarFeature extends Feature<DefaultFeatureConfig>
 		BlockPos position = context.getOrigin();
 		Random rand = context.getRandom();
 		if (altarPoses.contains(new ChunkPos(position))) {
-			BlockPos top = worldIn.getTopPosition(Heightmap.Type.MOTION_BLOCKING, position.add(rand.nextInt(16), 0, rand.nextInt(16))).down();
+			BlockPos top = position.down();
 			BlockState floor = Blocks.OBSIDIAN.getDefaultState();
 			BlockState banner = Blocks.BLACK_BANNER.getDefaultState();
 			BlockState air = Blocks.AIR.getDefaultState();

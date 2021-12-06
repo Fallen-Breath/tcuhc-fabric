@@ -17,7 +17,6 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -48,7 +47,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 			return false;
 		float merchantChance = UhcGameManager.instance.getOptions().getFloatOptionValue("merchantFrequency");
 		if (chunkX % 4 == 0 && chunkZ % 4 == 0 && rand.nextFloat() < 0.3 * merchantChance) {
-			BlockPos pos = worldIn.getTopPosition(Heightmap.Type.OCEAN_FLOOR, position.add(rand.nextInt(16) - 8, 0, rand.nextInt(16) - 8)).down();
+			BlockPos pos = position.down();
 			if (worldIn.getBlockState(pos).getFluidState().isIn(FluidTags.WATER))
 				return false;
 			VillagerEntity villager = new VillagerEntity(EntityType.VILLAGER, worldIn.toServerWorld());

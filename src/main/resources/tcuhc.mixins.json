@@ -48,6 +48,8 @@
     "worldgen.feature.NetherFortressFeatureMixin",
     "worldgen.ore.DefaultBiomeFeaturesMixin",
     "worldgen.ore.OreFeatureMixin",
+    "worldgen.ore.PlacedFeatureAccessor",
+    "worldgen.ore.PlacedFeaturesMixin",
     "worldgen.world.CaveCarverMixin",
     "worldgen.world.NoiseColumnSamplerMixin"
   ],

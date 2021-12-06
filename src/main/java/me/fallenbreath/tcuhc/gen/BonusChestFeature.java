@@ -80,8 +80,8 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 		int chunkZ = position.getZ() >> 4;
 		if (Math.abs(chunkX) <= 1 || Math.abs(chunkZ) <= 1)
 			return false;
-		int posX = rand.nextInt(16) + position.getX() - 8;
-		int posZ = rand.nextInt(16) + position.getZ() - 8;
+		int posX = rand.nextInt(32) + position.getX() - 16;
+		int posZ = rand.nextInt(32) + position.getZ() - 16;
 		int posY = worldIn.getTopY(Heightmap.Type.OCEAN_FLOOR, posX, posZ);
 		position = new BlockPos(posX, posY, posZ);
 		while (!worldIn.getBlockState(position).isSolidBlock(worldIn, position) && position.getY() > worldIn.getBottomY())
