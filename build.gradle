@@ -1,6 +1,18 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+
+	// https://github.com/Juuxel/LoomQuiltflower
+	id 'io.github.juuxel.loom-quiltflower-mini' version '1.1.0'
+}
+
+repositories {
+	maven {
+		url 'https://masa.dy.fi/maven'
+	}
+	maven {
+		url 'https://www.cursemaven.com'
+	}
 }
 
 repositories {
@@ -25,21 +37,15 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modRuntimeOnly "carpet:fabric-carpet:${project.minecraft_version}-1.4.45+v210825"
+	modRuntimeOnly "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
 
-	modRuntime "carpet:fabric-carpet:${project.minecraft_version}-1.4.45+v210825"
-	modRuntime "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
-
-	modImplementation "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
-	include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
+	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 }
 
-minecraft {
-	accessWidener = file("src/main/resources/tcuhc.accesswidener")
+loom {
+	accessWidenerPath = file("src/main/resources/tcuhc.accesswidener")
 }
 
 processResources {
@@ -73,13 +79,7 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 
