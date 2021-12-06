@@ -32,7 +32,7 @@ dependencies {
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modRuntimeOnly "carpet:fabric-carpet:1.18-1.4.56+v211130"
-//	modRuntime "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
+	modRuntimeOnly "curse.maven:lithium-360438:3550011"  // Lithium mc1.18-0.7.6-rc1
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
