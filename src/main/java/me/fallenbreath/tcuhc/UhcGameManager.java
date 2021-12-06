@@ -71,7 +71,7 @@ public class UhcGameManager extends Taskable {
 		playerManager = new UhcPlayerManager(this);
 		winnerList = new LastWinnerList(new File("lastwinners.txt"));
 	}
-	
+
 	public MinecraftServer getMinecraftServer() { return mcServer; }
 	public PlayerManager getServerPlayerManager() { return mcServer.getPlayerManager(); }
 	public UhcPlayerManager getUhcPlayerManager() { return playerManager; }

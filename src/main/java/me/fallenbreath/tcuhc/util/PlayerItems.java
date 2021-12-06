@@ -131,7 +131,7 @@ public class PlayerItems
 		items.put("LUZaLID", Builder.create(Items.CYAN_DYE).named("cyanLu").get());
 		items.put("U_ruby", Builder.create(Items.FEATHER).named("double u").get());
 		items.put("Do1phin_jump", Builder.create(Items.TROPICAL_FISH).named("do1phin's food").enchant(Enchantments.UNBREAKING, 3).get());
-		items.put("kuri_laan", Builder.create(Items.CAKE).named("XiangSuLiRon cake").enchant(Enchantments.LUCK_OF_THE_SEA, 1).get());
+		items.put("kuritsirolf", Builder.create(Items.CAKE).named("XiangSuLiRon cake").enchant(Enchantments.LUCK_OF_THE_SEA, 1).get());
 	}
 
 	private static class Builder

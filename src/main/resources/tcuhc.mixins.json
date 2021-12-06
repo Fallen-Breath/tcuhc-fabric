@@ -42,6 +42,7 @@
     "recipe.SynchronizeRecipesS2CPacketMixin",
     "task.DyeColorAccessor",
     "task.PlayerListHeaderS2CPacketAccessor",
+    "task.ServerChunkManagerAccessor",
     "util.SheepEntityAccessor",
     "worldgen.feature.DefaultBiomeFeaturesMixin",
     "worldgen.feature.NetherFortressFeatureMixin",
