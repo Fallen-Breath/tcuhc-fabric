@@ -28,14 +28,8 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
 	modRuntimeOnly "carpet:fabric-carpet:1.18-1.4.56+v211130"
 	modRuntimeOnly "curse.maven:lithium-360438:3550011"  // Lithium mc1.18-0.7.6-rc1
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
 
 	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)

@@ -4,6 +4,7 @@
 
 package me.fallenbreath.tcuhc.task;
 
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.mixins.task.ServerChunkManagerAccessor;
@@ -16,7 +17,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import org.apache.commons.compress.utils.Lists;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class TaskPregenerate extends Task
 		}
 		if (!chunks.isEmpty())
 		{
-			this.mcServer.submit(() -> this.generateChunks(chunks));
+			this.mcServer.execute(() -> this.generateChunks(chunks));
 		}
 	}
 
@@ -88,7 +88,7 @@ public class TaskPregenerate extends Task
 
 	private void acceptChunkResult(ChunkPos chunkPos, Either<Chunk, ChunkHolder.Unloaded> result)
 	{
-		this.mcServer.submit(() -> this.removeTicketAt(chunkPos));
+		this.mcServer.execute(() -> this.removeTicketAt(chunkPos));
 		result.left().orElseThrow(() -> new RuntimeException("Pregenerate for chunk " + chunkPos + " failed"));
 		this.loadedChunkAmount.incrementAndGet();
 		if (this.queuedCount.decrementAndGet() <= ENQUEUE_THRESHOLD)
