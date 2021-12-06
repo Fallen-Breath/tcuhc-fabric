@@ -64,7 +64,7 @@ public abstract class LootManagerMixin
 				}
 				tableAccessor.setPools(lootPools.toArray(new LootPool[0]));
 			}
-			else if (block == Blocks.GLOWSTONE || block == Blocks.LAPIS_ORE)
+			else if (block == Blocks.GLOWSTONE || block == Blocks.LAPIS_ORE || block == Blocks.DEEPSLATE_LAPIS_ORE)
 			{
 				if (tableAccessor.getPools().length == 1)
 				{
