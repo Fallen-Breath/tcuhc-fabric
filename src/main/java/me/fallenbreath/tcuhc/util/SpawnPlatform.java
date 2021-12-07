@@ -10,15 +10,29 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
 public class SpawnPlatform {
-	public static int height = 160;
-	private static final BlockPos[] hexagonPos;
+	private static final int DEFAULT_HEIGHT = 160;
+	public static int height = DEFAULT_HEIGHT;
+	private static BlockPos[] hexagonPos;
+
+	private static void sampleTerrainHeight(World world) {
+		height = DEFAULT_HEIGHT;
+		final int sampleWidth = 40;
+		for (int x = -sampleWidth; x <= sampleWidth; x++)
+			for (int z = -sampleWidth; z <= sampleWidth; z++) {
+				int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
+				height = Math.max(height, Math.min(y + 64, world.getTopY() - 16));
+			}
+	}
 
 	public static void generatePlatform(UhcGameManager gameManager, World world) {
+		sampleTerrainHeight(world);
+		generateHexagonPos();
 		generateHexagon(world, hexagonPos[0], DyeColor.BLUE);
 		generateHexagon(world, hexagonPos[1], DyeColor.RED);
 		generateHexagon(world, hexagonPos[2], DyeColor.BLUE);
@@ -70,7 +84,7 @@ public class SpawnPlatform {
 		return res.add(new BlockPos(rand.nextInt(7) - 3, 0, rand.nextInt(7) - 3));
 	}
 
-	static {
+	private static void generateHexagonPos() {
 		hexagonPos = new BlockPos[7];
 		hexagonPos[0] = new BlockPos(0, height, 0);
 		hexagonPos[1] = new BlockPos(14, height, 0);
