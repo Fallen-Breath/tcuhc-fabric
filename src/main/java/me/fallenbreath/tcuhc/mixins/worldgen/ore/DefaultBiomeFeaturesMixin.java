@@ -172,7 +172,7 @@ public abstract class DefaultBiomeFeaturesMixin
 //	{
 //		return 20;
 //	}
-
+//
 //	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_lapis")), constant = @Constant(intValue = 16, ordinal = 1))
 //	private static int lapisSpread(int value)
 //	{
