@@ -100,6 +100,7 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 				add(new UHCRecipe(Items.ENDER_PEARL, 1, 1, 10, 20, false)).
 				add(new UHCRecipe(Items.EMERALD, 1, 1, 3, 6, false)).
 				add(new UHCRecipe(Items.DIAMOND, 1, 1, 2, 4, false)).
+				add(new UHCRecipe(Items.ANCIENT_DEBRIS, 1, 1, 12, 24, false)).
 				build();
 	}
 
