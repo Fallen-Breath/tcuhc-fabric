@@ -7,14 +7,18 @@ package me.fallenbreath.tcuhc.gen;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import me.fallenbreath.tcuhc.UhcGameManager;
+import me.fallenbreath.tcuhc.mixins.feature.HorizontalConnectingBlockAccessor;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.state.property.Property;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Heightmap;
@@ -25,6 +29,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 {
@@ -55,10 +60,16 @@ public class MerchantsFeature extends Feature<DefaultFeatureConfig>
 			for (int x = pos.getX() - 1; x <= pos.getX() + 1; x++)
 				for (int z = pos.getZ() - 1; z <= pos.getZ() + 1; z++) {
 					worldIn.setBlockState(new BlockPos(x, pos.getY(), z), Blocks.STONE_BRICKS.getDefaultState(), 2);
-					if (x != pos.getX() || z != pos.getZ())
-						worldIn.setBlockState(new BlockPos(x, pos.getY() + 1, z), Blocks.IRON_BARS.getDefaultState(), 2);
 					worldIn.setBlockState(new BlockPos(x, pos.getY() + 3, z), Blocks.STONE_BRICKS.getDefaultState(), 2);
 				}
+			BlockPos ironBarCenter = pos.up();
+			Function<Direction, Property<Boolean>> barStateMapper = HorizontalConnectingBlockAccessor.getFACING_PROPERTIES()::get;
+			for (Direction dir : Direction.Type.HORIZONTAL) {
+				BlockState ironBar = Blocks.IRON_BARS.getDefaultState();
+				worldIn.setBlockState(ironBarCenter.offset(dir), ironBar.with(barStateMapper.apply(dir.rotateYClockwise()), true).with(barStateMapper.apply(dir.rotateYCounterclockwise()), true), 2);
+				Direction cornerDir = dir.rotateYClockwise();
+				worldIn.setBlockState(ironBarCenter.offset(dir).offset(cornerDir), ironBar.with(barStateMapper.apply(cornerDir.rotateYClockwise()), true).with(barStateMapper.apply(dir.rotateYCounterclockwise()), true), 2);
+			}
 			worldIn.setBlockState(pos.up(4), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 2);
 			int recipeCnt = rand.nextInt(3) + 2;
 			TradeOfferList recipes = new TradeOfferList();
