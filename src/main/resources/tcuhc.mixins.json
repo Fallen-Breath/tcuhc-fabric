@@ -27,6 +27,7 @@
     "entity.SpectralArrowEntityMixin",
     "entity.VillagerEntityMixin",
     "entity.WitchEntityMixin",
+    "feature.HorizontalConnectingBlockAccessor",
     "item.AbsorptionStatusEffectMixin",
     "item.ChorusFruitMixin",
     "item.FoodComponentBuilderMixin",
