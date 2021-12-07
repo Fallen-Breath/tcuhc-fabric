@@ -16,20 +16,22 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class DefaultBiomeFeaturesMixin
 {
 	/*
-	 * // TC Plugin
-	 * this.coalSize = 10;
-	 * this.ironSize = 6;
-	 * this.ironCount = 4;
-	 * this.goldSize = 4;
-	 * this.goldCount = 1;
-	 * this.goldMaxHeight = 20;
-	 * this.redstoneSize = 4;
-	 * this.redstoneCount = 4;
-	 * this.diamondSize = 4;
-	 * this.lapisSize = 4;
-	 * this.lapisCount = 2;
-	 * this.lapisCenterHeight = 20;
-	 * this.lapisSpread = 10;
+	 * TC-UHC 1.12 v1.4.6
+	 *
+	 * coalSize: 17 -> 12
+	 * ironSize: 9 -> 6
+	 * ironCount: 20 -> 4
+	 * goldSize: 9 -> 4
+	 * goldCount: 2 -> 1
+	 * goldMaxHeight: 32 -> 20;
+	 * redstoneSize: 8 -> 4;
+	 * redstoneCount: 8 -> 4;
+	 * diamondSize: 8 -> 5;
+	 * lapisSize: 7 -> 4;
+	 * lapisCenterHeight: 16 -> 20;
+	 * lapisSpread: 16 -> 10;
+	 *
+	 * oreFrequency on ironCount, goldCount, diamondCount, lapisCount
 	 */
 
 	@Unique
@@ -52,9 +54,9 @@ public abstract class DefaultBiomeFeaturesMixin
 	}
 
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 17, ordinal = 0))
-	private static int coralSize(int value)
+	private static int coalSize(int value)
 	{
-		return 10;
+		return 12;
 	}
 
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 9, ordinal = 0))
@@ -93,16 +95,10 @@ public abstract class DefaultBiomeFeaturesMixin
 		return 4;
 	}
 
-	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 8, ordinal = 1))
-	private static int redstoneCount(int value)
-	{
-		return calcOreCount(4);
-	}
-
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 8, ordinal = 2))
 	private static int diamondSize(int value)
 	{
-		return 4;
+		return 5;
 	}
 
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 1, ordinal = 0))
@@ -120,7 +116,7 @@ public abstract class DefaultBiomeFeaturesMixin
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 1, ordinal = 1))
 	private static int lapisCount(int value)
 	{
-		return calcOreCount(2);
+		return calcOreCount(1);
 	}
 
 	@ModifyConstant(method = "addDefaultOres", constant = @Constant(intValue = 16, ordinal = 2))
