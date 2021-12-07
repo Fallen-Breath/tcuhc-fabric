@@ -15,20 +15,22 @@ import org.spongepowered.asm.mixin.injection.*;
 public abstract class DefaultBiomeFeaturesMixin
 {
 	/*
-	 * // TC Plugin
-	 * this.coalSize = 10;
-	 * this.ironSize = 6;
-	 * this.ironCount = 4;
-	 * this.goldSize = 4;
-	 * this.goldCount = 1;
-	 * this.goldMaxHeight = 20;
-	 * this.redstoneSize = 4;
-	 * this.redstoneCount = 4;
-	 * this.diamondSize = 4;
-	 * this.lapisSize = 4;
-	 * this.lapisCount = 2;
-	 * this.lapisCenterHeight = 20;
-	 * this.lapisSpread = 10;
+	 * TC-UHC 1.12 v1.4.6
+	 *
+	 * coalSize: 17 -> 12
+	 * ironSize: 9 -> 6
+	 * ironCount: 20 -> 4
+	 * goldSize: 9 -> 4
+	 * goldCount: 2 -> 1
+	 * goldMaxHeight: 32 -> 20;
+	 * redstoneSize: 8 -> 4;
+	 * redstoneCount: 8 -> 4;
+	 * diamondSize: 8 -> 5;
+	 * lapisSize: 7 -> 4;
+	 * lapisCenterHeight: 16 -> 20;
+	 * lapisSpread: 16 -> 10;
+	 *
+	 * oreFrequency on ironCount, goldCount, diamondCount, lapisCount
 	 */
 
 	@Unique
@@ -83,9 +85,9 @@ public abstract class DefaultBiomeFeaturesMixin
 	}
 
 	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_coal")), constant = @Constant(intValue = 17, ordinal = 0))
-	private static int coralSize(int value)
+	private static int coalSize(int value)
 	{
-		return 10;
+		return 12;
 	}
 
 	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_iron")), constant = @Constant(intValue = 9, ordinal = 0))
@@ -124,16 +126,10 @@ public abstract class DefaultBiomeFeaturesMixin
 		return 4;
 	}
 
-	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_redstone")), constant = @Constant(intValue = 8, ordinal = 1))
-	private static int redstoneCount(int value)
-	{
-		return calcOreCount(4);
-	}
-
 	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_diamond")), constant = @Constant(intValue = 8, ordinal = 0))
 	private static int diamondSize(int value)
 	{
-		return 4;
+		return 5;
 	}
 
 	@ModifyArg(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_diamond")), at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/ConfiguredFeatures;register(Ljava/lang/String;Lnet/minecraft/world/gen/feature/ConfiguredFeature;)Lnet/minecraft/world/gen/feature/ConfiguredFeature;", ordinal = 0), index = 1)
@@ -151,7 +147,7 @@ public abstract class DefaultBiomeFeaturesMixin
 	@ModifyArg(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_lapis")), at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/ConfiguredFeatures;register(Ljava/lang/String;Lnet/minecraft/world/gen/feature/ConfiguredFeature;)Lnet/minecraft/world/gen/feature/ConfiguredFeature;", ordinal = 0), index = 1)
 	private static ConfiguredFeature<?, ?> lapisCount(ConfiguredFeature<?, ?> configuredFeature)
 	{
-		return configuredFeature.repeat(calcOreCount(2));
+		return configuredFeature.repeat(calcOreCount(1));
 	}
 
 	@ModifyConstant(method = "<clinit>", slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=ore_lapis")), constant = @Constant(intValue = 16, ordinal = 0))
