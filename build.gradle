@@ -11,13 +11,7 @@ repositories {
 		url 'https://masa.dy.fi/maven'
 	}
 	maven {
-		url 'https://www.cursemaven.com'
-	}
-}
-
-repositories {
-	maven {
-		url 'https://masa.dy.fi/maven'
+		url 'https://jitpack.io'
 	}
 	maven {
 		url 'https://www.cursemaven.com'
@@ -37,7 +31,8 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modRuntimeOnly "carpet:fabric-carpet:${project.minecraft_version}-1.4.45+v210825"
+	modRuntimeOnly 'com.github.astei:lazydfu:0.1.2'
+	modRuntimeOnly "carpet:fabric-carpet:1.17.1-1.4.45+v210825"
 	modRuntimeOnly "curse.maven:lithium-360438:3438799"  // Lithium mc1.17.1-0.7.4
 
 	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
