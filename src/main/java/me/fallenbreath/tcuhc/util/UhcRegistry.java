@@ -1,9 +1,12 @@
 package me.fallenbreath.tcuhc.util;
 
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -71,5 +74,13 @@ public class UhcRegistry
 	{
 		RECIPE_SERIALIZERS.add(serializer);
 		return Registry.register(Registry.RECIPE_SERIALIZER, getIdentifier(name), serializer);
+	}
+
+	/**
+	 * Like {@link net.minecraft.util.math.intprovider.IntProviderType}
+	 */
+	public static <P extends IntProvider> IntProviderType<P> registerIntProviderType(String name, Codec<P> codec)
+	{
+		return Registry.register(Registry.INT_PROVIDER_TYPE, getIdentifier(name), () -> codec);
 	}
 }
