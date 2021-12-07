@@ -4,17 +4,32 @@ import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(NetherFortressFeature.class)
 public abstract class NetherFortressFeatureMixin
 {
-	@Inject(method = "canGenerate", at = @At("HEAD"), cancellable = true)
-	private static void fortressGenerateIffXZAre0(StructureGeneratorFactory.Context<DefaultFeatureConfig> context, CallbackInfoReturnable<Boolean> cir)
+	@Redirect(
+			method = "canGenerate",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/gen/random/ChunkRandom;nextInt(I)I"
+			)
+	)
+	private static int fortressGenerateIffXZAre0(ChunkRandom instance, int i, /* parent method parameters -> */ StructureGeneratorFactory.Context<DefaultFeatureConfig> context)
 	{
-		cir.setReturnValue(context.chunkPos().equals(new ChunkPos(0, 0)));
+		// vanilla: chunkRandom.nextInt(5) >= 2 ? false: furtherTest()
+
+		if (context.chunkPos().equals(new ChunkPos(0, 0)))
+		{
+			return 0;  // ok
+		}
+		else
+		{
+			return 3;  // nope
+		}
 	}
 }

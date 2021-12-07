@@ -19,7 +19,7 @@ import static net.minecraft.world.gen.feature.Feature.isExposedToAir;
 public abstract class OreFeatureMixin
 {
 	@Inject(method = "shouldPlace", at = @At("HEAD"), cancellable = true)
-	private static void uhcValuableOreNeverHidesInBlocks(BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos, CallbackInfoReturnable<Boolean> cir  /* parent method parameters -> */)
+	private static void uhcValuableOreNeverHidesInBlocks(BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos, CallbackInfoReturnable<Boolean> cir)
 	{
 		if (UhcFeatures.isValuableOreBlock(target.state.getBlock()))
 		{
