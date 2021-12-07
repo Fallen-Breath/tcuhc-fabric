@@ -45,6 +45,7 @@
     "util.SheepEntityAccessor",
     "worldgen.feature.DefaultBiomeFeaturesMixin",
     "worldgen.feature.NetherFortressFeatureMixin",
+    "worldgen.feature.StructureFeatureMixin",
     "worldgen.ore.DefaultBiomeFeaturesMixin",
     "worldgen.ore.OreFeatureMixin",
     "worldgen.world.BiomeLayersMixin",
