@@ -152,7 +152,7 @@ public class TaskPregenerate extends Task
 	public void onFinish()
 	{
 		long miliPassed = Util.getMeasuringTimeMs() - this.startTimeMili;
-		UhcGameManager.LOG.info(String.format("Pre-generating of %s finished, took %s", getWorldName(), makeTime(miliPassed)));
+		UhcGameManager.instance.broadcastMessage(String.format("Pre-generating of %s finished, took %s", getWorldName(), makeTime(miliPassed)));
 		this.world.getChunkManager().getLightingProvider().setTaskBatchSize(5);
 		if (this.world == UhcGameManager.instance.getOverWorld())
 		{

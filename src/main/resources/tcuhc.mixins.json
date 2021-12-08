@@ -27,6 +27,7 @@
     "feature.HorizontalConnectingBlockAccessor",
     "item.AbsorptionStatusEffectMixin",
     "item.ChorusFruitMixin",
+    "item.FlowerBlockMixin",
     "item.FoodComponentBuilderMixin",
     "item.ItemMixin",
     "item.ItemStackMixin",
