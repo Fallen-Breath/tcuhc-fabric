@@ -21,13 +21,23 @@ public class SpawnPlatform {
 	private static BlockPos[] hexagonPos;
 
 	private static void sampleTerrainHeight(World world) {
-		height = DEFAULT_HEIGHT;
-		final int sampleWidth = 40;
-		for (int x = -sampleWidth; x <= sampleWidth; x++)
-			for (int z = -sampleWidth; z <= sampleWidth; z++) {
-				int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
-				height = Math.max(height, Math.min(y + 64, world.getTopY() - 16));
-			}
+		UhcWorldData uhcData = UhcWorldData.load();
+		if (uhcData.isSpawnPlatformHeightValid()) {
+			height = uhcData.spawnPlatformHeight;
+		}
+		else {
+			height = DEFAULT_HEIGHT;
+			final int sampleWidth = 40;
+			for (int x = -sampleWidth; x <= sampleWidth; x++)
+				for (int z = -sampleWidth; z <= sampleWidth; z++)
+				{
+					int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
+					height = Math.max(height, Math.min(y + 64, world.getTopY() - 16));
+				}
+			uhcData.spawnPlatformHeight = height;
+			uhcData.save();
+		}
+		UhcGameManager.LOG.info("Set spawn platform height to y" + height);
 	}
 
 	public static void generatePlatform(UhcGameManager gameManager, World world) {

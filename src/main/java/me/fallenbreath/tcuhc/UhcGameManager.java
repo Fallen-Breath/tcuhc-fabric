@@ -193,6 +193,10 @@ public class UhcGameManager extends Taskable {
 	public static File getPreloadFile() {
 		return ((SessionAccessor)((MinecraftServerAccessor)instance.mcServer).getSession()).getDirectory().resolve("preload").toFile();
 	}
+
+	public static File getDataFile() {
+		return ((SessionAccessor)((MinecraftServerAccessor)instance.mcServer).getSession()).getDirectory().resolve("uhc.json").toFile();
+	}
 	
 	public static void regenerateTerrain() {
 		File preload = getPreloadFile();
