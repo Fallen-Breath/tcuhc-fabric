@@ -21,6 +21,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.util.Collection;
@@ -39,8 +40,9 @@ public class PlayerItems
 
 	private static void setSingleLore(ItemStack itemStack, String lore)
 	{
+		String jsonText = Text.Serializer.toJson(new LiteralText(lore));
 		ListTag loreList = new ListTag();
-		loreList.add(new StringTag(lore));
+		loreList.add(new StringTag(jsonText));
 		itemStack.getOrCreateSubTag("display").put("Lore", loreList);
 	}
 
