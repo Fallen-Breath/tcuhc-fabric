@@ -5,12 +5,12 @@
 package me.fallenbreath.tcuhc.task;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
 import me.fallenbreath.tcuhc.UhcGamePlayer.EnumStat;
 import me.fallenbreath.tcuhc.task.Task.TaskTimer;
 import net.minecraft.world.GameMode;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -46,10 +46,10 @@ public class TaskBroadcastData extends TaskTimer {
 				stats.add(Pair.of(player, value));
 			}
 
-			stats.sort((A, B) -> B.getValue().compareTo(A.getValue()));
+			stats.sort((A, B) -> B.getSecond().compareTo(A.getSecond()));
 			for (int i = 0; i < stats.size(); i++) {
 				Pair<UhcGamePlayer, Float> pair = stats.get(i);
-				if (pair.getValue() == 0 || (i >= 8 && pair.getValue() < stats.get(i - 1).getValue())) {
+				if (pair.getSecond() == 0 || (i >= 8 && pair.getSecond() < stats.get(i - 1).getSecond())) {
 					stats.subList(i, stats.size()).clear();
 					break;
 				}
@@ -58,8 +58,8 @@ public class TaskBroadcastData extends TaskTimer {
 			if (!stats.isEmpty()) {
 				gameManager.broadcastMessage(stat.name + ":");
 				for (Pair<UhcGamePlayer, Float> pair : stats) {
-					gameManager.broadcastMessage(String.format("  %s%-40s %7.2f %s", pair.getLeft().getTeam().getTeamColor().chatColor,
-							getGraph((int) (40 * pair.getValue() / max)), pair.getValue(), pair.getLeft().getName()));
+					gameManager.broadcastMessage(String.format("  %s%-40s %7.2f %s", pair.getFirst().getTeam().getTeamColor().chatColor,
+							getGraph((int) (40 * pair.getSecond() / max)), pair.getSecond(), pair.getFirst().getName()));
 				}
 			}
 
