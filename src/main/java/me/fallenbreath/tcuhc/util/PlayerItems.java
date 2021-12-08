@@ -21,6 +21,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.util.Collection;
@@ -39,8 +40,9 @@ public class PlayerItems
 
 	private static void setSingleLore(ItemStack itemStack, String lore)
 	{
+		String jsonText = Text.Serializer.toJson(new LiteralText(lore));
 		NbtList loreList = new NbtList();
-		loreList.add(NbtString.of(lore));
+		loreList.add(NbtString.of(jsonText));
 		itemStack.getOrCreateSubTag("display").put("Lore", loreList);
 	}
 
@@ -132,6 +134,7 @@ public class PlayerItems
 		items.put("U_ruby", Builder.create(Items.FEATHER).named("double u").get());
 		items.put("Do1phin_jump", Builder.create(Items.TROPICAL_FISH).named("do1phin's food").enchant(Enchantments.UNBREAKING, 3).get());
 		items.put("kuritsirolf", Builder.create(Items.CAKE).named("XiangSuLiRon cake").enchant(Enchantments.LUCK_OF_THE_SEA, 1).get());
+		items.put("acaciachan", Builder.create(Items.ACACIA_SAPLING).named("si~ha~si~ha~").enchant(Enchantments.LOYALTY, 3).enchant(Enchantments.RIPTIDE, 3).get());
 	}
 
 	private static class Builder

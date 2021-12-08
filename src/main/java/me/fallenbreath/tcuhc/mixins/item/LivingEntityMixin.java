@@ -1,6 +1,7 @@
 package me.fallenbreath.tcuhc.mixins.item;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -8,7 +9,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,8 +60,8 @@ public abstract class LivingEntityMixin
 			List<Pair<StatusEffectInstance, Float>> newList = Lists.newArrayList(list);
 			for (int i = 0; i < newList.size(); i++)
 			{
-				StatusEffectInstance effect = newList.get(i).getLeft();
-				float chance = newList.get(i).getRight();
+				StatusEffectInstance effect = newList.get(i).getFirst();
+				float chance = newList.get(i).getSecond();
 				StatusEffectInstance newEffect = new StatusEffectInstance(effect);
 				StatusEffect effectType = newEffect.getEffectType();
 				if (effectType == StatusEffects.REGENERATION)
