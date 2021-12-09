@@ -23,7 +23,29 @@ public abstract class OreFeatureMixin
 	{
 		if (UhcFeatures.isValuableOreBlock(target.state.getBlock()))
 		{
-			cir.setReturnValue(target.target.test(state, random) && isExposedToAir(posToState, pos));
+			if (!isExposedToAir(posToState, pos))
+			{
+				cir.setReturnValue(false);
+			}
+		}
+	}
+
+	@Inject(
+			method = "shouldPlace",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/gen/feature/OreFeature;isExposedToAir(Ljava/util/function/Function;Lnet/minecraft/util/math/BlockPos;)Z"
+			),
+			cancellable = true
+	)
+	private static void uhcValuableOreLovesToBeExposedToAir(BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos, CallbackInfoReturnable<Boolean> cir)
+	{
+		if (UhcFeatures.isValuableOreBlock(target.state.getBlock()))
+		{
+			if (random.nextFloat() < config.discardOnAirChance / 2)
+			{
+				cir.setReturnValue(true);
+			}
 		}
 	}
 }
