@@ -18,9 +18,9 @@ public class Taskable {
 		task.onAdd();
 		return this;
 	}
-	
+
 	public void updateTasks() {
-		tasks.forEach(Task::onUpdate);
+		Lists.newArrayList(tasks).forEach(Task::onUpdate);
 		tasks.stream().filter(Task::hasFinished).forEach(toRemove::add);
 		toRemove.forEach(Task::onFinish);
 		tasks.removeAll(toRemove);
