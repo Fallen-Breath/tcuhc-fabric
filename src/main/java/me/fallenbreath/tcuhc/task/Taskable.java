@@ -20,7 +20,10 @@ public class Taskable {
 	}
 
 	public void updateTasks() {
-		Lists.newArrayList(tasks).forEach(Task::onUpdate);
+		//noinspection ForLoopReplaceableByForEach
+		for (int i = 0; i < tasks.size(); i++) {
+			tasks.get(i).onUpdate();
+		}
 		tasks.stream().filter(Task::hasFinished).forEach(toRemove::add);
 		toRemove.forEach(Task::onFinish);
 		tasks.removeAll(toRemove);
