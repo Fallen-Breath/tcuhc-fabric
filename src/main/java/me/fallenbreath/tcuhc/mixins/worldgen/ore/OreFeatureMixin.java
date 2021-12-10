@@ -42,7 +42,7 @@ public abstract class OreFeatureMixin
 	{
 		if (UhcFeatures.isValuableOreBlock(target.state.getBlock()))
 		{
-			if (random.nextFloat() < config.discardOnAirChance / 2)
+			if (random.nextFloat() < config.discardOnAirChance * 0.6)
 			{
 				cir.setReturnValue(true);
 			}

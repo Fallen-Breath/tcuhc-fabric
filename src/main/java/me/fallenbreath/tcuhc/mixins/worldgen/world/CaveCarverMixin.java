@@ -23,7 +23,8 @@ public abstract class CaveCarverMixin
 	)
 	private int customRandomizer(Random random, int bound)
 	{
-		if (random.nextInt(2) == 0)
+		// vanilla: random.nextInt(bound)
+		if (random.nextFloat() < 0.6F)
 		{
 			return random.nextInt(this.getMaxCaveCount());
 		}
