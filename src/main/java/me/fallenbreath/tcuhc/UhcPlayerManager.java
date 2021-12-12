@@ -549,8 +549,7 @@ public class UhcPlayerManager
 		boolean teamColl = gameManager.getOptions().getBooleanOptionValue("teamCollision");
 		for (UhcGameTeam team : teams) {
 			Team spTeam = scoreboard.addTeam(team.getTeamName());
-			spTeam.setPrefix(new LiteralText(team.getTeamColor().chatColor.toString()));
-			spTeam.setSuffix(new LiteralText(Formatting.RESET.toString()));
+			spTeam.setColor(team.getTeamColor().chatColor);
 			spTeam.setFriendlyFireAllowed(teamFire);
 			spTeam.setCollisionRule(teamColl ? AbstractTeam.CollisionRule.ALWAYS : AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS);
 			gameManager.broadcastMessage(team.getColorfulTeamName() + " Members:");
