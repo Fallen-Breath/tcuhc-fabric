@@ -17,6 +17,7 @@
     "entity.BoatEntityMixin",
     "entity.EnderCrystalEntityMixin",
     "entity.EntityCategoryMixin",
+    "entity.LoseJobOnSiteLossTaskMixin",
     "entity.MobEntityAccessor",
     "entity.MobEntityMixin",
     "entity.PersistentProjectileEntityMixin",
