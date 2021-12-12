@@ -33,7 +33,7 @@ dependencies {
 
 	modRuntimeOnly 'com.github.astei:lazydfu:0.1.2'
 	modRuntimeOnly "carpet:fabric-carpet:1.18-1.4.56+v211130"
-	modRuntimeOnly "curse.maven:lithium-360438:3550011"  // Lithium mc1.18-0.7.6-rc1
+	modRuntimeOnly 'com.github.CaffeineMC.lithium-fabric:lithium:1.18.x~dev-SNAPSHOT'
 
 	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
