@@ -31,7 +31,7 @@ public class TaskPregenerate extends Task
 {
 	public static final ChunkTicketType<ChunkPos> PRE_GENERATE = ChunkTicketType.create("pre_generate", Comparator.comparingLong(ChunkPos::toLong));
 
-	private static final int PARALLELISM_LIMIT = Runtime.getRuntime().availableProcessors() * 2;
+	private static final int PARALLELISM_LIMIT = Runtime.getRuntime().availableProcessors() * 4;
 	private static final int ENQUEUE_THRESHOLD = PARALLELISM_LIMIT / 3;
 
 	private long startTimeMili;
