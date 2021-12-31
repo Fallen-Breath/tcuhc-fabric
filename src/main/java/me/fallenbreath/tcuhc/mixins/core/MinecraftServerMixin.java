@@ -21,7 +21,15 @@ public abstract class MinecraftServerMixin
 		this.uhcGameManager = new UhcGameManager((MinecraftServer)(Object)this);
 	}
 
-	@Inject(method = "loadWorld", at = @At("HEAD"))
+	@Inject(
+			method = "createWorlds",
+			at = @At(
+					value = "INVOKE",
+					target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+					ordinal = 0,
+					shift = At.Shift.AFTER
+			)
+	)
 	private void setSpawnPosTo00(CallbackInfo ci)
 	{
 		ServerWorld world = this.uhcGameManager.getOverWorld();
