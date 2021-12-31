@@ -2,12 +2,9 @@ package me.fallenbreath.tcuhc.mixins.core;
 
 import me.fallenbreath.tcuhc.UhcGameManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin
 {
-	@Shadow @Final protected LevelStorage.Session session;
-
 	private UhcGameManager uhcGameManager;
 	private boolean serverInited = false;
 
@@ -30,7 +25,9 @@ public abstract class MinecraftServerMixin
 	private void setSpawnPosTo00(CallbackInfo ci)
 	{
 		ServerWorld world = this.uhcGameManager.getOverWorld();
-		world.setSpawnPos(BlockPos.ORIGIN.up(world.getChunkManager().getChunkGenerator().getSpawnHeight()));
+		BlockPos spawnPos = BlockPos.ORIGIN.up(world.getChunkManager().getChunkGenerator().getSpawnHeight(world));
+		float spawnAngle = world.getSpawnAngle();
+		world.setSpawnPos(spawnPos, spawnAngle);
 	}
 
 	@Inject(
