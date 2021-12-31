@@ -9,3 +9,7 @@ Changes:
 - Reduced the effect duration of oxeye daisy suspicious stew to +1 hp
 - Villager never losses its job
 - (1.16+) Added netherite scrap trade: 1 -> \[20, 32\]
+- Make the stronghold closer to (0, 0)
+
+In dev branch
+- 1.18.x
