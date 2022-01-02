@@ -101,6 +101,7 @@ public class UhcGamePlayer extends Taskable {
 		EMPTY_CHEST_FOUND("Empty Chest Found"),
 		DIAMOND_FOUND("Diamond Found"),
 		HEALTH_HEALED("Health Healed"),
+		GOLDEN_APPLE_EATEN("Golden Apple Eaten"),
 		ALIVE_TIME("Alive Time");
 		
 		public final String name;

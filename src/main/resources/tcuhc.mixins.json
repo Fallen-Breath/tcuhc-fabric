@@ -36,6 +36,7 @@
     "item.ItemMixin",
     "item.ItemStackMixin",
     "item.LivingEntityMixin",
+    "item.PlayerEntityMixin",
     "item.StatusEffectInstanceAccessor",
     "loot.ItemEntryAccessor",
     "loot.LootManagerAccessor",
