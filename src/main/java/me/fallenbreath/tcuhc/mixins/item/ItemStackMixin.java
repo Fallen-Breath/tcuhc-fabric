@@ -26,9 +26,12 @@ public abstract class ItemStackMixin
 	)
 	private void onPlayerMinedBlock(World world, BlockState state, BlockPos pos, PlayerEntity miner, CallbackInfo ci)
 	{
-		if (miner instanceof ServerPlayerEntity && state.getBlock() == Blocks.DIAMOND_ORE)
+		if (miner instanceof ServerPlayerEntity)
 		{
-			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(miner).getStat().addStat(UhcGamePlayer.EnumStat.DIAMOND_FOUND, 1);
+			if (state.getBlock() == Blocks.DIAMOND_ORE || state.getBlock() == Blocks.DEEPSLATE_DIAMOND_ORE)
+			{
+				UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(miner).getStat().addStat(UhcGamePlayer.EnumStat.DIAMOND_FOUND, 1);
+			}
 		}
 	}
 }
