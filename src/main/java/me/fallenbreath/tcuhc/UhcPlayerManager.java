@@ -591,6 +591,7 @@ public class UhcPlayerManager
 				player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(health);
 				player.fallDistance = 0.0f;
 				player.getInventory().clear();
+				player.changeGameMode(GameMode.ADVENTURE);
 			}
 		}
 		
