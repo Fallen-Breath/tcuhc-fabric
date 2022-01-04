@@ -125,7 +125,7 @@ public class TaskNetherCave extends TaskTimer {
 			caveTime = -caveTime;
 			boolean glow = caveTime % 60 == 0;
 			float partial = caveTime <= finalTime ? (float) caveTime / finalTime : 1;
-			float minY = finalMinY * partial;
+			float minY = world.getBottomY() + partial * (finalMinY - world.getBottomY());
 			float maxY = world.getTopY() - partial * (world.getTopY() - finalMaxY);
 
 			Scoreboard scoreboard = UhcGameManager.instance.getMainScoreboard();
