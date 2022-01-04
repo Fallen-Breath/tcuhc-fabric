@@ -7,11 +7,14 @@ import me.fallenbreath.tcuhc.options.Option;
 import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.TaskOnce;
 import me.fallenbreath.tcuhc.util.PlayerItems;
+import me.fallenbreath.tcuhc.util.Position;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -82,7 +85,13 @@ public class UhcGameCommand
 						then(literal("resu").
 								then(argument("player", string()).
 										suggests((c, b) -> suggestMatching(getGamePlayerNameSuggestion(), b)).
-										executes(c -> resurrentPlayer(c.getSource(), getString(c, "player")))
+										executes(c -> resurrentPlayer(c.getSource(), getString(c, "player"), false))
+								)
+						).
+						then(literal("respawn").
+								then(argument("player", string()).
+										suggests((c, b) -> suggestMatching(getGamePlayerNameSuggestion(), b)).
+										executes(c -> resurrentPlayer(c.getSource(), getString(c, "player"), true))
 								)
 						)
 				).
@@ -116,14 +125,22 @@ public class UhcGameCommand
 	private static int sendDeathPos(ServerCommandSource sender) throws CommandSyntaxException
 	{
 		UhcGamePlayer gamePlayer = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(sender.getPlayer());
-		BlockPos pos = gamePlayer.getDeathPos();
-		if (pos.equals(BlockPos.ORIGIN))
+		Position deathPos = gamePlayer.getDeathPos();
+		if (deathPos == Position.EMPTY)
 		{
 			sender.sendFeedback(new LiteralText("You are still alive."), false);
 		}
 		else
 		{
-			sender.sendFeedback(new LiteralText(String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ())), false);
+			Vec3d pos = deathPos.pos;
+			String dimId = deathPos.dimension.getValue().toString();
+			LiteralText text = new LiteralText(String.format("[%.1f, %.1f, %.1f] @ %s", pos.getX(), pos.getY(), pos.getZ(), dimId));
+			text.setStyle(
+					text.getStyle().
+					withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to teleport back to your death position"))).
+					withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.format("/execute in %s run tp %s %s %s", dimId, pos.getX(), pos.getY(), pos.getZ())))
+			);
+			sender.sendFeedback(text, false);
 		}
 		return 1;
 	}
@@ -225,11 +242,15 @@ public class UhcGameCommand
 		}
 	}
 
-	private static int resurrentPlayer(ServerCommandSource source, String player) throws CommandSyntaxException
+	private static int resurrentPlayer(ServerCommandSource source, String player, boolean teleportBack) throws CommandSyntaxException
 	{
 		if (ensureGameIsPlaying(source))
 		{
-			UhcGameManager.instance.getUhcPlayerManager().resurrentPlayer(player);
+			boolean ret = UhcGameManager.instance.getUhcPlayerManager().resurrentPlayer(player, teleportBack);
+			if (!ret)
+			{
+				source.sendFeedback(new LiteralText(Formatting.RED + "Player " + player + " is still alive"), false);
+			}
 			regiveAdjustBook(source, false);
 		}
 		return 1;

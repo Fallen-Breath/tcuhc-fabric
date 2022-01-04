@@ -39,6 +39,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.util.Collection;
 import java.util.List;
@@ -350,19 +351,42 @@ public class UhcPlayerManager
 			}
 		});
 	}
-	
-	public void resurrentPlayer(String playerName) {
+
+	// returns false if the player is alive
+	public boolean resurrentPlayer(String playerName, boolean teleportBack) {
+		MutableBoolean ret = new MutableBoolean(true);
 		getPlayerByName(playerName).ifPresent(player -> {
+			if (player.isAlive) {
+				ret.setFalse();
+				return;
+			}
 			player.deathTime = 0;
 			player.isAlive = true;
 			player.getStat().setStat(EnumStat.ALIVE_TIME, 0);
-			player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SURVIVAL));
+			player.getRealPlayer().ifPresent(playermp -> {
+				playermp.changeGameMode(GameMode.SURVIVAL);
+				if (teleportBack) {
+					// 5s Resistance V + 3s Blindness I
+					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 4));
+					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
+					if (player.getDeathPos() != Position.EMPTY) {
+						playermp.getInventory().clear();
+						Position deathPos = player.getDeathPos();
+						playermp.teleport(
+								UhcGameManager.instance.getMinecraftServer().getWorld(deathPos.dimension),
+								deathPos.pos.x, deathPos.pos.y, deathPos.pos.z, deathPos.yaw,  deathPos.pitch
+						);
+					}
+				}
+			});
+			player.resetDeathPos();
 			if (UhcGameManager.getGameMode() == EnumMode.GHOST)
 				player.addGhostModeEffect();
 			if (player.getTeam() != null) {
-				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got +1s.");
+				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got +1s" + (teleportBack ? " and returns to its death pos." : " with inventory reserved."));
 			}
 		});
+		return ret.getValue();
 	}
 	
 	public boolean formTeams(boolean auto) {
