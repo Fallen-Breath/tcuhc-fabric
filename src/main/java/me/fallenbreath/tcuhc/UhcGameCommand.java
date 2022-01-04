@@ -107,9 +107,9 @@ public class UhcGameCommand
 	}
 
 	private static int sendVersionInfo(ServerCommandSource sender) {
-		sender.sendFeedback(new LiteralText(Formatting.GOLD + "== UHC Plugin for " + Formatting.RED + "T" + Formatting.BLUE + "opology" + Formatting.RED + "C" + Formatting.BLUE + "raft" + Formatting.GOLD + " =="), false);
-		sender.sendFeedback(new LiteralText("          " + Formatting.GREEN + "Plugin Version " + Formatting.GOLD + "1.4.6"), false);
-		sender.sendFeedback(new LiteralText("     " + Formatting.GREEN + "Minecraft Version " + Formatting.GOLD + "1.12-pre7"), false);
+		sender.sendFeedback(new LiteralText(Formatting.GOLD + "== UHC Mod for " + Formatting.RED + "T" + Formatting.BLUE + "opology" + Formatting.RED + "C" + Formatting.BLUE + "raft" + Formatting.GOLD + " =="), false);
+		sender.sendFeedback(new LiteralText("          " + Formatting.GREEN + "Mod Version " + Formatting.GOLD + TcUhcMod.getModVersion()), false);
+		sender.sendFeedback(new LiteralText("     " + Formatting.GREEN + "Minecraft Version " + Formatting.GOLD + TcUhcMod.getMinecraftVersion()), false);
 		return 1;
 	}
 

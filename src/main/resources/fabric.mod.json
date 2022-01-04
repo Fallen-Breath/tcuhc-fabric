@@ -17,6 +17,11 @@
   "icon": "assets/tcuhc/icon.png",
 
   "environment": "server",
+  "entrypoints": {
+    "main": [
+      "me.fallenbreath.tcuhc.TcUhcMod"
+    ]
+  },
   "mixins": [
     "tcuhc.mixins.json"
   ],
