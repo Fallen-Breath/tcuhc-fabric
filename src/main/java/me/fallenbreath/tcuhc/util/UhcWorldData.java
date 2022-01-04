@@ -5,10 +5,17 @@ import com.google.gson.GsonBuilder;
 import me.fallenbreath.tcuhc.UhcGameManager;
 
 import java.io.*;
+import java.util.Random;
 
 public class UhcWorldData
 {
 	public int spawnPlatformHeight = -1;
+	public StructureType netherFortressType = StructureType.randomChoose();
+
+	private UhcWorldData()
+	{
+		this.save();
+	}
 
 	public boolean isSpawnPlatformHeightValid()
 	{
@@ -32,7 +39,7 @@ public class UhcWorldData
 		}
 	}
 
-	public void save()
+	public synchronized void save()
 	{
 		File file = UhcGameManager.getDataFile();
 		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file)))
@@ -42,6 +49,20 @@ public class UhcWorldData
 		catch (Exception e)
 		{
 			UhcGameManager.LOG.error("Failed to save uhc data file", e);
+		}
+	}
+
+	public enum StructureType
+	{
+		NETHER_FORTRESS,
+		BASTION_REMNANT;
+
+		private static final Random random = new Random();
+
+		public static StructureType randomChoose()
+		{
+			StructureType[] values = values();
+			return values[random.nextInt(values.length)];
 		}
 	}
 }

@@ -1,6 +1,9 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
+import me.fallenbreath.tcuhc.UhcGameManager;
+import me.fallenbreath.tcuhc.util.UhcWorldData;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.gen.feature.BastionRemnantFeature;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,9 +18,16 @@ public abstract class StructureFeatureMixin
 	private void fortressStartChunkIsAlways00(CallbackInfoReturnable<ChunkPos> cir)
 	{
 		StructureFeature<?> self = (StructureFeature<?>)(Object)this;
-		if (self instanceof NetherFortressFeature)
+		UhcWorldData.StructureType type = UhcGameManager.instance.getWorldData().netherFortressType;
+		ChunkPos zero = new ChunkPos(0, 0);
+
+		if (self instanceof NetherFortressFeature && type == UhcWorldData.StructureType.NETHER_FORTRESS)
 		{
-			cir.setReturnValue(new ChunkPos(0, 0));
+			cir.setReturnValue(zero);
+		}
+		if (self instanceof BastionRemnantFeature && type == UhcWorldData.StructureType.BASTION_REMNANT)
+		{
+			cir.setReturnValue(zero);
 		}
 	}
 }

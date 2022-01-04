@@ -48,6 +48,8 @@
     "task.PlayerListHeaderS2CPacketAccessor",
     "task.ServerChunkManagerAccessor",
     "util.SheepEntityAccessor",
+    "worldgen.feature.BastionRemnantFeatureMixin",
+    "worldgen.feature.ConfiguredStructureFeaturesMixin",
     "worldgen.feature.DefaultBiomeFeaturesMixin",
     "worldgen.feature.NetherFortressFeatureMixin",
     "worldgen.feature.StructureFeatureMixin",

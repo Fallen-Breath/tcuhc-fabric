@@ -62,6 +62,7 @@ public class UhcGameManager extends Taskable {
 	private Optional<ServerBossBar> bossInfo = Optional.empty();
 
 	public final MsptRecorder msptRecorder = new MsptRecorder();
+	private final UhcWorldData worldData;
 	
 	public UhcGameManager(MinecraftServer server)
 	{
@@ -70,6 +71,7 @@ public class UhcGameManager extends Taskable {
 		uhcOptions = Options.instance;
 		playerManager = new UhcPlayerManager(this);
 		winnerList = new LastWinnerList(new File("lastwinners.txt"));
+		worldData = UhcWorldData.load();
 	}
 
 	public MinecraftServer getMinecraftServer() { return mcServer; }
@@ -86,7 +88,12 @@ public class UhcGameManager extends Taskable {
 	{
 		return mcServer.getWorld(World.OVERWORLD);
 	}
-	
+
+	public UhcWorldData getWorldData()
+	{
+		return worldData;
+	}
+
 	public void onPlayerJoin(ServerPlayerEntity player) {
 		try {
 			playerManager.onPlayerJoin(player);

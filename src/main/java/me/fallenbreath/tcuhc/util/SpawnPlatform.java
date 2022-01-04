@@ -20,10 +20,10 @@ public class SpawnPlatform {
 	public static int height = DEFAULT_HEIGHT;
 	private static BlockPos[] hexagonPos;
 
-	private static void sampleTerrainHeight(World world) {
-		UhcWorldData uhcData = UhcWorldData.load();
-		if (uhcData.isSpawnPlatformHeightValid()) {
-			height = uhcData.spawnPlatformHeight;
+	private static void sampleTerrainHeight(UhcGameManager gameManager, World world) {
+		UhcWorldData uhcWorldData = gameManager.getWorldData();
+		if (uhcWorldData.isSpawnPlatformHeightValid()) {
+			height = uhcWorldData.spawnPlatformHeight;
 		}
 		else {
 			height = DEFAULT_HEIGHT;
@@ -34,14 +34,14 @@ public class SpawnPlatform {
 					int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
 					height = Math.max(height, Math.min(y + 64, world.getTopY() - 16));
 				}
-			uhcData.spawnPlatformHeight = height;
-			uhcData.save();
+			uhcWorldData.spawnPlatformHeight = height;
+			uhcWorldData.save();
 		}
 		UhcGameManager.LOG.info("Set spawn platform height to y" + height);
 	}
 
 	public static void generatePlatform(UhcGameManager gameManager, World world) {
-		sampleTerrainHeight(world);
+		sampleTerrainHeight(gameManager, world);
 		generateHexagonPos();
 		generateHexagon(world, hexagonPos[0], DyeColor.BLUE);
 		generateHexagon(world, hexagonPos[1], DyeColor.RED);
