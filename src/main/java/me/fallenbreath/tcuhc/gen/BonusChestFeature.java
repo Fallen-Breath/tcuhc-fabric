@@ -227,6 +227,8 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 				put(Biome.Category.SWAMP, swamplandChance).
 				put(Biome.Category.MUSHROOM, mushroomChance).
 				put(Biome.Category.NETHER, miscChance).
+				put(Biome.Category.UNDERGROUND, miscChance).
+				put(Biome.Category.MOUNTAIN, exHillsChance).
 				build();
 
 		valuableItemList.add(new RandomItem(16, new ItemSupplier(Items.DIAMOND_SWORD)));
