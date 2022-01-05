@@ -137,7 +137,7 @@ public class PlayerItems
 		items.put("zi_nv", Builder.create(Blocks.TALL_GRASS).named("mY lIVe").enchant(Enchantments.EFFICIENCY, 11).get());
 		items.put("CallMeLecten", Builder.create(Items.GLASS_BOTTLE).named("oxygen").get());
 		items.put("HG_Fei", Builder.create(Items.POTION).potion(Potions.WATER).named("hydrofluoric acid").get());
-		items.put("hai_dan", Builder.create(Items.EGG).named("sea egg").get());
+		items.put("hai_dan", Builder.create(Items.TURTLE_EGG).named("sea egg").get());
 		items.put("Fallen_Breath", Builder.create(Items.LEATHER_CHESTPLATE).mani(s -> ((DyeableItem)Items.LEATHER_CHESTPLATE).setColor(s, 16742436)).named("fox fur coat").get());
 		items.put("Sanluli36li", Builder.create(Items.TNT_MINECART).named("36li's self-destruct-car").enchant(Enchantments.FORTUNE, 3).get());
 		items.put("shamreltuim", Builder.create(Items.PUFFERFISH).enchant(Enchantments.BINDING_CURSE, 1).get());
