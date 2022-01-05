@@ -34,6 +34,8 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -246,6 +248,9 @@ public class UhcPlayerManager
 						}
 					});
 				}
+
+				// fancy death sound xd
+				player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 10000.0F, 0.8F + UhcGameManager.rand.nextFloat() * 0.2F);
 			}
 		}
 		ItemEntity entityitem = player.dropStack(PlayerItems.getPlayerItem(player.getEntityName(), player.isOnFire()));

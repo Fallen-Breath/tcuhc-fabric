@@ -86,8 +86,7 @@ public class UhcGamePlayer extends Taskable {
 		return playerManager.getPlayerByUUID(playerUUID);
 	}
 
-	public void addGhostModeEffect()
-	{
+	public void addGhostModeEffect() {
 		this.getRealPlayer().ifPresent(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 0, true, false)));
 	}
 
