@@ -135,6 +135,7 @@ public class PlayerItems
 		items.put("Do1phin_jump", Builder.create(Items.TROPICAL_FISH).named("do1phin's food").enchant(Enchantments.UNBREAKING, 3).get());
 		items.put("kuritsirolf", Builder.create(Items.CAKE).named("XiangSuLiRon cake").enchant(Enchantments.LUCK_OF_THE_SEA, 1).get());
 		items.put("acaciachan", Builder.create(Items.ACACIA_SAPLING).named("si~ha~si~ha~").enchant(Enchantments.LOYALTY, 3).enchant(Enchantments.RIPTIDE, 3).get());
+		items.put("Lei_Feng_", Builder.create(Items.GUNPOWDER).get());
 	}
 
 	private static class Builder
