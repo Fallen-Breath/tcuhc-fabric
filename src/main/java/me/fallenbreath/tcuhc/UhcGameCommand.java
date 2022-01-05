@@ -246,7 +246,7 @@ public class UhcGameCommand
 	{
 		if (ensureGameIsPlaying(source))
 		{
-			boolean ret = UhcGameManager.instance.getUhcPlayerManager().resurrentPlayer(player, teleportBack);
+			boolean ret = UhcGameManager.instance.getUhcPlayerManager().resurrectPlayerUsingCommand(player, teleportBack);
 			if (!ret)
 			{
 				source.sendFeedback(new LiteralText(Formatting.RED + "Player " + player + " is still alive"), false);

@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.potion.Potion;
@@ -23,6 +24,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -81,7 +83,22 @@ public class PlayerItems
 		{
 			stack.addEnchantment(Enchantments.SHARPNESS, 1);
 		}
+		// added a special nbt to the item for identifying
+		stack.getOrCreateNbt().putString("MoralOwner", playerName);
 		return stack;
+	}
+
+	@Nullable
+	public static String getMoralOwner(ItemStack itemStack) {
+		NbtCompound nbt = itemStack.getNbt();
+		if (nbt != null) {
+			return nbt.getString("MoralOwner");
+		}
+		return null;
+	}
+
+	public static boolean isMoralItem(ItemStack itemStack) {
+		return getMoralOwner(itemStack) != null;
 	}
 
 	public static ItemStack getPlayerItem(String playerName)

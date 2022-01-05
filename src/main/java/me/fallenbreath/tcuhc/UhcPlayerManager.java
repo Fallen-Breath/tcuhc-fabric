@@ -40,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -331,7 +332,7 @@ public class UhcPlayerManager
 		}
 		return target;
 	}
-	
+
 	private Optional<UhcGamePlayer> getPlayerByName(String name) {
 		return allPlayerList.stream().filter(player -> player.getName().equals(name)).findFirst();
 	}
@@ -353,28 +354,30 @@ public class UhcPlayerManager
 	}
 
 	// returns false if the player is alive
-	public boolean resurrentPlayer(String playerName, boolean teleportBack) {
-		MutableBoolean ret = new MutableBoolean(true);
+	private boolean resurrectPlayer(String playerName, @Nullable Position respawnPos, boolean usingMoral) {
+		MutableBoolean ret = new MutableBoolean(false);
 		getPlayerByName(playerName).ifPresent(player -> {
 			if (player.isAlive) {
 				ret.setFalse();
 				return;
 			}
+
+			// init player
+
 			player.deathTime = 0;
 			player.isAlive = true;
 			player.getStat().setStat(EnumStat.ALIVE_TIME, 0);
 			player.getRealPlayer().ifPresent(playermp -> {
 				playermp.changeGameMode(GameMode.SURVIVAL);
-				if (teleportBack) {
+				if (respawnPos != null) {
 					// 5s Resistance V + 3s Blindness I
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 4));
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
 					if (player.getDeathPos() != Position.EMPTY) {
 						playermp.getInventory().clear();
-						Position deathPos = player.getDeathPos();
 						playermp.teleport(
-								UhcGameManager.instance.getMinecraftServer().getWorld(deathPos.dimension),
-								deathPos.pos.x, deathPos.pos.y, deathPos.pos.z, deathPos.yaw,  deathPos.pitch
+								UhcGameManager.instance.getMinecraftServer().getWorld(respawnPos.dimension),
+								respawnPos.pos.x, respawnPos.pos.y, respawnPos.pos.z, respawnPos.yaw, respawnPos.pitch
 						);
 					}
 				}
@@ -382,11 +385,35 @@ public class UhcPlayerManager
 			player.resetDeathPos();
 			if (UhcGameManager.getGameMode() == EnumMode.GHOST)
 				player.addGhostModeEffect();
-			if (player.getTeam() != null) {
-				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got +1s" + (teleportBack ? " and returns to its death pos." : " with inventory reserved."));
+
+			// side effects & broadcast
+
+			if (usingMoral) {
+				player.getRealPlayer().ifPresent(playermp -> playermp.setHealth(1.0F));
 			}
+			if (player.getTeam() != null) {
+				String msg;
+				if (usingMoral) {
+					msg = " has been resurrection.";
+				} else {
+					msg = " got +1s" + (respawnPos != null ? " and returns to its death pos." : " with inventory reserved.");
+				}
+				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + msg);
+			}
+			ret.setTrue();
 		});
 		return ret.getValue();
+	}
+
+	// returns false if the player is alive
+	public boolean resurrectPlayerUsingCommand(String playerName, boolean teleportBack) {
+		Optional<UhcGamePlayer> optionalPlayer = getPlayerByName(playerName);
+		return optionalPlayer.isPresent() && resurrectPlayer(playerName, teleportBack ? optionalPlayer.get().getDeathPos() : null, false);
+	}
+
+	// returns false if the player is alive
+	public boolean resurrectPlayerUsingMoral(String playerName, Position respawnPos) {
+		return resurrectPlayer(playerName, respawnPos, true);
 	}
 	
 	public boolean formTeams(boolean auto) {
