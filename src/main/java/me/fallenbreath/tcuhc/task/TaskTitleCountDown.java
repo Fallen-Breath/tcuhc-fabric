@@ -7,6 +7,7 @@ package me.fallenbreath.tcuhc.task;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.task.Task.TaskTimer;
 import me.fallenbreath.tcuhc.util.TitleUtil;
+import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -53,6 +54,15 @@ public class TaskTitleCountDown extends TaskTimer {
 				UhcGameManager.instance.getUhcPlayerManager().resetHealthAndFood(player);
 				player.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));  // no free phantom
 				player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 4));  // 10s Resistance V
+				// revoke all advancements
+				player.getServer().getAdvancementLoader().getAdvancements().forEach(advancement -> {
+					AdvancementProgress advancementProgress = player.getAdvancementTracker().getProgress(advancement);
+					if (advancementProgress.isAnyObtained()) {
+						for(String string : advancementProgress.getObtainedCriteria()) {
+							player.getAdvancementTracker().revokeCriterion(advancement, string);
+						}
+					}
+				});
 
 				// give invisibility and shiny potion to player for ghost mode
 				switch (UhcGameManager.getGameMode()) {
