@@ -125,7 +125,7 @@ public class PlayerItems
 		items.put("Sanluli36li", Builder.create(Items.TNT_MINECART).named("36li's self-destruct-car").enchant(Enchantments.FORTUNE, 3).get());
 		items.put("shamreltuim", Builder.create(Items.PUFFERFISH).enchant(Enchantments.BINDING_CURSE, 1).get());
 		items.put("YtonE", Builder.create(Items.POTION).potion(Potions.EMPTY).named("liquid ketone").get());
-		items.put("DawNemo", Builder.create(Blocks.SUNFLOWER).named("Real Man Never Look Round").enchant(Enchantments.THORNS, 1).get());
+		items.put("DawNemo", Builder.create(Items.SPYGLASS).named("Real Man Never Look Round").enchant(Enchantments.THORNS, 1).get());
 		items.put("Van_Nya", Builder.create(Items.RABBIT_STEW).named("Van Nya Stew").get());  // Nya? Nya!
 		items.put("youngdao", Builder.create(Items.STONE_SWORD).named("Murasame").enchant(Enchantments.SHARPNESS, 10).expensive().get());
 		items.put("ql_Lwi", Builder.create(Items.COD).named("Dinner in the belly of a penguin").get());
