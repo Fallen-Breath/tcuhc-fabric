@@ -13,6 +13,8 @@ Changes:
 - Nether fortress or bastion remnant will be chosen randomly, the chosen one will and only will be generated at nether (0, 0)
   - The not-chosen one will generate vanillaly
   - Bastion remnant is allowed to be generated in basalt deltas biome
+- Lighting sound will be played when a player dies
+- You can right click a wither skeleton skull block with a moral item to respawn the player
 
 In dev branch
 - 1.18.x
