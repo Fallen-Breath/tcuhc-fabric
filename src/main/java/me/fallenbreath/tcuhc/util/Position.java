@@ -6,8 +6,6 @@ import net.minecraft.world.World;
 
 public class Position
 {
-	public static final Position EMPTY = new Position(Vec3d.ZERO, null, 0, 0);
-
 	public final Vec3d pos;
 	public final RegistryKey<World> dimension;
 	public final float yaw;

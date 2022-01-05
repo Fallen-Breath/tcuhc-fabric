@@ -377,7 +377,7 @@ public class UhcPlayerManager
 			player.getStat().setStat(EnumStat.ALIVE_TIME, 0);
 			player.getRealPlayer().ifPresent(playermp -> {
 				playermp.changeGameMode(GameMode.SURVIVAL);
-				if (respawnPos != null && respawnPos != Position.EMPTY) {
+				if (respawnPos != null) {
 					// 5s Resistance V + 3s Blindness I
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 4));
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
@@ -413,13 +413,11 @@ public class UhcPlayerManager
 		return ret.getValue();
 	}
 
-	// returns false if the player is alive
 	public boolean resurrectPlayerUsingCommand(String playerName, boolean cleanInventory, boolean teleportBack) {
 		Optional<UhcGamePlayer> optionalPlayer = getPlayerByName(playerName);
 		return optionalPlayer.isPresent() && resurrectPlayer(playerName, teleportBack ? optionalPlayer.get().getDeathPos() : null, cleanInventory, false);
 	}
 
-	// returns false if the player is alive
 	public boolean resurrectPlayerUsingMoral(String playerName, Position respawnPos) {
 		return resurrectPlayer(playerName, respawnPos, true, true);
 	}

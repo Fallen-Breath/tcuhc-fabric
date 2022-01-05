@@ -126,7 +126,7 @@ public class UhcGameCommand
 	{
 		UhcGamePlayer gamePlayer = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(sender.getPlayer());
 		Position deathPos = gamePlayer.getDeathPos();
-		if (deathPos == Position.EMPTY)
+		if (deathPos == null)
 		{
 			sender.sendFeedback(new LiteralText("You are still alive."), false);
 		}

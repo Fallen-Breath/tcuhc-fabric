@@ -31,7 +31,8 @@ public class UhcGamePlayer extends Taskable {
 	private UhcGameColor colorSelected = null;
 	
 	protected int deathTime;
-	private Position deathPos = Position.EMPTY;
+	@Nullable
+	private Position deathPos = null;
 	private final PlayerStatistics statistics = new PlayerStatistics();
 	
 	private int borderReminder;
@@ -45,8 +46,9 @@ public class UhcGamePlayer extends Taskable {
 	public UhcGameTeam getTeam() { return team; }
 	protected void setTeam(UhcGameTeam team) { this.team = team; }
 	public int getDeathTime() { return deathTime; }
+	@Nullable
 	public Position getDeathPos() { return deathPos; }
-	public void resetDeathPos() { this.deathPos = Position.EMPTY; }
+	public void resetDeathPos() { this.deathPos = null; }
 	public void setColorSelected(@Nullable UhcGameColor color) { colorSelected = color; }
 	public Optional<UhcGameColor> getColorSelected() { return Optional.ofNullable(colorSelected); }
 	public String getName() { return playerName; }
@@ -65,7 +67,7 @@ public class UhcGamePlayer extends Taskable {
 		if (isAlive) {
 			isAlive = false;
 			deathTime = curTime;
-			deathPos = getRealPlayer().map(player -> new Position(player.getPos(), player.getWorld().getRegistryKey(), player.getYaw(), player.getPitch())).orElse(Position.EMPTY);
+			deathPos = getRealPlayer().map(player -> new Position(player.getPos(), player.getWorld().getRegistryKey(), player.getYaw(), player.getPitch())).orElse(null);
 			statistics.setStat(EnumStat.ALIVE_TIME, Options.instance.getIntegerOptionValue("gameTime") - deathTime);
 		}
 	}
