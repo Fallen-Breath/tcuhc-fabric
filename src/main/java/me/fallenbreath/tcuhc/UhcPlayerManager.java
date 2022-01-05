@@ -358,8 +358,11 @@ public class UhcPlayerManager
 		});
 	}
 
-	// returns false if the player is alive
-	private boolean resurrectPlayer(String playerName, @Nullable Position respawnPos, boolean usingMoral) {
+	/**
+	 * @param respawnPos the position to teleport the player to after respawn
+	 * @return false if the player is alive or player not found
+ 	 */
+	private boolean resurrectPlayer(String playerName, @Nullable Position respawnPos, boolean cleanInventory, boolean usingMoral) {
 		MutableBoolean ret = new MutableBoolean(false);
 		getPlayerByName(playerName).ifPresent(player -> {
 			if (player.isAlive) {
@@ -374,17 +377,17 @@ public class UhcPlayerManager
 			player.getStat().setStat(EnumStat.ALIVE_TIME, 0);
 			player.getRealPlayer().ifPresent(playermp -> {
 				playermp.changeGameMode(GameMode.SURVIVAL);
-				if (respawnPos != null) {
+				if (respawnPos != null && respawnPos != Position.EMPTY) {
 					// 5s Resistance V + 3s Blindness I
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 4));
 					playermp.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
-					if (player.getDeathPos() != Position.EMPTY) {
+					if (cleanInventory) {
 						playermp.getInventory().clear();
-						playermp.teleport(
-								UhcGameManager.instance.getMinecraftServer().getWorld(respawnPos.dimension),
-								respawnPos.pos.x, respawnPos.pos.y, respawnPos.pos.z, respawnPos.yaw, respawnPos.pitch
-						);
 					}
+					playermp.teleport(
+							UhcGameManager.instance.getMinecraftServer().getWorld(respawnPos.dimension),
+							respawnPos.pos.x, respawnPos.pos.y, respawnPos.pos.z, respawnPos.yaw, respawnPos.pitch
+					);
 				}
 			});
 			player.resetDeathPos();
@@ -411,14 +414,14 @@ public class UhcPlayerManager
 	}
 
 	// returns false if the player is alive
-	public boolean resurrectPlayerUsingCommand(String playerName, boolean teleportBack) {
+	public boolean resurrectPlayerUsingCommand(String playerName, boolean cleanInventory, boolean teleportBack) {
 		Optional<UhcGamePlayer> optionalPlayer = getPlayerByName(playerName);
-		return optionalPlayer.isPresent() && resurrectPlayer(playerName, teleportBack ? optionalPlayer.get().getDeathPos() : null, false);
+		return optionalPlayer.isPresent() && resurrectPlayer(playerName, teleportBack ? optionalPlayer.get().getDeathPos() : null, cleanInventory, false);
 	}
 
 	// returns false if the player is alive
 	public boolean resurrectPlayerUsingMoral(String playerName, Position respawnPos) {
-		return resurrectPlayer(playerName, respawnPos, true);
+		return resurrectPlayer(playerName, respawnPos, true, true);
 	}
 	
 	public boolean formTeams(boolean auto) {

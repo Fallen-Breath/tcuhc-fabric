@@ -13,7 +13,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -70,6 +72,14 @@ public abstract class ItemStackMixin
 					context.getWorld().removeBlock(blockPos, false);
 					context.getWorld().playSound(null, vec3d.getX(), vec3d.getY(), vec3d.getZ(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					cir.setReturnValue(ActionResult.CONSUME);
+				}
+				else
+				{
+					PlayerEntity player = context.getPlayer();
+					if (player != null)
+					{
+						player.sendMessage(Text.of(Formatting.RED + "You cannot resurrect " + playerName + " now."), false);
+					}
 				}
 			}
 		}
