@@ -365,7 +365,7 @@ public class UhcPlayerManager
 	private boolean resurrectPlayer(String playerName, @Nullable Position respawnPos, boolean cleanInventory, boolean usingMoral) {
 		MutableBoolean ret = new MutableBoolean(false);
 		getPlayerByName(playerName).ifPresent(player -> {
-			if (player.isAlive) {
+			if (player.isAlive || !player.getRealPlayer().isPresent()) {
 				ret.setFalse();
 				return;
 			}
