@@ -15,6 +15,7 @@
     "core.PlayerManagerMixin",
     "entity.AbstractMinecartEntityMixin",
     "entity.BoatEntityMixin",
+    "entity.DrownedEntityMixin",
     "entity.EnderCrystalEntityMixin",
     "entity.EntityCategoryMixin",
     "entity.MobEntityAccessor",
