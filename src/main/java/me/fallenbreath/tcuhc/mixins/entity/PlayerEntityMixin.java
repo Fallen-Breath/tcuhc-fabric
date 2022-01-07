@@ -3,21 +3,34 @@ package me.fallenbreath.tcuhc.mixins.entity;
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
 import me.fallenbreath.tcuhc.interfaces.IPlayerInventory;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin
+public abstract class PlayerEntityMixin extends LivingEntity
 {
+	private float modifiedDamageAmount;
+
+	protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world)
+	{
+		super(entityType, world);
+	}
+
 	/**
 	 * Added tag check for KING mode's king's crown item
 	 */
@@ -60,5 +73,52 @@ public abstract class PlayerEntityMixin
 	private void dropInventoryWithoutClear(PlayerInventory playerInventory)
 	{
 		((IPlayerInventory)playerInventory).dropAllItemsWithoutClear();
+	}
+
+	@Inject(
+			method = "damage",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+			)
+	)
+	private void modifyAndRecordDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir)
+	{
+		this.modifiedDamageAmount = amount = UhcGameManager.instance.modifyPlayerDamage(amount);
+
+		PlayerEntity self = (PlayerEntity)(Object)this;
+		Entity sourceEntity = source.getSource();
+		if (!(sourceEntity instanceof ServerPlayerEntity)) sourceEntity = source.getAttacker();
+		if (sourceEntity instanceof ServerPlayerEntity) {
+			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(self).getStat().addStat(UhcGamePlayer.EnumStat.DAMAGE_TAKEN, amount);
+			UhcGamePlayer.PlayerStatistics statistics = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((ServerPlayerEntity)sourceEntity).getStat();
+			statistics.addStat(UhcGamePlayer.EnumStat.DAMAGE_DEALT, amount);
+			if (this.getScoreboardTeam() != null && this.getScoreboardTeam().isEqual(sourceEntity.getScoreboardTeam())) {
+				statistics.addStat(UhcGamePlayer.EnumStat.FRIENDLY_FIRE, amount);
+			}
+		}
+	}
+
+	@ModifyArg(
+			method = "damage",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+			),
+			index = 1
+	)
+	private float modifyAndRecordDamage(float amount)
+	{
+		return this.modifiedDamageAmount;
+	}
+
+	@Inject(method = "damage", at = @At("RETURN"))
+	private void afterDamageCalc(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir)
+	{
+		PlayerEntity self = (PlayerEntity)(Object)this;
+		if (cir.getReturnValue() && self instanceof ServerPlayerEntity)
+		{
+			UhcGameManager.instance.onPlayerDamaged((ServerPlayerEntity)self, source, this.modifiedDamageAmount);
+		}
 	}
 }
