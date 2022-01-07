@@ -89,8 +89,17 @@ public abstract class PlayerEntityMixin extends LivingEntity
 		PlayerEntity self = (PlayerEntity)(Object)this;
 		Entity sourceEntity = source.getSource();
 		if (!(sourceEntity instanceof ServerPlayerEntity)) sourceEntity = source.getAttacker();
-		if (sourceEntity instanceof ServerPlayerEntity) {
-			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(self).getStat().addStat(UhcGamePlayer.EnumStat.DAMAGE_TAKEN, amount);
+		if (sourceEntity instanceof ServerPlayerEntity && amount > 0.0F) {
+
+			// target player
+			UhcGamePlayer.EnumStat stat = UhcGamePlayer.EnumStat.DAMAGE_TAKEN;
+			// the same logic in net.minecraft.entity.LivingEntity.damage
+			if (this.blockedByShield(source)) {
+				stat = UhcGamePlayer.EnumStat.DAMAGE_BLOCKED;
+			}
+			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(self).getStat().addStat(stat, amount);
+
+			// source player
 			UhcGamePlayer.PlayerStatistics statistics = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((ServerPlayerEntity)sourceEntity).getStat();
 			statistics.addStat(UhcGamePlayer.EnumStat.DAMAGE_DEALT, amount);
 			if (this.getScoreboardTeam() != null && this.getScoreboardTeam().isEqual(sourceEntity.getScoreboardTeam())) {

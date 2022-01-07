@@ -97,6 +97,7 @@ public class UhcGamePlayer extends Taskable {
 		ENTITY_KILLED("Entity Killed"),
 		DAMAGE_TAKEN("Damage Taken"),
 		DAMAGE_DEALT("Damage Dealt"),
+		DAMAGE_BLOCKED("Damage Blocked"),
 		FRIENDLY_FIRE("Friendly Fire"),
 		CHEST_FOUND("Chest Found"),
 		EMPTY_CHEST_FOUND("Empty Chest Found"),
