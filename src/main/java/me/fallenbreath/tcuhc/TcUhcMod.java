@@ -3,6 +3,7 @@ package me.fallenbreath.tcuhc;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
+import net.minecraft.util.Identifier;
 
 public class TcUhcMod implements ModInitializer
 {
@@ -29,5 +30,10 @@ public class TcUhcMod implements ModInitializer
 	public static String getMinecraftVersion()
 	{
 		return MINECRAFT_VERSION;
+	}
+
+	public static Identifier id(String name)
+	{
+		return new Identifier(MOD_ID, name);
 	}
 }

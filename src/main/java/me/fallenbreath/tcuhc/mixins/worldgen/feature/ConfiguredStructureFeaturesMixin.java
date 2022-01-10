@@ -1,5 +1,8 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
+import me.fallenbreath.tcuhc.gen.structure.EnderPyramidStructure;
+import me.fallenbreath.tcuhc.gen.structure.UhcStructures;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -36,12 +39,29 @@ public abstract class ConfiguredStructureFeaturesMixin
 	}
 
 	@Inject(method = "registerAll", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void allowBastionRemnantToGenerateInBasaltDeltas(BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar, CallbackInfo ci, Set<RegistryKey<Biome>> set, Set<RegistryKey<Biome>> set2, Set<RegistryKey<Biome>> set3, Set<RegistryKey<Biome>> set4, Set<RegistryKey<Biome>> set5, Set<RegistryKey<Biome>> set6, Set<RegistryKey<Biome>> set7, Set<RegistryKey<Biome>> set8, Set<RegistryKey<Biome>> set9, Set<RegistryKey<Biome>> set10, Set<RegistryKey<Biome>> set11)
+	private static void allowBastionRemnantToGenerateInBasaltDeltas(
+			BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar, CallbackInfo ci,
+			Set<RegistryKey<Biome>> deepOcean, Set<RegistryKey<Biome>> ocean, Set<RegistryKey<Biome>> beache, Set<RegistryKey<Biome>> river,
+			Set<RegistryKey<Biome>> peak, Set<RegistryKey<Biome>> badland, Set<RegistryKey<Biome>> hill, Set<RegistryKey<Biome>> taiga,
+			Set<RegistryKey<Biome>> jungle, Set<RegistryKey<Biome>> forest, Set<RegistryKey<Biome>> nether
+	)
 	{
+		// ======== Vanilla Structure tweaks  ========
+
 		// allow BastionRemnant to generate in basalt deltas
 		register(registrar, BASTION_REMNANT, BiomeKeys.BASALT_DELTAS);
 		// allow ocean shipwecks and buried treasures to generate in rivers
-		register(registrar, SHIPWRECK, set4);
-		register(registrar, BURIED_TREASURE, set4);
+		register(registrar, SHIPWRECK, river);
+		register(registrar, BURIED_TREASURE, river);
+
+		//  ======== UHC Structures ========
+		BuiltinRegistries.BIOME.getEntries().forEach(entry -> {
+			RegistryKey<Biome> key = entry.getKey();
+			Biome biome = entry.getValue();
+			if (EnderPyramidStructure.canGenerateIn(biome))
+			{
+				register(registrar, UhcStructures.ENDER_PYRAMID, key);
+			}
+		});
 	}
 }

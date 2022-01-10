@@ -1,6 +1,6 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
-import me.fallenbreath.tcuhc.gen.UhcFeatures;
+import me.fallenbreath.tcuhc.gen.feature.UhcFeatures;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;

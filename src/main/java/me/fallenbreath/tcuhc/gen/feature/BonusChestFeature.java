@@ -2,7 +2,7 @@
  From Gamepiaynmo: https://github.com/Gamepiaynmo/TC-UHC
  */
 
-package me.fallenbreath.tcuhc.gen;
+package me.fallenbreath.tcuhc.gen.feature;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
