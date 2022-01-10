@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EndCrystalEntity.class)
-public abstract class EnderCrystalEntityMixin extends Entity
+public abstract class EndCrystalEntityMixin extends Entity
 {
 	@Unique
 	private PlayerEntity target;
@@ -24,7 +24,7 @@ public abstract class EnderCrystalEntityMixin extends Entity
 	@Shadow
 	public abstract void setBeamTarget(@Nullable BlockPos blockPos);
 
-	public EnderCrystalEntityMixin(EntityType<?> type, World world)
+	public EndCrystalEntityMixin(EntityType<?> type, World world)
 	{
 		super(type, world);
 	}
@@ -38,16 +38,20 @@ public abstract class EnderCrystalEntityMixin extends Entity
 
 			if (this.age % 5 == 0)
 			{
-				if (this.target != null && this.target.squaredDistanceTo(this) < 1024 && this.target.canSee(this))
+				double distanceSqr = this.target == null ? 1024 : this.target.squaredDistanceTo(this);
+				if (this.target != null && distanceSqr < 1024 && this.target.canSee(this))
 				{
-					if (this.age % 20 == 0)
+					if (this.age % 30 == 0)
 					{
-						this.target.damage(new EntityDamageSource("mob", this), 1.0f);
+						float amount;
+						if (distanceSqr < 8 * 8) amount = 2.0F;
+						else if (distanceSqr < 16 * 16) amount = 1.5F;
+						else amount = 1.0F;
+						this.target.damage(new EntityDamageSource("mob", this), amount);
 					}
 				}
 				else
 				{
-					double distance = this.target == null ? 1024 : this.target.squaredDistanceTo(this);
 					this.target = null;
 
 					for (PlayerEntity player : this.world.getNonSpectatingEntities(PlayerEntity.class, this.getBoundingBox().expand(32, 10, 32)))
@@ -58,9 +62,9 @@ public abstract class EnderCrystalEntityMixin extends Entity
 						}
 
 						double newdis = player.squaredDistanceTo(this);
-						if (newdis < distance && player.canSee(this))
+						if (newdis < distanceSqr && player.canSee(this))
 						{
-							distance = newdis;
+							distanceSqr = newdis;
 							this.target = player;
 						}
 					}

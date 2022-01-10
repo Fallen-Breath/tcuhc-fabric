@@ -15,6 +15,8 @@ Changes:
   - Bastion remnant is allowed to be generated in basalt deltas biome
 - Lighting sound will be played when a player dies
 - You can right click a wither skeleton skull block with a moral item to respawn the player
+- End crystal deals more damage with less distance to player
+  - Its damage now scales with difficulty
 
 In dev branch
 - 1.18.x
