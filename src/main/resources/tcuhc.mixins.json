@@ -33,6 +33,7 @@
     "feature.HorizontalConnectingBlockAccessor",
     "feature.structure.StructureFeatureAccessor",
     "feature.structure.StructuresConfigAccessor",
+    "feature.structure.WeightedListAccessor",
     "item.AbsorptionStatusEffectMixin",
     "item.ChorusFruitMixin",
     "item.FlowerBlockMixin",

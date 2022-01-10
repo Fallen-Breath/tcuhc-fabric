@@ -1,6 +1,7 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
 import me.fallenbreath.tcuhc.gen.structure.EnderPyramidStructure;
+import me.fallenbreath.tcuhc.gen.structure.GreenhouseStructure;
 import me.fallenbreath.tcuhc.gen.structure.UhcStructures;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryKey;
@@ -61,6 +62,20 @@ public abstract class ConfiguredStructureFeaturesMixin
 			if (EnderPyramidStructure.canGenerateIn(biome))
 			{
 				register(registrar, UhcStructures.ENDER_PYRAMID, key);
+			}
+			if (GreenhouseStructure.canGenerateIn(biome))
+			{
+				switch (biome.getPrecipitation())
+				{
+					case NONE:
+						register(registrar, UhcStructures.GREENHOUSE_DESERT, key);
+						break;
+					case RAIN:
+						break;
+					case SNOW:
+						register(registrar, UhcStructures.GREENHOUSE_SNOW, key);
+						break;
+				}
 			}
 		});
 	}

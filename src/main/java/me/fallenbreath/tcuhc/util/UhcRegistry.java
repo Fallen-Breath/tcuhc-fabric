@@ -54,7 +54,7 @@ public class UhcRegistry
 	 */
 	public static <F extends StructureFeature<?>> F registerStructure(String name, F structureFeature, GenerationStep.Feature step)
 	{
-		StructureFeatureAccessor.getSTRUCTURES().put(name, structureFeature);
+		StructureFeature.STRUCTURES.put(name, structureFeature);
 		StructureFeatureAccessor.getSTRUCTURE_TO_GENERATION_STEP().put(structureFeature, step);
 		return Registry.register(Registry.STRUCTURE_FEATURE, TcUhcMod.id(name), structureFeature);
 	}

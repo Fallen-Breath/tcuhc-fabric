@@ -1,6 +1,10 @@
 package me.fallenbreath.tcuhc.gen.structure;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.*;
 import net.minecraft.util.BlockRotation;
@@ -10,18 +14,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 import java.util.Random;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public abstract class SinglePieceLandStructure extends StructureFeature<DefaultFeatureConfig>
+public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends StructureFeature<C>
 {
-	protected SinglePieceLandStructure(Codec<DefaultFeatureConfig> configCodec, StructureGeneratorFactory<DefaultFeatureConfig> piecesGenerator, PostPlacementProcessor postPlacementProcessor)
+	protected SinglePieceLandStructure(Codec<C> configCodec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor)
 	{
 		super(configCodec, piecesGenerator, postPlacementProcessor);
 	}
@@ -31,13 +38,58 @@ public abstract class SinglePieceLandStructure extends StructureFeature<DefaultF
 		return UhcStructures.CONTINENT_BIOMES.contains(biome.getCategory());
 	}
 
+	protected static <FC extends FeatureConfig> BlockPos shiftStartPosRandomly(StructurePiecesGenerator.Context<FC> context)
+	{
+		return context.chunkPos().getStartPos().add(context.random().nextInt(16) - 8, 0, context.random().nextInt(16) - 8);
+	}
+
+	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, Predicate<BlockState> blockTester, Function<Random, BlockState> blockGetter, int yOffset)
+	{
+		int worldBottomY = world.getBottomY();
+		BlockBox blockBox = children.getBoundingBox();
+		int minY = blockBox.getMinY() + yOffset;
+		BlockPos.Mutable blockPos = new BlockPos.Mutable();
+
+		for (int x = chunkBox.getMinX(); x <= chunkBox.getMaxX(); x++)
+		{
+			for (int z = chunkBox.getMinZ(); z <= chunkBox.getMaxZ(); z++)
+			{
+				blockPos.set(x, minY, z);
+				if (blockTester.test(world.getBlockState(blockPos)) && blockBox.contains(blockPos) && children.contains(blockPos))
+				{
+					for (int y = minY - 1; y > worldBottomY; y--)
+					{
+						blockPos.setY(y);
+						if (world.isAir(blockPos) || world.getBlockState(blockPos).getMaterial().isLiquid())
+						{
+							world.setBlockState(blockPos, blockGetter.apply(random), Block.NOTIFY_ALL);
+						}
+						else if (y < blockBox.getMinY())  // outside the bounding box, stop filling now
+						{
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, Predicate<BlockState> blockTester, Function<Random, BlockState> blockGetter)
+	{
+		fillBottomAirGap(world, random, chunkBox, children, blockTester, blockGetter, 0);
+	}
+
 	protected abstract static class Piece extends SimpleStructurePiece
 	{
+		private final Object posLock = new Object();
 		private boolean positionAdjusted = false;
 
 		public Piece(StructurePieceType type, StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation)
 		{
 			super(type, 0, manager, identifier, identifier.toString(), createPlacementData(rotation), pos);
+			if (this.structure.getSize() == Vec3i.ZERO)
+			{
+				throw new IllegalArgumentException("Unknown structure: " + identifier);
+			}
 		}
 
 		public Piece(StructurePieceType type, StructureManager manager, NbtCompound nbt)
@@ -47,7 +99,7 @@ public abstract class SinglePieceLandStructure extends StructureFeature<DefaultF
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation)
 		{
-			return (new StructurePlacementData()).setRotation(rotation);
+			return (new StructurePlacementData()).setRotation(rotation).setPlaceFluids(false);
 		}
 
 		@Override
@@ -60,16 +112,19 @@ public abstract class SinglePieceLandStructure extends StructureFeature<DefaultF
 		@Override
 		public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos)
 		{
-			this.adjustPosByTerrain(world);
+			synchronized (this.posLock)
+			{
+				if (!this.positionAdjusted)
+				{
+					this.positionAdjusted = true;
+					this.adjustPosByTerrain(world);
+				}
+			}
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 		}
 
-		private synchronized void adjustPosByTerrain(StructureWorldAccess world)
+		protected void adjustPosByTerrain(StructureWorldAccess world)
 		{
-			if (this.positionAdjusted)
-			{
-				return;
-			}
 			int sumY = 0;
 			Vec3i size = this.structure.getSize();
 			Heightmap.Type type = Heightmap.Type.WORLD_SURFACE_WG;
@@ -79,7 +134,15 @@ public abstract class SinglePieceLandStructure extends StructureFeature<DefaultF
 			}
 			int avgY = sumY / (size.getX() * size.getZ());
 			this.pos = new BlockPos(this.pos.getX(), avgY, this.pos.getZ());
-			this.positionAdjusted = true;
+		}
+
+		protected void setChestLoot(ServerWorldAccess world, BlockPos chestPos, Random random, Identifier lootTableId)
+		{
+			BlockEntity blockEntity = world.getBlockEntity(chestPos);
+			if (blockEntity instanceof ChestBlockEntity)
+			{
+				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
+			}
 		}
 	}
 }
