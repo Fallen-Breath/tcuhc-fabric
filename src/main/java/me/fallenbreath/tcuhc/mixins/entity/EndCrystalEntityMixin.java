@@ -51,11 +51,22 @@ public abstract class EndCrystalEntityMixin extends Entity
 				if (this.attackCooldown <= 0)
 				{
 					float amount;
-					if (distanceSqrToTarget < 8 * 8) amount = 2.0F;
-					else if (distanceSqrToTarget < 16 * 16) amount = 1.5F;
-					else amount = 1.0F;
+					if (distanceSqrToTarget < 8 * 8)
+					{
+						amount = 2.0F;
+						this.attackCooldown = 25;
+					}
+					else if (distanceSqrToTarget < 16 * 16)
+					{
+						amount = 1.5F;
+						this.attackCooldown = 28;
+					}
+					else
+					{
+						amount = 1.0F;
+						this.attackCooldown = 30;
+					}
 					this.target.damage(new EntityDamageSource("mob", this), amount);
-					this.attackCooldown = 30;
 				}
 			}
 			else  // no target
