@@ -61,7 +61,7 @@ public abstract class ConfiguredStructureFeaturesMixin
 			if (SinglePieceLandStructure.canGenerateIn(biome))
 			{
 				register(registrar, UhcStructures.ENDER_PYRAMID, key);
-				if (forest.contains(key))
+				if (forest.contains(key) || taiga.contains(key))
 				{
 					register(registrar, UhcStructures.VILLAIN_HOUSE, key);
 				}

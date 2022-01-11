@@ -66,7 +66,17 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:book",
-          "functions": [{"function": "minecraft:enchant_randomly"}]
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": {
+                "type": "minecraft:uniform",
+                "min": 25,
+                "max": 35
+              },
+              "treasure": true
+            }
+          ]
         }
       ]
     }

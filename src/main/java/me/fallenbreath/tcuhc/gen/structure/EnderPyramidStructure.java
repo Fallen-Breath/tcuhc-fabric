@@ -32,8 +32,8 @@ public class EnderPyramidStructure extends SinglePieceLandStructure<DefaultFeatu
 	private static final Identifier MAIN_TEMPLATE = TcUhcMod.id("ender_pyramid/main");
 	private static final Identifier CHEST_LOOT_TABLE = TcUhcMod.id("ender_pyramid/chest");
 	private static final List<Block> BASE_BLOCKS = ImmutableList.of(
-			Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS,
-			Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE, Blocks.MOSSY_COBBLESTONE
+			Blocks.STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS,
+			Blocks.COBBLESTONE, Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE, Blocks.MOSSY_COBBLESTONE
 	);
 
 	public EnderPyramidStructure(Codec<DefaultFeatureConfig> configCodec)

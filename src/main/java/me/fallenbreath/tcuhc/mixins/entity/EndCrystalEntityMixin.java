@@ -5,6 +5,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +23,12 @@ public abstract class EndCrystalEntityMixin extends Entity
 	@Unique
 	private PlayerEntity target;
 
+	@Unique
+	private static final double MAX_RANGE_SQR = 32 * 32;
+
+	@Unique
+	private int attackCooldown;
+
 	@Shadow
 	public abstract void setBeamTarget(@Nullable BlockPos blockPos);
 
@@ -36,24 +44,29 @@ public abstract class EndCrystalEntityMixin extends Entity
 		{
 			this.setBeamTarget(this.target == null ? null : new BlockPos(this.target.getPos().getX(), this.target.getPos().getY() - 0.5, this.target.getPos().getZ()));
 
-			if (this.age % 5 == 0)
+			double distanceSqrToTarget = this.target == null ? MAX_RANGE_SQR : this.target.squaredDistanceTo(this);
+			if (this.target != null && distanceSqrToTarget < MAX_RANGE_SQR && this.target.canSee(this))  // has valid target
 			{
-				double distanceSqr = this.target == null ? 1024 : this.target.squaredDistanceTo(this);
-				if (this.target != null && distanceSqr < 1024 && this.target.canSee(this))
+				this.attackCooldown--;
+				if (this.attackCooldown <= 0)
 				{
-					if (this.age % 30 == 0)
-					{
-						float amount;
-						if (distanceSqr < 8 * 8) amount = 2.0F;
-						else if (distanceSqr < 16 * 16) amount = 1.5F;
-						else amount = 1.0F;
-						this.target.damage(new EntityDamageSource("mob", this), amount);
-					}
+					float amount;
+					if (distanceSqrToTarget < 8 * 8) amount = 2.0F;
+					else if (distanceSqrToTarget < 16 * 16) amount = 1.5F;
+					else amount = 1.0F;
+					this.target.damage(new EntityDamageSource("mob", this), amount);
+					this.attackCooldown = 30;
 				}
-				else
-				{
-					this.target = null;
+			}
+			else  // no target
+			{
+				// reset
+				this.target = null;
+				this.attackCooldown = 40;
 
+				if (this.age % 5 == 0)  // search target every 5gt
+				{
+					double maxDistance = MAX_RANGE_SQR;
 					for (PlayerEntity player : this.world.getNonSpectatingEntities(PlayerEntity.class, this.getBoundingBox().expand(32, 10, 32)))
 					{
 						if (player.isCreative() || player.isSpectator())
@@ -62,11 +75,15 @@ public abstract class EndCrystalEntityMixin extends Entity
 						}
 
 						double newdis = player.squaredDistanceTo(this);
-						if (newdis < distanceSqr && player.canSee(this))
+						if (newdis < maxDistance && player.canSee(this))
 						{
-							distanceSqr = newdis;
+							maxDistance = newdis;
 							this.target = player;
 						}
+					}
+					if (this.target != null)  // target found
+					{
+						this.target.playSound(SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.HOSTILE, 1.0F, 1.0F);
 					}
 				}
 			}
