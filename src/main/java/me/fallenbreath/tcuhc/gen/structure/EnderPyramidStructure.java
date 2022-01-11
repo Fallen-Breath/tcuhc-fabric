@@ -49,7 +49,7 @@ public class EnderPyramidStructure extends SinglePieceLandStructure<DefaultFeatu
 
 	private static void postGenerated(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, StructurePiecesList children)
 	{
-		fillBottomAirGap(world, random, chunkBox, children, blockState -> BASE_BLOCKS.contains(blockState.getBlock()), rnd -> BASE_BLOCKS.get(random.nextInt(BASE_BLOCKS.size())).getDefaultState());
+		fillBottomAirGap(world, random, chunkBox, children, (pos, blockState) -> BASE_BLOCKS.contains(blockState.getBlock()), rnd -> BASE_BLOCKS.get(random.nextInt(BASE_BLOCKS.size())).getDefaultState());
 	}
 
 	private static class Piece extends SinglePieceLandStructure.Piece

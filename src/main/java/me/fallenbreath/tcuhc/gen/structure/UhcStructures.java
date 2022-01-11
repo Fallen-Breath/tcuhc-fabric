@@ -23,6 +23,7 @@ public class UhcStructures
 	public static final Set<Biome.Category> CONTINENT_BIOMES = ImmutableSet.of(TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, FOREST, DESERT, SWAMP, MUSHROOM, MOUNTAIN);
 
 	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> ENDER_PYRAMID = createDefault("ender_pyramid", new EnderPyramidStructure(DefaultFeatureConfig.CODEC), EnderPyramidStructure.STRUCTURE_CONFIG);
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> VILLAIN_HOUSE = createDefault("villain_house", new VillainHouseStructure(DefaultFeatureConfig.CODEC), VillainHouseStructure.STRUCTURE_CONFIG);
 
 	private static final StructureFeature<GreenhouseConfig> GREENHOUSE = registerStructure("greenhouse", new GreenhouseStructure(GreenhouseConfig.CODEC), GreenhouseStructure.STRUCTURE_CONFIG);
 	public static final ConfiguredStructureFeature<GreenhouseConfig, ?> GREENHOUSE_SNOW = UhcRegistry.registerConfiguredStructure("greenhouse_snow", GREENHOUSE.configure(new GreenhouseConfig("snow")));

@@ -17,14 +17,15 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends StructureFeature<C>
 {
@@ -40,10 +41,32 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 
 	protected static <FC extends FeatureConfig> BlockPos shiftStartPosRandomly(StructurePiecesGenerator.Context<FC> context)
 	{
-		return context.chunkPos().getStartPos().add(context.random().nextInt(16) - 8, 0, context.random().nextInt(16) - 8);
+		return context.chunkPos().getStartPos().add(context.random().nextInt(16), 0, context.random().nextInt(16));
 	}
 
-	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, Predicate<BlockState> blockTester, Function<Random, BlockState> blockGetter, int yOffset)
+	protected static <FC extends FeatureConfig> boolean isBiomeValidInChunk(StructureGeneratorFactory.Context<FC> context)
+	{
+		for (int x = context.chunkPos().getStartX(); x <= context.chunkPos().getEndX(); x++)
+		{
+			for (int z = context.chunkPos().getStartZ(); z <= context.chunkPos().getEndZ(); z++)
+			{
+				if (!isBiomeValid(context, new BlockPos(x, 0, z)))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	protected static <FC extends FeatureConfig> boolean isBiomeValid(StructureGeneratorFactory.Context<FC> context, BlockPos pos)
+	{
+		int y = context.chunkGenerator().getHeightInGround(pos.getX(), pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
+		Biome biome = context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(pos.getX()), BiomeCoords.fromBlock(y), BiomeCoords.fromBlock(pos.getY()));
+		return context.validBiome().test(biome);
+	}
+
+	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, BiPredicate<BlockPos, BlockState> blockTester, Function<Random, BlockState> blockGetter, int yOffset)
 	{
 		int worldBottomY = world.getBottomY();
 		BlockBox blockBox = children.getBoundingBox();
@@ -55,7 +78,7 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			for (int z = chunkBox.getMinZ(); z <= chunkBox.getMaxZ(); z++)
 			{
 				blockPos.set(x, minY, z);
-				if (blockTester.test(world.getBlockState(blockPos)) && blockBox.contains(blockPos) && children.contains(blockPos))
+				if (blockTester.test(blockPos, world.getBlockState(blockPos)) && blockBox.contains(blockPos) && children.contains(blockPos))
 				{
 					for (int y = minY - 1; y > worldBottomY; y--)
 					{
@@ -73,7 +96,7 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			}
 		}
 	}
-	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, Predicate<BlockState> blockTester, Function<Random, BlockState> blockGetter)
+	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, BiPredicate<BlockPos, BlockState> blockTester, Function<Random, BlockState> blockGetter)
 	{
 		fillBottomAirGap(world, random, chunkBox, children, blockTester, blockGetter, 0);
 	}
@@ -143,6 +166,11 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			{
 				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}
+		}
+
+		@Override
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox)
+		{
 		}
 	}
 }

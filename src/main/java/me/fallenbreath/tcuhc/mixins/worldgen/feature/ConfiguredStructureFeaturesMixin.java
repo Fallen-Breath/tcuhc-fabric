@@ -1,7 +1,6 @@
 package me.fallenbreath.tcuhc.mixins.worldgen.feature;
 
-import me.fallenbreath.tcuhc.gen.structure.EnderPyramidStructure;
-import me.fallenbreath.tcuhc.gen.structure.GreenhouseStructure;
+import me.fallenbreath.tcuhc.gen.structure.SinglePieceLandStructure;
 import me.fallenbreath.tcuhc.gen.structure.UhcStructures;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryKey;
@@ -59,12 +58,13 @@ public abstract class ConfiguredStructureFeaturesMixin
 		BuiltinRegistries.BIOME.getEntries().forEach(entry -> {
 			RegistryKey<Biome> key = entry.getKey();
 			Biome biome = entry.getValue();
-			if (EnderPyramidStructure.canGenerateIn(biome))
+			if (SinglePieceLandStructure.canGenerateIn(biome))
 			{
 				register(registrar, UhcStructures.ENDER_PYRAMID, key);
-			}
-			if (GreenhouseStructure.canGenerateIn(biome))
-			{
+				if (forest.contains(key))
+				{
+					register(registrar, UhcStructures.VILLAIN_HOUSE, key);
+				}
 				switch (biome.getPrecipitation())
 				{
 					case NONE:

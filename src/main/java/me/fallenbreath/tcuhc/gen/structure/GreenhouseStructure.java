@@ -18,11 +18,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -46,28 +43,11 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 	private static final Map<String, StructurePieceType> POSSIBLE_TYPES = ImmutableMap.of(SNOW, SNOW_PIECE_TYPE, DESERT, DESERT_PIECE_TYPE);
 	private static final Map<String, Identifier> CHEST_LOOT_TABLES = ImmutableMap.of(SNOW, CHEST_SNOW_LOOT_TABLE, DESERT, CHEST_DESERT_LOOT_TABLE);
 	private static final Map<String, Block> GROUND_FILLER_BLOCK = ImmutableMap.of(SNOW, Blocks.DEEPSLATE_BRICKS, DESERT, Blocks.SANDSTONE);
-	private static final Map<String, Integer> GROUND_OFFSET = ImmutableMap.of(SNOW, -1, DESERT, -3);
+	private static final Map<String, Integer> FLOOR_OFFSET = ImmutableMap.of(SNOW, 1, DESERT, 3);
 
 	public GreenhouseStructure(Codec<GreenhouseConfig> configCodec)
 	{
-		super(configCodec, StructureGeneratorFactory.simple(GreenhouseStructure::canGenerate, GreenhouseStructure::addPieces), GreenhouseStructure::postGenerated);
-	}
-
-	private static boolean canGenerate(StructureGeneratorFactory.Context<GreenhouseConfig> context)
-	{
-		int cx = context.chunkPos().getCenterX();
-		int cz = context.chunkPos().getCenterZ();
-		for (int x = cx - 1; x <= cx + 1; x++)
-			for (int z = cz - 1; z <= cz + 1; z++)
-			{
-				int k = context.chunkGenerator().getHeightInGround(cx, cz, Heightmap.Type.WORLD_SURFACE_WG, context.world());
-				Biome biome = context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(cx), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(cz));
-				if (!context.validBiome().test(biome))
-				{
-					return false;
-				}
-			}
-		return true;
+		super(configCodec, StructureGeneratorFactory.simple(GreenhouseStructure::isBiomeValidInChunk, GreenhouseStructure::addPieces), GreenhouseStructure::postGenerated);
 	}
 
 	private static Identifier getStructureId(String type)
@@ -110,7 +90,7 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 			{
 				String type = ((Piece) piece).getGreenhouseType();
 				BlockState dummy = GROUND_FILLER_BLOCK.get(type).getDefaultState();
-				fillBottomAirGap(world, random, chunkBox, children, blockState -> !blockState.isAir(), rnd -> dummy, -GROUND_OFFSET.get(type));
+				fillBottomAirGap(world, random, chunkBox, children, (pos, blockState) -> !blockState.isAir(), rnd -> dummy, FLOOR_OFFSET.get(type));
 			}
 		}
 	}
@@ -237,7 +217,7 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 		protected void adjustPosByTerrain(StructureWorldAccess world)
 		{
 			super.adjustPosByTerrain(world);
-			this.pos = this.pos.up(GROUND_OFFSET.getOrDefault(this.type, 0));
+			this.pos = this.pos.down(FLOOR_OFFSET.getOrDefault(this.type, 0));
 		}
 	}
 }
