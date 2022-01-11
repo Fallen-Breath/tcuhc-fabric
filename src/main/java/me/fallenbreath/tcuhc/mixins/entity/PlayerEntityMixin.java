@@ -90,20 +90,19 @@ public abstract class PlayerEntityMixin extends LivingEntity
 		Entity sourceEntity = source.getSource();
 		if (!(sourceEntity instanceof ServerPlayerEntity)) sourceEntity = source.getAttacker();
 		if (sourceEntity instanceof ServerPlayerEntity && amount > 0.0F) {
+			// the same logic in net.minecraft.entity.LivingEntity.damage
+			boolean blocked = this.blockedByShield(source);
 
 			// target player
-			UhcGamePlayer.EnumStat stat = UhcGamePlayer.EnumStat.DAMAGE_TAKEN;
-			// the same logic in net.minecraft.entity.LivingEntity.damage
-			if (this.blockedByShield(source)) {
-				stat = UhcGamePlayer.EnumStat.DAMAGE_BLOCKED;
-			}
-			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(self).getStat().addStat(stat, amount);
+			UhcGamePlayer.PlayerStatistics targetStat = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(self).getStat();
+			targetStat.addStat(blocked ? UhcGamePlayer.EnumStat.DAMAGE_BLOCKED : UhcGamePlayer.EnumStat.DAMAGE_TAKEN, amount);
 
 			// source player
-			UhcGamePlayer.PlayerStatistics statistics = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((ServerPlayerEntity)sourceEntity).getStat();
-			statistics.addStat(UhcGamePlayer.EnumStat.DAMAGE_DEALT, amount);
-			if (this.getScoreboardTeam() != null && this.getScoreboardTeam().isEqual(sourceEntity.getScoreboardTeam())) {
-				statistics.addStat(UhcGamePlayer.EnumStat.FRIENDLY_FIRE, amount);
+			UhcGamePlayer.PlayerStatistics sourceStat = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((ServerPlayerEntity)sourceEntity).getStat();
+			sourceStat.addStat(blocked ? UhcGamePlayer.EnumStat.DAMAGE_BEING_BLOCKED : UhcGamePlayer.EnumStat.DAMAGE_DEALT, amount);
+
+			if (this.getScoreboardTeam() != null && this.getScoreboardTeam().isEqual(sourceEntity.getScoreboardTeam()) && !blocked) {
+				sourceStat.addStat(UhcGamePlayer.EnumStat.FRIENDLY_FIRE, amount);
 			}
 		}
 	}
