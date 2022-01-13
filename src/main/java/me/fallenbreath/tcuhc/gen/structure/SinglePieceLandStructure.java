@@ -85,7 +85,7 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 					for (int y = minY - 1; y > worldBottomY; y--)
 					{
 						blockPos.setY(y);
-						if (world.isAir(blockPos) || world.getBlockState(blockPos).getMaterial().isLiquid())
+						if (world.isAir(blockPos) || world.getBlockState(blockPos).getMaterial().isReplaceable())
 						{
 							world.setBlockState(blockPos, blockGetter.apply(random), Block.NOTIFY_ALL);
 						}
