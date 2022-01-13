@@ -109,6 +109,10 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig>
 							with(ChestBlock.WATERLOGGED, hasWater)
 					, 3
 			);
+			if (worldIn.getBlockState(position.up()).getBlock() == Blocks.SNOW)
+			{
+				worldIn.setBlockState(position.up(), Blocks.AIR.getDefaultState(), 3);
+			}
 			BlockEntity tileentity = worldIn.getBlockEntity(position);
 			if (!(tileentity instanceof ChestBlockEntity))
 			{
