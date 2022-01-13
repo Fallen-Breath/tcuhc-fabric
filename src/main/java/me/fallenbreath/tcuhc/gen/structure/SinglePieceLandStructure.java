@@ -103,9 +103,6 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 
 	protected abstract static class Piece extends SimpleStructurePiece
 	{
-		private final Object posLock = new Object();
-		private boolean positionAdjusted = false;
-
 		public Piece(StructurePieceType type, StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation)
 		{
 			super(type, 0, manager, identifier, identifier.toString(), createPlacementData(rotation), pos);
@@ -135,28 +132,16 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 		@Override
 		public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos)
 		{
-			synchronized (this.posLock)
-			{
-				if (!this.positionAdjusted)
-				{
-					this.positionAdjusted = true;
-					this.adjustPosByTerrain(world);
-				}
-			}
+			this.adjustPosByTerrain(world);
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 		}
 
 		protected void adjustPosByTerrain(StructureWorldAccess world)
 		{
-			int sumY = 0;
-			Vec3i size = this.structure.getSize();
-			Heightmap.Type type = Heightmap.Type.WORLD_SURFACE_WG;
-			for (BlockPos blockPos : BlockPos.iterate(this.boundingBox.getMinX(), 0, this.boundingBox.getMinZ(), this.boundingBox.getMaxX(), 0, this.boundingBox.getMaxZ()))
-			{
-				sumY += world.getTopY(type, blockPos.getX(), blockPos.getZ());
-			}
-			int avgY = sumY / (size.getX() * size.getZ());
-			this.pos = new BlockPos(this.pos.getX(), avgY, this.pos.getZ());
+			int midX = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
+			int midZ = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
+			int sampledY = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, midX, midZ);
+			this.pos = new BlockPos(this.pos.getX(), sampledY, this.pos.getZ());
 		}
 
 		protected void setChestLoot(ServerWorldAccess world, BlockPos chestPos, Random random, Identifier lootTableId)
