@@ -22,29 +22,43 @@ public class UhcStructures
 {
 	public static final Set<Biome.Category> CONTINENT_BIOMES = ImmutableSet.of(TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, FOREST, DESERT, SWAMP, MUSHROOM, MOUNTAIN);
 
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> ENDER_PYRAMID = createDefault("ender_pyramid", new EnderPyramidStructure(DefaultFeatureConfig.CODEC), EnderPyramidStructure.STRUCTURE_CONFIG);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> VILLAIN_HOUSE = createDefault("villain_house", new VillainHouseStructure(DefaultFeatureConfig.CODEC), VillainHouseStructure.STRUCTURE_CONFIG);
+	// StructureFeature
+	private static class SF
+	{
+		private static final StructureFeature<DefaultFeatureConfig> ENDER_PYRAMID = registerStructure("ender_pyramid", new EnderPyramidStructure(DefaultFeatureConfig.CODEC));
+		private static final StructureFeature<GreenhouseConfig> GREENHOUSE = registerStructure("greenhouse", new GreenhouseStructure(GreenhouseConfig.CODEC));
+		private static final StructureFeature<DefaultFeatureConfig> VILLAIN_HOUSE = registerStructure("villain_house", new VillainHouseStructure(DefaultFeatureConfig.CODEC));
+		private static final StructureFeature<DefaultFeatureConfig> HONEY_WORKSHOP = registerStructure("honey_workshop", new HoneyWorkshopStructure(DefaultFeatureConfig.CODEC));
 
-	private static final StructureFeature<GreenhouseConfig> GREENHOUSE = registerStructure("greenhouse", new GreenhouseStructure(GreenhouseConfig.CODEC), GreenhouseStructure.STRUCTURE_CONFIG);
-	public static final ConfiguredStructureFeature<GreenhouseConfig, ?> GREENHOUSE_SNOW = UhcRegistry.registerConfiguredStructure("greenhouse_snow", GREENHOUSE.configure(new GreenhouseConfig("snow")));
-	public static final ConfiguredStructureFeature<GreenhouseConfig, ?> GREENHOUSE_DESERT = UhcRegistry.registerConfiguredStructure("greenhouse_desert", GREENHOUSE.configure(new GreenhouseConfig("desert")));
+		private static final Map<StructureFeature<?>, StructureConfig> STRUCTURE_CONFIG_MAP = new ImmutableMap.Builder<StructureFeature<?>, StructureConfig>().
+				put(ENDER_PYRAMID, new StructureConfig(40, 24, 591497057)).
+				put(GREENHOUSE, new StructureConfig(32, 8, 981666224)).
+				put(VILLAIN_HOUSE, new StructureConfig(28, 12, 1323770494)).
+				put(HONEY_WORKSHOP, new StructureConfig(32, 8, 1124961827)).
+				build();
+
+		public static void load()
+		{
+			Map<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfigAccessor.getDEFAULT_STRUCTURES());
+			map.putAll(STRUCTURE_CONFIG_MAP);
+			StructuresConfigAccessor.setDEFAULT_STRUCTURES(new ImmutableMap.Builder<StructureFeature<?>, StructureConfig>().putAll(map).build());
+		}
+	}
+
+	// ConfiguredStructureFeature
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> ENDER_PYRAMID = UhcRegistry.registerConfiguredStructure("ender_pyramid", SF.ENDER_PYRAMID.configure(DefaultFeatureConfig.INSTANCE));
+	public static final ConfiguredStructureFeature<GreenhouseConfig, ?> GREENHOUSE_SNOW = UhcRegistry.registerConfiguredStructure("greenhouse_snow", SF.GREENHOUSE.configure(new GreenhouseConfig("snow")));
+	public static final ConfiguredStructureFeature<GreenhouseConfig, ?> GREENHOUSE_DESERT = UhcRegistry.registerConfiguredStructure("greenhouse_desert", SF.GREENHOUSE.configure(new GreenhouseConfig("desert")));
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> VILLAIN_HOUSE = UhcRegistry.registerConfiguredStructure("villain_house", SF.VILLAIN_HOUSE.configure(DefaultFeatureConfig.INSTANCE));
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ?> HONEY_WORKSHOP = UhcRegistry.registerConfiguredStructure("honey_workshop", SF.HONEY_WORKSHOP.configure(DefaultFeatureConfig.INSTANCE));
 
 	public static void load()
 	{
-		// no op
+		SF.load();
 	}
 
-	private static <FC extends FeatureConfig, F extends StructureFeature<FC>> F registerStructure(String name, F structure, StructureConfig config)
+	private static <FC extends FeatureConfig, F extends StructureFeature<FC>> F registerStructure(String name, F structure)
 	{
-		F struct = UhcRegistry.registerStructure(name, structure, GenerationStep.Feature.SURFACE_STRUCTURES);
-		Map<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfigAccessor.getDEFAULT_STRUCTURES());
-		map.put(struct, config);
-		StructuresConfigAccessor.setDEFAULT_STRUCTURES(new ImmutableMap.Builder<StructureFeature<?>, StructureConfig>().putAll(map).build());
-		return struct;
-	}
-
-	private static <F extends StructureFeature<DefaultFeatureConfig>> ConfiguredStructureFeature<DefaultFeatureConfig, ?> createDefault(String name, F structure, StructureConfig config)
-	{
-		return UhcRegistry.registerConfiguredStructure(name, registerStructure(name, structure, config).configure(DefaultFeatureConfig.INSTANCE));
+		return UhcRegistry.registerStructure(name, structure, GenerationStep.Feature.SURFACE_STRUCTURES);
 	}
 }

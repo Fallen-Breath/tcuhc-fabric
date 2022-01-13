@@ -55,6 +55,11 @@ public abstract class ConfiguredStructureFeaturesMixin
 		register(registrar, BURIED_TREASURE, river);
 
 		//  ======== UHC Structures ========
+		register(registrar, UhcStructures.HONEY_WORKSHOP, BiomeKeys.FLOWER_FOREST);
+		register(registrar, UhcStructures.HONEY_WORKSHOP, BiomeKeys.PLAINS);
+		register(registrar, UhcStructures.HONEY_WORKSHOP, BiomeKeys.SNOWY_PLAINS);
+		register(registrar, UhcStructures.HONEY_WORKSHOP, BiomeKeys.SUNFLOWER_PLAINS);
+
 		BuiltinRegistries.BIOME.getEntries().forEach(entry -> {
 			RegistryKey<Biome> key = entry.getKey();
 			Biome biome = entry.getValue();

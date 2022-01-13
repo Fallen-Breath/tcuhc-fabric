@@ -22,7 +22,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.Random;
 
 public class VillainHouseStructure extends SinglePieceLandStructure<DefaultFeatureConfig>
 {
-	public static final StructureConfig STRUCTURE_CONFIG = new StructureConfig(28, 12, 1323770494);
 	private static final StructurePieceType PIECE_TYPE = UhcRegistry.registerStructurePieceType(Piece::new, "villain_house_piece");
 
 	private static final Identifier MAIN_TEMPLATE = TcUhcMod.id("villain_house/main");
@@ -72,26 +70,9 @@ public class VillainHouseStructure extends SinglePieceLandStructure<DefaultFeatu
 		collector.addPiece(new Piece(context.structureManager(), MAIN_TEMPLATE, shiftStartPosRandomly(context), rotation));
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void postGenerated(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, StructurePiecesList children)
 	{
-		BlockBox[] bottomBox = new BlockBox[]{null};
-		fillBottomAirGap(
-				world, random, chunkBox, children,
-				(pos, blockState) -> {
-					if (bottomBox[0] != null && bottomBox[0].contains(pos))
-					{
-						return true;
-					}
-					if (BASE_BLOCKS.contains(blockState.getBlock()))
-					{
-						bottomBox[0] = bottomBox[0] == null ? new BlockBox(pos) : bottomBox[0].encompass(pos);
-					}
-					return bottomBox[0] != null && bottomBox[0].contains(pos);
-				},
-				rnd -> BASE_BLOCKS.get(random.nextInt(BASE_BLOCKS.size())).getDefaultState(),
-				FLOOR_OFFSET
-		);
+		fillBottomAirGapInAutoBox(world, random, chunkBox, children, BASE_BLOCKS, BASE_BLOCKS, FLOOR_OFFSET);
 	}
 
 	private static class Piece extends SinglePieceLandStructure.Piece

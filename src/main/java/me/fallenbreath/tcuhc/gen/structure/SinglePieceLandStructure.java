@@ -23,6 +23,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -96,9 +98,27 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			}
 		}
 	}
-	protected static void fillBottomAirGap(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, BiPredicate<BlockPos, BlockState> blockTester, Function<Random, BlockState> blockGetter)
+
+	@SuppressWarnings("deprecation")
+	protected static void fillBottomAirGapInAutoBox(StructureWorldAccess world, Random random, BlockBox chunkBox, StructurePiecesList children, Collection<Block> baseBlocks, List<Block> fillerBlocks, int yOffset)
 	{
-		fillBottomAirGap(world, random, chunkBox, children, blockTester, blockGetter, 0);
+		BlockBox[] bottomBox = new BlockBox[]{null};
+		fillBottomAirGap(
+				world, random, chunkBox, children,
+				(pos, blockState) -> {
+					if (bottomBox[0] != null && bottomBox[0].contains(pos))
+					{
+						return true;
+					}
+					if (baseBlocks.contains(blockState.getBlock()))
+					{
+						bottomBox[0] = bottomBox[0] == null ? new BlockBox(pos) : bottomBox[0].encompass(pos);
+					}
+					return bottomBox[0] != null && bottomBox[0].contains(pos);
+				},
+				rnd -> fillerBlocks.get(random.nextInt(fillerBlocks.size())).getDefaultState(),
+				yOffset
+		);
 	}
 
 	protected abstract static class Piece extends SimpleStructurePiece

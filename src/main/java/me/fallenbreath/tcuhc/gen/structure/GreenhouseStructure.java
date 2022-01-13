@@ -22,7 +22,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,6 @@ import java.util.Random;
 
 public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConfig>
 {
-	public static final StructureConfig STRUCTURE_CONFIG = new StructureConfig(32, 8, 981666224);
-
 	private static final String SNOW = "snow";
 	private static final String DESERT = "desert";
 
