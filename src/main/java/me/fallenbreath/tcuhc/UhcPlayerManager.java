@@ -44,10 +44,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class UhcPlayerManager
 {
@@ -451,23 +448,19 @@ public class UhcPlayerManager
 		switch (UhcGameManager.getGameMode()) {
 			case NORMAL:
 			case KING: {
-				int playerCount = combatPlayerList.size();
+
 				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
-				playersPerTeam = playerCount / teamCount + (playerCount % teamCount == 0 ? 0 : 1);
-				int morePlayers = playerCount % teamCount;
-				int[] randomTeam = new int[playerCount];
-				int posCnt = 0;
-				for (int i = 0; i < teamCount; i++) {
-					for (int j = (morePlayers > 0 && i >= morePlayers ? 1 : 0); j < playersPerTeam; j++)
-						randomTeam[posCnt++] = i;
+
+				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
+				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
+				Map<UhcGamePlayer,Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
+				List<List<UhcGamePlayer>> teamResult = allocator.matchMaking(PlayerScores,teamCount);
+
+				for (int i=0;i<teamCount;i++){
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
-				}
-				for (int i = 0; i < playerCount; i++) {
-					int pos = UhcGameManager.rand.nextInt(playerCount - i) + i;
-					int temp = randomTeam[i];
-					randomTeam[i] = randomTeam[pos];
-					randomTeam[pos] = temp;
-					teams.get(randomTeam[i]).addPlayer(combatPlayerList.get(i));
+					for (UhcGamePlayer player:teamResult.get(i)){
+						teams.get(i).addPlayer(player);
+					}
 				}
 				break;
 			}
@@ -596,6 +589,27 @@ public class UhcPlayerManager
 			return teams.get(0).getPlayers().iterator().next();
 		}
 		return null;
+	}
+
+	/**
+	 * 游戏结束后计算玩家分数
+	 * */
+	public void endPlayerCal(){
+		PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
+		for (UhcGamePlayer player:combatPlayerList){
+			UUID UUID = player.getPlayerUUID();
+			float damageDealt = player.getStat().getFloatStat(EnumStat.DAMAGE_DEALT);
+			float damageTake = player.getStat().getFloatStat(EnumStat.DAMAGE_TAKEN);
+			float playerKill = player.getStat().getFloatStat(EnumStat.PLAYER_KILLED);
+
+			if (damageTake<=1){
+				damageTake = 1;
+			}
+			double DTRadio = damageDealt/damageTake;
+			double factor = Math.pow(1.2,playerKill);
+			Handler.updatePersonalPP( DTRadio*factor,player.getPlayerUUID());
+		}
+		Handler.saveData();
 	}
 	
 	public void setupIngameTeams() {

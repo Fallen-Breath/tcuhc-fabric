@@ -239,6 +239,8 @@ public class UhcGameManager extends Taskable {
 		isGameEnded = true;
 		removeWorldBorder();
 		TaskScoreboard.hideScoreboard();
+		//暂停接受UHC regen的指令,计算和更新pp
+		playerManager.endPlayerCal();
 		bossInfo.ifPresent(info -> info.setVisible(false));
 		bossInfo = Optional.empty();
 	}
@@ -247,10 +249,19 @@ public class UhcGameManager extends Taskable {
 		if (isGameEnded || !isGamePlaying) return;
 		int remainTeamCnt = 0;
 		UhcGameTeam winner = null;
+		PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
+
 		for (UhcGameTeam team : playerManager.getTeams()) {
 			if (team.getAliveCount() > 0) {
 				remainTeamCnt++;
 				winner = team;
+				for (UhcGamePlayer player:team.getPlayers()){ //更新每个玩家的连胜数据
+					dataHandler.processWinStreak(player.getPlayerUUID(),true);
+				}
+			}else {
+				for (UhcGamePlayer player:team.getPlayers()){//更新每个玩家的连胜数据
+					dataHandler.processWinStreak(player.getPlayerUUID(),false);
+				}
 			}
 		}
 		if (remainTeamCnt == 1)
@@ -265,6 +276,7 @@ public class UhcGameManager extends Taskable {
 				player.getStat().setStat(EnumStat.ALIVE_TIME, uhcOptions.getIntegerOptionValue("gameTime") - this.getGameTimeRemaining());
 		}
 		winnerList.setWinner(team.getPlayers());
+
 		this.endGame();
 		this.addTask(new TaskBroadcastData(160));
 	}
