@@ -1,6 +1,9 @@
 package me.fallenbreath.tcuhc.gen.structure;
 
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
+import me.fallenbreath.tcuhc.util.collection.ExpiringMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -123,6 +126,8 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 
 	protected abstract static class Piece extends SimpleStructurePiece
 	{
+		private static final Long2ObjectMap<Integer> Y_ADJUST_CACHE = Long2ObjectMaps.synchronize(new ExpiringMap<>(5 * 1000));  // 5s cache
+
 		public Piece(StructurePieceType type, StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation)
 		{
 			super(type, 0, manager, identifier, identifier.toString(), createPlacementData(rotation), pos);
@@ -158,10 +163,17 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 
 		protected void adjustPosByTerrain(StructureWorldAccess world)
 		{
-			int midX = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
-			int midZ = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
-			int sampledY = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, midX, midZ);
-			this.pos = new BlockPos(this.pos.getX(), sampledY, this.pos.getZ());
+			int newY = Y_ADJUST_CACHE.computeIfAbsent(this.pos.asLong(), key -> {
+				int sumY = 0;
+				Vec3i size = this.structure.getSize();
+				Heightmap.Type type = Heightmap.Type.WORLD_SURFACE_WG;
+				for (BlockPos blockPos : BlockPos.iterate(this.boundingBox.getMinX(), 0, this.boundingBox.getMinZ(), this.boundingBox.getMaxX(), 0, this.boundingBox.getMaxZ()))
+				{
+					sumY += world.getTopY(type, blockPos.getX(), blockPos.getZ());
+				}
+				return sumY / (size.getX() * size.getZ());
+			});
+			this.pos = new BlockPos(this.pos.getX(), newY, this.pos.getZ());
 		}
 
 		protected void setChestLoot(ServerWorldAccess world, BlockPos chestPos, Random random, Identifier lootTableId)
