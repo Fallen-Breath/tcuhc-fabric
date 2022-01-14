@@ -3,6 +3,7 @@ package me.fallenbreath.tcuhc.gen.structure;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
+import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.util.collection.ExpiringMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -135,16 +136,27 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			{
 				throw new IllegalArgumentException("Unknown structure: " + identifier);
 			}
+			this.ensureStructureDataExists();
 		}
 
 		public Piece(StructurePieceType type, StructureManager manager, NbtCompound nbt)
 		{
 			super(type, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rotation"))));
+			this.ensureStructureDataExists();
 		}
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation)
 		{
 			return (new StructurePlacementData()).setRotation(rotation).setPlaceFluids(false);
+		}
+
+		private void ensureStructureDataExists()
+		{
+			Vec3i size = this.structure.getSize();
+			if (size.getX() * size.getY() * size.getZ() == 0)
+			{
+				UhcGameManager.LOG.error("Empty structure with template {}", this.template);
+			}
 		}
 
 		@Override

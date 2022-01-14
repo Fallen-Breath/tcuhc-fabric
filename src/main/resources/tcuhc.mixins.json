@@ -64,6 +64,8 @@
     "worldgen.ore.OreFeatureMixin",
     "worldgen.ore.PlacedFeatureAccessor",
     "worldgen.ore.PlacedFeaturesMixin",
+    "worldgen.structure.BuriedTreasureFeatureMixin",
+    "worldgen.structure.ShipwreckFeatureMixin",
     "worldgen.structure.StructuresConfigMixin",
     "worldgen.world.CaveCarverMixin",
     "worldgen.world.NoiseColumnSamplerMixin",
