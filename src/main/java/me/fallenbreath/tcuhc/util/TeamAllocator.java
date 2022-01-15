@@ -6,7 +6,6 @@ import org.lwjgl.system.CallbackI;
 import java.util.*;
 
 public class TeamAllocator {
-    final double k_point_factor = 1.5; // 战力修正值, 越大的话说明战斗力质量越重要.
     public static TeamAllocator teamAllocator = new TeamAllocator();
     private TeamAllocator() {
 
@@ -50,19 +49,16 @@ public class TeamAllocator {
             double t2 = i-mean;
             t1 += t2*t2;
         }
-        double std = Math.sqrt(t1);
-        return std;
+        return Math.sqrt(t1);
+
     }
     public double mean (ArrayList<Double> data){
         double sum = 0;
         for (double i:data){
             sum += i;
         }
-        double mean = sum/data.size();
-        return mean;
+        return sum/data.size();
     }
-
-
 
     public void shuffle(ArrayList<String> a){
         for (int i=a.size()-1;i>0;i--){
@@ -72,19 +68,5 @@ public class TeamAllocator {
              a.set(j,t);
         }
     }
-    /****
-     * 承伤量
-     * <伤害量> -> 不考虑力量2
-     *
-     * 击杀数:修正值
-     *
-     *
-     *
-     *
-     *
-     *
-     * 100
-       100
-     *
-     * */
+
 }
