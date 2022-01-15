@@ -45,10 +45,8 @@ public class UhcGameManager extends Taskable {
 	public static final Logger LOG = LogManager.getLogger("TC UHC");
 	public static UhcGameManager instance;
 	public static final Random rand = new Random();
-	PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
-
 	private final MinecraftServer mcServer;
-	private PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
+	private PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 
 	private final UhcPlayerManager playerManager;
 	private final UhcConfigManager configManager = new UhcConfigManager();
