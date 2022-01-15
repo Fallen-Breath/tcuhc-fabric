@@ -89,6 +89,11 @@ public class Options {
 		addOption(new Option("mobCount", "Mob Count", new OptionType.IntegerType(10, 300, 10), 70).setNeedToSave().setDescription("Adjust number of monsters in the world."));
 
 		addOption(new Option("matchMakingLevel","SkillBasedMatchMakingLevel",new OptionType.IntegerType(0,10,1),1).setNeedToSave().setDescription("Adjust fairness of skill based matchmaking "));
+		addOption(new Option("k_point_factor","SinglePlayerFactor",new OptionType.FloatType(0,2.0f,0.01f),1.2f).setNeedToSave().setDescription("Adjust importance of single player during the matchmaking"));
+		addOption(new Option("k_singleGame","SingleGameFactor",new OptionType.FloatType(0,1.0f,0.01f),0.2f).setNeedToSave().setDescription("Adjust importance of single game during the calculation of performance point"));
+		addOption(new Option("k_wStreak","WinStreakFactor",new OptionType.FloatType(0,2.0f,0.01f),1.2f).setNeedToSave().setDescription("Adjust importance of win streak during calculation of performance point"));
+		addOption(new Option("k_player_kill","PlayerKillFactor",new OptionType.FloatType(0,2.0f,0.01f),1.2f).setNeedToSave().setDescription("Adjust importance of player kill during calculation of performance point"));
+
 
 		loadPropertiesFile();
 		savePropertiesFile();

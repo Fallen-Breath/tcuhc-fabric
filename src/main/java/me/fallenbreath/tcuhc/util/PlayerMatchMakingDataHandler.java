@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
+import me.fallenbreath.tcuhc.options.Options;
 
 import java.io.*;
 import java.util.HashMap;
@@ -13,31 +14,30 @@ import java.util.UUID;
 
 public class PlayerMatchMakingDataHandler {
     /**
-     *  队伍分配影响因素:
-     *  输出/承伤系数
-     *
-     *  输出总量
-     *
-     *  分数计算 = 系数 * 输出总量
-     *
-     *  连胜/连败
-     *
-     * */
-    final double k_point_factor = 1.3; // 战力修正值, 越大的话说明战斗力质量越重要.
-    static double k_singleGame = 0.2; // pp更新常数 越大说明单局游戏的表现影响越高
-    static double k_wStreak = 1.025; // 连胜影响系数 越大说明连胜/连败影响越大
+     * 队伍分配影响因素:
+     * 输出/承伤系数
+     * <p>
+     * 输出总量
+     * <p>
+     * 分数计算 = 系数 * 输出总量
+     * <p>
+     * 连胜/连败
+     */
     final private String path;
     final private static PlayerMatchMakingDataHandler PLAYER_MATCH_MAKING_DATA_HANDLER = new PlayerMatchMakingDataHandler("playerData.txt");
     final private Gson gson = new Gson();
-    private Map<UUID,PlayerMatchMakingData> playerData;
-    public PlayerMatchMakingDataHandler(String path){
+    private Map<UUID, PlayerMatchMakingData> playerData;
+    private final Options uhcOptions;
+
+    public PlayerMatchMakingDataHandler(String path) {
         this.path = path;
+        uhcOptions = Options.instance;
         File file = new File(path);
-        try{
+        try {
             boolean value = file.createNewFile();
-            if (value){
+            if (value) {
                 System.out.println("new File created");
-            }else {
+            } else {
                 System.out.println("File existed");
             }
         } catch (IOException e) {
@@ -45,99 +45,116 @@ public class PlayerMatchMakingDataHandler {
         }
         this.init();
     }
+
     public static PlayerMatchMakingDataHandler getDataBase() {
         return PLAYER_MATCH_MAKING_DATA_HANDLER;
     }
 
-    private void init(){
+    private void init() {
         playerData = new HashMap<>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String line;
-            while ((line = in.readLine())!= null){
+            while ((line = in.readLine()) != null) {
                 PlayerMatchMakingData data = unpack(line);
-                playerData.put(data.getUUID(),data);
+                playerData.put(data.getUUID(), data);
             }
             in.close();
-        }
-        catch (IOException e){
+        } catch (IOException e) {
         }
     }
-    public void saveData(){
-        try{
+
+    public void saveData() {
+        try {
             BufferedWriter out = new BufferedWriter(new FileWriter(path));
-            for (UUID s:playerData.keySet()){
+            for (UUID s : playerData.keySet()) {
                 out.write(pack(playerData.get(s)));
                 out.write("\n");
             }
             out.close();
-        }catch (IOException e){
+        } catch (IOException e) {
         }
     }
-    private PlayerMatchMakingData unpack(String str){
-        return gson.fromJson(str,PlayerMatchMakingData.class);
+
+    /**
+     * @param str json object in the string format
+     * @return a PlayerMatchMakingData object that unpacked from this String
+     */
+    private PlayerMatchMakingData unpack(String str) {
+        return gson.fromJson(str, PlayerMatchMakingData.class);
     }
-    private String pack (PlayerMatchMakingData data){
+    /**
+     * @param data a PlayerMatchMakingData object
+     * @return the json object in the string format
+     */
+
+    private String pack(PlayerMatchMakingData data) {
         return gson.toJson(data);
     }
 
-    public boolean add(PlayerMatchMakingData data){
-        if (playerData.containsKey(data.getUUID())){
+    /**
+     * @param data a PlayerMatchMakingData object
+     * @return if the data added successfully
+     * */
+    public boolean add(PlayerMatchMakingData data) {
+        if (playerData.containsKey(data.getUUID())) {
             return false;
         }
-        playerData.put(data.getUUID(),data);
+        playerData.put(data.getUUID(), data);
         saveData();
         return true;
     }
 
     /**
+     * @param SingleGame_PP player's performance point in the current game
+     * @param uuid player's uuid relative to current performance point
      *
-     * Update performance point of single player.
-     * 更新单一玩家的技能分数
-     *
-     */
-
-    public void updatePersonalPP (double SingleGame_PP,UUID uuid){
+     * */
+    public void updatePersonalPP(double SingleGame_PP, UUID uuid) {
+        double k_singleGame = uhcOptions.getFloatOptionValue("k_singleGame");
+        double k_wStreak = uhcOptions.getFloatOptionValue("k_wStreak");
         double hisPP = playerData.get(uuid).getHisPP();
         int wStreak = playerData.get(uuid).getWStreak();
-        playerData.get(uuid).setHisPP((1-k_singleGame)*hisPP+(k_singleGame*SingleGame_PP*Math.pow(k_wStreak,(wStreak-1))));
+        playerData.get(uuid).setHisPP((1 - k_singleGame) * hisPP + (k_singleGame * SingleGame_PP * Math.pow(k_wStreak, (wStreak - 1))));
     }
 
-     /**
-     * 更新玩家的连胜数据
+    /**
+     * @param win if the player win in the current game
+     * @param uuid player's uuid relative to current performance point
      * */
-    public void processWinStreak(UUID UUID,boolean win){
-        int winStreak = playerData.get(UUID).getWStreak();
+    public void processWinStreak(UUID uuid, boolean win) {
+        int winStreak = playerData.get(uuid).getWStreak();
 
-        if (winStreak<0&&win||winStreak>0&&!win){
+        if (winStreak < 0 && win || winStreak > 0 && !win) {
             winStreak = 0;
-        }else {
-            if (win){
+        } else {
+            if (win) {
                 winStreak++;
-            }else {
+            } else {
                 winStreak--;
             }
         }
-        playerData.get(UUID).setWStreak(winStreak);
+        playerData.get(uuid).setWStreak(winStreak);
     }
+
     /**
-     * 输入： 参与游戏的玩家列表
-     * 输出:  一个Map, Key:玩家， value:玩家的PP值
-     *
+     * @param combatPlayers A list of player that joined the game
+     * @return Map with UhcGamePlayer as key and performance point as key
      * */
-    public Map<UhcGamePlayer,Double> getPlayerWithScore(List<UhcGamePlayer> combatPlayers){
-        Map<UhcGamePlayer,Double> result = new HashMap<>();
-        for (UhcGamePlayer player:combatPlayers){
+    public Map<UhcGamePlayer, Double> getPlayerWithScore(List<UhcGamePlayer> combatPlayers) {
+        Map<UhcGamePlayer, Double> result = new HashMap<>();
+        double k_point_factor = uhcOptions.getIntegerOptionValue("k_point_factor");
+        for (UhcGamePlayer player : combatPlayers) {
             UUID uuid = player.getPlayerUUID();
-            if (playerData.containsKey(uuid)){ // 检测该玩家是否存在
-            }else {
-                playerData.put(uuid,new PlayerMatchMakingData(uuid,0,100)); //初始的PP值为100
+            if (!playerData.containsKey(uuid)) {// 检测该玩家是否存在
+                playerData.put(uuid, new PlayerMatchMakingData(uuid, 0, 100)); //初始的PP值为100
             }
-            double MPP = Math.pow(playerData.get(uuid).getHisPP(),k_point_factor);
-            result.put(player,MPP);
+            double MPP = Math.pow(playerData.get(uuid).getHisPP(), k_point_factor);
+            result.put(player, MPP);
         }
         return result;
     }
+
     public Map<UUID, PlayerMatchMakingData> getPlayerData() {
         return playerData;
     }
