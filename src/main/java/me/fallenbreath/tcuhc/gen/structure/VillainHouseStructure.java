@@ -103,7 +103,7 @@ public class VillainHouseStructure extends SinglePieceLandStructure<DefaultFeatu
 			{
 				case "villain":
 					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-					for (int i = random.nextInt(2); i >= 0; i--)
+					for (int i = 0; i < 2; i++)
 					{
 						EntityType<?> villainType = VILLAINS.get(random.nextInt(VILLAINS.size()));
 						Entity entity = villainType.create(world.toServerWorld());
