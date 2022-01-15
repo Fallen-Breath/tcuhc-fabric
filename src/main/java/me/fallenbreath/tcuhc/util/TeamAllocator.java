@@ -33,6 +33,7 @@ public class TeamAllocator {
                 }
             }
             res.get(weekTeam).add(player); //将这个玩家分配给最弱的队
+            scores[weekTeam]+=players.get(player);
         }
         return res;
     }

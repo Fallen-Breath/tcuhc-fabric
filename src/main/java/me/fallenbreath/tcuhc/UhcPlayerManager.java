@@ -54,7 +54,8 @@ public class UhcPlayerManager
 	private final List<UhcGamePlayer> combatPlayerList = Lists.newArrayList();
 	private final List<UhcGamePlayer> observePlayerList = Lists.newArrayList();
 	private final List<UhcGameTeam> teams = Lists.newArrayList();
-	
+	private PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
+
 	private int playersPerTeam;
 	
 	public UhcPlayerManager(UhcGameManager manager) {
@@ -448,9 +449,8 @@ public class UhcPlayerManager
 		switch (UhcGameManager.getGameMode()) {
 			case NORMAL:
 			case KING: {
-
 				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
-
+				playersPerTeam = combatPlayerList.size()/teamCount+1;
 				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
 				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 				Map<UhcGamePlayer,Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
@@ -595,7 +595,6 @@ public class UhcPlayerManager
 	 * 游戏结束后计算玩家分数
 	 * */
 	public void endPlayerCal(){
-		PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
 		for (UhcGamePlayer player:combatPlayerList){
 			UUID UUID = player.getPlayerUUID();
 			float damageDealt = player.getStat().getFloatStat(EnumStat.DAMAGE_DEALT);
