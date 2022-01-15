@@ -30,7 +30,6 @@ public abstract class ShipwreckFeatureMixin
 				World world = (World)context.world();
 				if (y > world.getSeaLevel() - 7)
 				{
-//					System.err.println("cancel ShipwreckFeature due to y = " + y);
 					cir.setReturnValue(false);
 				}
 			}

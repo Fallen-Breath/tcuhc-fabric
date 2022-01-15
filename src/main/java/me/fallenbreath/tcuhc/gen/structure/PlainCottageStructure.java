@@ -94,7 +94,6 @@ public class PlainCottageStructure extends SinglePieceLandStructure<DefaultFeatu
 				case "chest":
 					this.chestCounter++;
 					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-					System.err.println(this.pos + " " + this.chestCounter);
 					if (this.chestCounter == this.bonusChestIndex)
 					{
 						setChestLoot(world, pos.down(), random, CHEST_LOOT_TABLE);
