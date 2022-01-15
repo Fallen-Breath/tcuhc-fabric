@@ -14,10 +14,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static me.fallenbreath.tcuhc.helpers.ServerPlayerEntityHelper.doSpectateCheck;
 
@@ -30,7 +28,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 
 	@Shadow public abstract boolean isSpectator();
 	private Entity previousCameraEntity;
-	private float modifiedDamageAmount;
 
 	public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile)
 	{
@@ -62,51 +59,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity
 		}
 		// TC Plugin: Player Death Hook
 		UhcGameManager.instance.onPlayerDeath((ServerPlayerEntity) (Object) this, cause);
-	}
-
-	@Inject(
-			method = "damage",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
-			)
-	)
-	private void modifyAndRecordDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir)
-	{
-		this.modifiedDamageAmount = amount = UhcGameManager.instance.modifyPlayerDamage(amount);
-
-		Entity sourceEntity = source.getSource();
-		if (!(sourceEntity instanceof ServerPlayerEntity)) sourceEntity = source.getAttacker();
-		if (sourceEntity instanceof ServerPlayerEntity) {
-			UhcGameManager.instance.getUhcPlayerManager().getGamePlayer(this).getStat().addStat(UhcGamePlayer.EnumStat.DAMAGE_TAKEN, amount);
-			UhcGamePlayer.PlayerStatistics statistics = UhcGameManager.instance.getUhcPlayerManager().getGamePlayer((ServerPlayerEntity)sourceEntity).getStat();
-			statistics.addStat(UhcGamePlayer.EnumStat.DAMAGE_DEALT, amount);
-			if (this.getScoreboardTeam() != null && this.getScoreboardTeam().isEqual(sourceEntity.getScoreboardTeam())) {
-				statistics.addStat(UhcGamePlayer.EnumStat.FRIENDLY_FIRE, amount);
-			}
-		}
-	}
-
-	@ModifyArg(
-			method = "damage",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
-			),
-			index = 1
-	)
-	private float modifyAndRecordDamage(float amount)
-	{
-		return this.modifiedDamageAmount;
-	}
-
-	@Inject(method = "damage", at = @At("RETURN"))
-	private void afterDamageCalc(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir)
-	{
-		if (cir.getReturnValue())
-		{
-			UhcGameManager.instance.onPlayerDamaged((ServerPlayerEntity) (Object) this, source, this.modifiedDamageAmount);
-		}
 	}
 
 	@ModifyVariable(method = "setCameraEntity", at = @At("STORE"), ordinal = 1)

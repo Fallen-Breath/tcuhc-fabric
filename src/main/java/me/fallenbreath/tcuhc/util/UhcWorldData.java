@@ -27,13 +27,19 @@ public class UhcWorldData
 		File file = UhcGameManager.getDataFile();
 		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file)))
 		{
-			return new Gson().fromJson(reader, UhcWorldData.class);
+			UhcWorldData data = new Gson().fromJson(reader, UhcWorldData.class);
+			UhcGameManager.LOG.info("Loaded uhc world data");
+			return data;
 		}
 		catch (Exception e)
 		{
-			if (!(e instanceof FileNotFoundException))
+			if (e instanceof FileNotFoundException)
 			{
-				UhcGameManager.LOG.error("Failed to read uhc data file", e);
+				UhcGameManager.LOG.warn("Generating new uhc world data");
+			}
+			else
+			{
+				UhcGameManager.LOG.error("Failed to read uhc world data file", e);
 			}
 			return new UhcWorldData();
 		}

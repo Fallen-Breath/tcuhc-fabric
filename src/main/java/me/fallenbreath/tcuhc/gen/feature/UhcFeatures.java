@@ -1,4 +1,4 @@
-package me.fallenbreath.tcuhc.gen;
+package me.fallenbreath.tcuhc.gen.feature;
 
 import com.google.common.collect.ImmutableSet;
 import me.fallenbreath.tcuhc.util.UhcRegistry;

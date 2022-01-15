@@ -5,8 +5,8 @@
 package me.fallenbreath.tcuhc;
 
 import me.fallenbreath.tcuhc.UhcGamePlayer.EnumStat;
-import me.fallenbreath.tcuhc.mixins.access.MinecraftServerAccessor;
-import me.fallenbreath.tcuhc.mixins.access.SessionAccessor;
+import me.fallenbreath.tcuhc.mixins.core.MinecraftServerAccessor;
+import me.fallenbreath.tcuhc.mixins.core.SessionAccessor;
 import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.*;
 import me.fallenbreath.tcuhc.util.*;

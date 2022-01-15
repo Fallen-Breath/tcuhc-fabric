@@ -1,4 +1,4 @@
-package me.fallenbreath.tcuhc.mixins.access;
+package me.fallenbreath.tcuhc.mixins.core;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelStorage;

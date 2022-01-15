@@ -153,6 +153,10 @@ public class PlayerItems
 		items.put("kuritsirolf", Builder.create(Items.CAKE).named("XiangSuLiRon cake").enchant(Enchantments.LUCK_OF_THE_SEA, 1).get());
 		items.put("acaciachan", Builder.create(Items.ACACIA_SAPLING).named("si~ha~si~ha~").enchant(Enchantments.LOYALTY, 3).enchant(Enchantments.RIPTIDE, 3).get());
 		items.put("Lei_Feng_", Builder.create(Items.GUNPOWDER).get());
+		items.put("Ra1ny_Yuki", Builder.create(Items.SNOW).get());
+		items.put("hsds", Builder.create(Items.END_CRYSTAL).get());
+		items.put("ayjinyt", Builder.create(Items.FLOWERING_AZALEA_LEAVES).named("yt's_Cherry_leaves").enchant(Enchantments.CHANNELING, 1).get());
+		items.put("north_82", Builder.create(Items.SHULKER_SHELL).named("\"North's\" Shark shel").enchant(Enchantments.SHARPNESS, 1).enchant(Enchantments.UNBREAKING, 3).get());
 	}
 
 	private static class Builder

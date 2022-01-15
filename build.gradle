@@ -25,6 +25,10 @@ archivesBaseName = project.archives_base_name
 version = 'mc' + project.minecraft_version + '-' + project.mod_version
 group = project.maven_group
 
+def fabricApiModules = [
+        "fabric-resource-loader-v0",
+]
+
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -35,8 +39,10 @@ dependencies {
 	modRuntimeOnly "carpet:fabric-carpet:1.18-1.4.56+v211130"
 	modRuntimeOnly 'com.github.CaffeineMC.lithium-fabric:lithium:mc1.18.1-0.7.6'
 
-	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
-	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+	fabricApiModules.each {
+		modImplementation fabricApi.module(it, project.fabric_api_version)
+		include fabricApi.module(it, project.fabric_api_version)
+	}
 }
 
 loom {

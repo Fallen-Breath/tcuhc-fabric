@@ -2,7 +2,7 @@ package me.fallenbreath.tcuhc.mixins.block;
 
 import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
-import me.fallenbreath.tcuhc.gen.BonusChestFeature;
+import me.fallenbreath.tcuhc.gen.feature.BonusChestFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;

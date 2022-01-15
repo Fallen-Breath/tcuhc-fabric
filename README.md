@@ -15,6 +15,19 @@ Changes:
   - Bastion remnant is allowed to be generated in basalt deltas biome
 - Lighting sound will be played when a player dies
 - You can right click a wither skeleton skull block with a moral item to respawn the player
+- End crystal deals more damage with less distance to player
+  - Its damage now scales with difficulty
+
+New structures
+
+- Ender Pyramid
+  - Similar to Ender Altar, but with more challenging layout and more bonus
+- Greenhouse
+  - Generated in biomes which don't rain
+  - There some plants e.g. flowers and mushroom inside
+- Villain House
+  - Generated in forests
+  - Spawns 1~2 villains. A villain can be a witch, a vindicator or a pillager
 
 In dev branch
 - 1.18.x
