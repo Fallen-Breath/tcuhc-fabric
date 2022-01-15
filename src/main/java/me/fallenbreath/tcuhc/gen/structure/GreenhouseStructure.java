@@ -40,7 +40,7 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 	private static final Map<String, StructurePieceType> POSSIBLE_TYPES = ImmutableMap.of(SNOW, SNOW_PIECE_TYPE, DESERT, DESERT_PIECE_TYPE);
 	private static final Map<String, Identifier> CHEST_LOOT_TABLES = ImmutableMap.of(SNOW, CHEST_SNOW_LOOT_TABLE, DESERT, CHEST_DESERT_LOOT_TABLE);
 	private static final Map<String, Block> GROUND_FILLER_BLOCK = ImmutableMap.of(SNOW, Blocks.DEEPSLATE_BRICKS, DESERT, Blocks.SANDSTONE);
-	private static final Map<String, Integer> FLOOR_OFFSET = ImmutableMap.of(SNOW, 1, DESERT, 3);
+	private static final Map<String, Integer> FLOOR_HEIGHT = ImmutableMap.of(SNOW, 1, DESERT, 3);
 
 	public GreenhouseStructure(Codec<GreenhouseConfig> configCodec)
 	{
@@ -87,7 +87,7 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 			{
 				String type = ((Piece) piece).getGreenhouseType();
 				BlockState dummy = GROUND_FILLER_BLOCK.get(type).getDefaultState();
-				fillBottomAirGap(world, random, chunkBox, children, (pos, blockState) -> !blockState.isAir(), rnd -> dummy, FLOOR_OFFSET.get(type));
+				fillBottomAirGap(world, random, chunkBox, children, (pos, blockState) -> !blockState.isAir(), rnd -> dummy, FLOOR_HEIGHT.get(type));
 			}
 		}
 	}
@@ -214,7 +214,7 @@ public class GreenhouseStructure extends SinglePieceLandStructure<GreenhouseConf
 		protected void adjustPosByTerrain(StructureWorldAccess world)
 		{
 			super.adjustPosByTerrain(world);
-			this.pos = this.pos.down(FLOOR_OFFSET.getOrDefault(this.type, 0));
+			this.pos = this.pos.down(FLOOR_HEIGHT.getOrDefault(this.type, 0));
 		}
 	}
 }
