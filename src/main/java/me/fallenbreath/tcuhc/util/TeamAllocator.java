@@ -1,6 +1,8 @@
 package me.fallenbreath.tcuhc.util;
 
+import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
+import org.apache.logging.log4j.Level;
 import org.lwjgl.system.CallbackI;
 
 import java.util.*;
@@ -56,6 +58,7 @@ public class TeamAllocator {
 		double minStd = Double.MAX_VALUE;
 		int bestResult = 0;
 		//do k times sampling, find the result with lowest STD
+		double debugArray[] = new double[sampling_k];
 		for (int i = 0; i < sampling_k; i++) {
 			//get k result from random sampling and store it.
 			sampling_result[i] = TotalRandomMatchMaking(players, teamNums);
@@ -70,11 +73,22 @@ public class TeamAllocator {
 				teamPPs.add(localTeamPP);
 			}
 			double currentSet_std = std(teamPPs);
+			debugArray[i] = currentSet_std;
 			if (minStd > currentSet_std) {
 				minStd = currentSet_std;
 				bestResult = i;
 			}
 		}
+		UhcGameManager.LOG.log(Level.DEBUG,"------------STD result start----------------");
+		StringBuilder stdMessage = new StringBuilder();
+		stdMessage.append("STDs:");
+		for (int i=0;i<debugArray.length;i++){
+			stdMessage.append(" "+debugArray[i]);
+		}
+		UhcGameManager.LOG.log(Level.DEBUG,stdMessage.toString());
+		UhcGameManager.LOG.log(Level.DEBUG,"chosen std:"+minStd);
+		UhcGameManager.LOG.log(Level.DEBUG,"------------STD result end----------------");
+
 		return sampling_result[bestResult];
 	}
 

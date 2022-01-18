@@ -1,10 +1,10 @@
 package me.fallenbreath.tcuhc.util;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import me.fallenbreath.tcuhc.UhcGameManager;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
 import me.fallenbreath.tcuhc.options.Options;
+import org.apache.logging.log4j.Level;
 
 import java.io.*;
 import java.util.HashMap;
@@ -13,16 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerMatchMakingDataHandler {
-	/**
-	 * 队伍分配影响因素:
-	 * 输出/承伤系数
-	 * <p>
-	 * 输出总量
-	 * <p>
-	 * 分数计算 = 系数 * 输出总量
-	 * <p>
-	 * 连胜/连败
-	 */
 	final private String path;
 	final private static PlayerMatchMakingDataHandler PLAYER_MATCH_MAKING_DATA_HANDLER = new PlayerMatchMakingDataHandler("playerData.txt");
 	final private Gson gson = new Gson();
@@ -35,13 +25,9 @@ public class PlayerMatchMakingDataHandler {
 		File file = new File(path);
 		try {
 			boolean value = file.createNewFile();
-			if (value) {
-				System.out.println("new File created");
-			} else {
-				System.out.println("File existed");
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			UhcGameManager.LOG.log(Level.WARN,"Error during create/read file");
 		}
 		this.init();
 	}
@@ -61,6 +47,7 @@ public class PlayerMatchMakingDataHandler {
 			}
 			in.close();
 		} catch (IOException e) {
+			UhcGameManager.LOG.log(Level.WARN,"Error during read player MMR file");
 		}
 	}
 
@@ -73,6 +60,7 @@ public class PlayerMatchMakingDataHandler {
 			}
 			out.close();
 		} catch (IOException e) {
+			UhcGameManager.LOG.log(Level.WARN,"Error during save player MMR file");
 		}
 	}
 
@@ -147,7 +135,7 @@ public class PlayerMatchMakingDataHandler {
 		for (UhcGamePlayer player : combatPlayers) {
 			UUID uuid = player.getPlayerUUID();
 			if (!playerData.containsKey(uuid)) {// 检测该玩家是否存在
-				playerData.put(uuid, new PlayerMatchMakingData(uuid, 0, 100)); //初始的PP值为100
+				playerData.put(uuid, new PlayerMatchMakingData(uuid, 0, 100,player.getName())); //初始的PP值为100
 			}
 			double MPP = Math.pow(playerData.get(uuid).getHisPP(), k_point_factor);
 			result.put(player, MPP);
