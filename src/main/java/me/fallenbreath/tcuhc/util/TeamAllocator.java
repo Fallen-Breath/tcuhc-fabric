@@ -33,8 +33,12 @@ public class TeamAllocator {
 		incoming_List.addAll(players.keySet());
 		shuffle(incoming_List);
 		//shuffle
-		for (int i = 0; i < teamNums; i++) {
-			result.get(i).add(incoming_List.remove(players.size() - 1));
+		while (incoming_List.size()>0){
+			for (int i = 0; i < teamNums; i++) {
+				if (incoming_List.size()>0){
+					result.get(i).add(incoming_List.remove(incoming_List.size()-1));
+				}
+			}
 		}
 
 		return result;
