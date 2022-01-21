@@ -53,6 +53,7 @@ public class ExpiringMap<T> extends Long2ObjectOpenHashMap<T>
 		return super.put(k, t);
 	}
 
+	@SuppressWarnings("deprecation")
 	public T put(Long k, T t)
 	{
 		this.refreshTimes(k);
@@ -75,6 +76,7 @@ public class ExpiringMap<T> extends Long2ObjectOpenHashMap<T>
 		throw new RuntimeException("Not implemented");
 	}
 
+	@SuppressWarnings("deprecation")
 	public T remove(Object k)
 	{
 		throw new RuntimeException("Not implemented");

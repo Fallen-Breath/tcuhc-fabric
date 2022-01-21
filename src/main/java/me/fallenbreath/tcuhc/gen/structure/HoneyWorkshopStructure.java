@@ -31,7 +31,7 @@ public class HoneyWorkshopStructure extends SinglePieceLandStructure<DefaultFeat
 	private static final Identifier CHEST_LOOT_TABLE = TcUhcMod.id("honey_workshop/chest");
 
 	private static final List<Block> BASE_BLOCKS = ImmutableList.of(Blocks.STONE_BRICKS);
-	private static final int FLOOR_OFFSET = 0;
+	private static final int FLOOR_HEIGHT = 0;
 
 	public HoneyWorkshopStructure(Codec<DefaultFeatureConfig> configCodec)
 	{
@@ -46,7 +46,7 @@ public class HoneyWorkshopStructure extends SinglePieceLandStructure<DefaultFeat
 
 	private static void postGenerated(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, StructurePiecesList children)
 	{
-		fillBottomAirGapInAutoBox(world, random, chunkBox, children, BASE_BLOCKS, BASE_BLOCKS, FLOOR_OFFSET);
+		fillBottomAirGapInAutoBox(world, random, chunkBox, children, BASE_BLOCKS, BASE_BLOCKS, FLOOR_HEIGHT);
 	}
 
 	private static class Piece extends SinglePieceLandStructure.Piece
@@ -59,13 +59,6 @@ public class HoneyWorkshopStructure extends SinglePieceLandStructure<DefaultFeat
 		public Piece(StructureManager manager, NbtCompound nbt)
 		{
 			super(PIECE_TYPE, manager, nbt);
-		}
-
-		@Override
-		protected void adjustPosByTerrain(StructureWorldAccess world)
-		{
-			super.adjustPosByTerrain(world);
-			this.pos = this.pos.down(FLOOR_OFFSET);
 		}
 
 		@Override

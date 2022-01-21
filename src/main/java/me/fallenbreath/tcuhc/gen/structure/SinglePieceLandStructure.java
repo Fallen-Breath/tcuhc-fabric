@@ -9,14 +9,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.*;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -63,6 +64,28 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			}
 		}
 		return true;
+	}
+
+	protected static <FC extends FeatureConfig> boolean isSurroundingFlat(StructureGeneratorFactory.Context<FC> context, Heightmap.Type heightMapType, int range, int maxDelta)
+	{
+		if (!context.isBiomeValid(heightMapType) || !isBiomeValidInChunk(context))
+		{
+			return false;
+		}
+		BlockPos startPos = context.chunkPos().getStartPos();
+		int minY = Integer.MAX_VALUE;
+		int maxY = Integer.MIN_VALUE;
+		for (int x = -range; x <= range; x++)
+		{
+			for (int z = -range; z <= range; z++)
+			{
+				BlockPos pos = startPos.add(x, 0, z);
+				int y = context.chunkGenerator().getHeightInGround(pos.getX(), pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
+				minY = Math.min(minY, y);
+				maxY = Math.max(maxY, y);
+			}
+		}
+		return maxY - minY <= maxDelta;
 	}
 
 	protected static <FC extends FeatureConfig> boolean isBiomeValid(StructureGeneratorFactory.Context<FC> context, BlockPos pos)
@@ -197,9 +220,57 @@ public abstract class SinglePieceLandStructure<C extends FeatureConfig> extends 
 			}
 		}
 
+		protected void placeEntity(EntityType<?> entityType, BlockPos pos, ServerWorldAccess world, Random random)
+		{
+			Entity entity = entityType.create(world.toServerWorld());
+			if (entity != null)
+			{
+				Vec3d vec3d = Vec3d.ofBottomCenter(pos);
+				entity.updatePosition(vec3d.x + random.nextFloat() / 10, vec3d.y, vec3d.z + random.nextFloat() / 10);
+				if (entity instanceof MobEntity)
+				{
+					MobEntity mobEntity = (MobEntity)entity;
+					mobEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+					mobEntity.setPersistent();
+				}
+				world.spawnEntity(entity);
+			}
+		}
+
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox)
 		{
+		}
+	}
+
+	protected abstract static class YOffsetPiece extends Piece
+	{
+		private final int floorHeight;
+
+		public YOffsetPiece(StructurePieceType type, StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int floorHeight)
+		{
+			super(type, manager, identifier, pos, rotation);
+			this.floorHeight = floorHeight;
+		}
+
+		public YOffsetPiece(StructurePieceType type, StructureManager manager, NbtCompound nbt)
+		{
+			super(type, manager, nbt);
+			this.floorHeight = nbt.getInt("FloorHeight");
+		}
+
+		@Override
+		protected void writeNbt(StructureContext context, NbtCompound nbt)
+		{
+			super.writeNbt(context, nbt);
+			nbt.putInt("FloorHeight", this.floorHeight);
+		}
+
+		@Override
+		protected void adjustPosByTerrain(StructureWorldAccess world)
+		{
+			super.adjustPosByTerrain(world);
+			this.pos = this.pos.down(this.floorHeight);
 		}
 	}
 }
