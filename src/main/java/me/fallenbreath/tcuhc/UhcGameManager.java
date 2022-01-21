@@ -10,8 +10,6 @@ import me.fallenbreath.tcuhc.mixins.core.SessionAccessor;
 import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.*;
 import me.fallenbreath.tcuhc.util.*;
-import net.fabricmc.loader.impl.util.log.Log;
-import net.fabricmc.loader.impl.util.log.LogLevel;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -34,7 +32,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -297,11 +294,12 @@ public class UhcGameManager extends Taskable {
 			if (t == team) {
 				for (UhcGamePlayer player : t.getPlayers()) { //更新每个玩家的连胜数据
 					dataHandler.processWinStreak(player.getPlayerUUID(), true);
-					LOG.log(Level.DEBUG,"win:"+player.getName()+" "+player.getPlayerUUID()+" \n");
+					System.out.println("Win: " + player.getPlayerUUID() + "\n");
 				}
 			} else {
 				for (UhcGamePlayer player : t.getPlayers()) {//更新每个玩家的连胜数据
-					LOG.log(Level.DEBUG,"lost:"+player.getName()+" "+player.getPlayerUUID()+" \n");
+					dataHandler.processWinStreak(player.getPlayerUUID(), false);
+					System.out.println("Lost: " + player.getPlayerUUID() + "\n");
 				}
 			}
 		}
