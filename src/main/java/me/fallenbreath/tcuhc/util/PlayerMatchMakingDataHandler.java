@@ -18,7 +18,6 @@ public class PlayerMatchMakingDataHandler {
 	final private Gson gson = new Gson();
 	private Map<UUID, PlayerMatchMakingData> playerData;
 	private final Options uhcOptions;
-	private final double initPerformancePoint = 100;
 
 	public PlayerMatchMakingDataHandler(String path) {
 		this.path = path;
@@ -136,7 +135,7 @@ public class PlayerMatchMakingDataHandler {
 		for (UhcGamePlayer player : combatPlayers) {
 			UUID uuid = player.getPlayerUUID();
 			if (!playerData.containsKey(uuid)) {// 检测该玩家是否存在
-				playerData.put(uuid, new PlayerMatchMakingData(uuid, 0, initPerformancePoint,player.getName())); //初始的PP值为100
+				playerData.put(uuid, new PlayerMatchMakingData(uuid, 0, 100,player.getName())); //初始的PP值为100
 			}
 			double MPP = Math.pow(playerData.get(uuid).getHisPP(), k_point_factor);
 			result.put(player, MPP);
