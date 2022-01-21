@@ -102,15 +102,7 @@ public class BookNBT {
 				.append(createTextEvent("       Regenerate\n", "/uhc regen", "Regenerate Terrain", Formatting.LIGHT_PURPLE))
 				.append(createTextEvent("          Start !\n", "/uhc start", "Start the UHC game !", Formatting.LIGHT_PURPLE))
 		);
-		appendPageText(pages, (BaseText) new LiteralText("MatchMaking Settings\n\n")
-				.append(createOptionText(options.getOption("matchMakingLevel")))
-				.append(createOptionText(options.getOption("k_point_factor")))
-				.append(createOptionText(options.getOption("k_singleGame")))
-				.append(createOptionText(options.getOption("k_wStreak")))
-				.append(createOptionText(options.getOption("k_player_kill")))
-
-
-		);
+		
 		return createWrittenBook("sbGP", "UHC Game Configuration", pages);
 	}
 	

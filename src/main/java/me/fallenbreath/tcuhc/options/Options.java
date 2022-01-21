@@ -88,7 +88,7 @@ public class Options {
 		addOption(new Option("chestItemFrequency", "Chest Loots", new OptionType.FloatType(0.0f, 10.0f, 0.1f), 1.0f).setNeedToSave().setDescription("Frequency of variable items in bonus chests."));
 		addOption(new Option("mobCount", "Mob Count", new OptionType.IntegerType(10, 300, 10), 70).setNeedToSave().setDescription("Adjust number of monsters in the world."));
 
-		addOption(new Option("matchMakingLevel","MMRLevel",new OptionType.IntegerType(0,10,1),1).setNeedToSave().setDescription("Adjust fairness of skill based matchmaking "));
+		addOption(new Option("matchMakingLevel","SkillBasedMatchMakingLevel",new OptionType.IntegerType(0,10,1),1).setNeedToSave().setDescription("Adjust fairness of skill based matchmaking "));
 		addOption(new Option("k_point_factor","SinglePlayerFactor",new OptionType.FloatType(0,2.0f,0.01f),1.2f).setNeedToSave().setDescription("Adjust importance of single player during the matchmaking"));
 		addOption(new Option("k_singleGame","SingleGameFactor",new OptionType.FloatType(0,1.0f,0.01f),0.2f).setNeedToSave().setDescription("Adjust importance of single game during the calculation of performance point"));
 		addOption(new Option("k_wStreak","WinStreakFactor",new OptionType.FloatType(0,2.0f,0.01f),1.2f).setNeedToSave().setDescription("Adjust importance of win streak during calculation of performance point"));
