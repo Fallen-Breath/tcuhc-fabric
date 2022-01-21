@@ -25,7 +25,7 @@ public class TeamAllocator {
 	 * <p>
 	 * the returned team list is allocated randomly
 	 */
-	public List<List<UhcGamePlayer>> totalRandomMatchMaking(Map<UhcGamePlayer, Double> players, int teamNums) {
+	public List<List<UhcGamePlayer>> TotalRandomMatchMaking(Map<UhcGamePlayer, Double> players, int teamNums) {
 		ArrayList<List<UhcGamePlayer>> result = new ArrayList();
 		//init the result list
 		for (int i = 0; i < teamNums; i++) {
@@ -33,7 +33,7 @@ public class TeamAllocator {
 		}
 		ArrayList<UhcGamePlayer> incoming_List = new ArrayList<>();
 		incoming_List.addAll(players.keySet());
-		Collections.shuffle(incoming_List);
+		shuffle(incoming_List);
 		//shuffle
 		while (incoming_List.size()>0){
 			for (int i = 0; i < teamNums; i++) {
@@ -53,7 +53,7 @@ public class TeamAllocator {
 	 * <p>
 	 * the returned result is the one of multiple totally random samplings that has lowest std.
 	 */
-	public List<List<UhcGamePlayer>> samplingMatchMaking(Map<UhcGamePlayer, Double> players, int teamNums, int sampling_k) {
+	public List<List<UhcGamePlayer>> SamplingMatchmaking(Map<UhcGamePlayer, Double> players, int teamNums, int sampling_k) {
 		List<List<UhcGamePlayer>> sampling_result[] = new ArrayList[sampling_k];
 		double minStd = Double.MAX_VALUE;
 		int bestResult = 0;
@@ -61,7 +61,7 @@ public class TeamAllocator {
 		double debugArray[] = new double[sampling_k];
 		for (int i = 0; i < sampling_k; i++) {
 			//get k result from random sampling and store it.
-			sampling_result[i] = totalRandomMatchMaking(players, teamNums);
+			sampling_result[i] = TotalRandomMatchMaking(players, teamNums);
 			ArrayList<Double> teamPPs = new ArrayList<>();
 			//get pp from current set
 			for (int j = 0; j < teamNums; j++) {
@@ -79,15 +79,15 @@ public class TeamAllocator {
 				bestResult = i;
 			}
 		}
-		UhcGameManager.LOG.log(Level.INFO,"------------STD result start----------------");
+		UhcGameManager.LOG.log(Level.DEBUG,"------------STD result start----------------");
 		StringBuilder stdMessage = new StringBuilder();
 		stdMessage.append("STDs:");
 		for (int i=0;i<debugArray.length;i++){
 			stdMessage.append(" "+debugArray[i]);
 		}
-		UhcGameManager.LOG.log(Level.INFO,stdMessage.toString());
-		UhcGameManager.LOG.log(Level.INFO,"chosen std:"+minStd);
-		UhcGameManager.LOG.log(Level.INFO,"------------STD result end----------------");
+		UhcGameManager.LOG.log(Level.DEBUG,stdMessage.toString());
+		UhcGameManager.LOG.log(Level.DEBUG,"chosen std:"+minStd);
+		UhcGameManager.LOG.log(Level.DEBUG,"------------STD result end----------------");
 
 		return sampling_result[bestResult];
 	}
@@ -120,6 +120,21 @@ public class TeamAllocator {
 			scores[weekTeam] += players.get(player);
 		}
 		return result;
+	}
+
+	/**
+	 * @param a Arraylist that contain players
+	 *          <p>
+	 *          randomized Arraylist
+	 */
+
+	private void shuffle(ArrayList<UhcGamePlayer> a) {
+		for (int i = a.size() - 1; i > 0; i--) {
+			int j = (int) (Math.random() * i);
+			UhcGamePlayer t = a.get(i);
+			a.set(i, a.get(j));
+			a.set(j, t);
+		}
 	}
 
 	/**

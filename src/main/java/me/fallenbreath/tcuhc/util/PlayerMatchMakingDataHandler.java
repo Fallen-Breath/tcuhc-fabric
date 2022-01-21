@@ -104,7 +104,7 @@ public class PlayerMatchMakingDataHandler {
 		double k_wStreak = uhcOptions.getFloatOptionValue("k_wStreak");
 		double hisPP = playerData.get(uuid).getHisPP();
 		int wStreak = playerData.get(uuid).getWStreak();
-		playerData.get(uuid).setHisPP((1 - k_singleGame) * hisPP + (k_singleGame * SingleGame_PP * Math.pow(k_wStreak, wStreak )));
+		playerData.get(uuid).setHisPP((1 - k_singleGame) * hisPP + (k_singleGame * SingleGame_PP * Math.pow(k_wStreak, (wStreak - 1))));
 	}
 
 	/**
@@ -114,20 +114,15 @@ public class PlayerMatchMakingDataHandler {
 	public void processWinStreak(UUID uuid, boolean win) {
 		int winStreak = playerData.get(uuid).getWStreak();
 
-		if (winStreak < 0 ){
-			if (win){
-				winStreak /= 2;
-			}else {
-				winStreak --;
-			}
-		}else {
-			if (win){
-				winStreak ++;
-			}else {
-				winStreak /=2;
+		if (winStreak < 0 && win || winStreak > 0 && !win) {
+			winStreak = 0;
+		} else {
+			if (win) {
+				winStreak++;
+			} else {
+				winStreak--;
 			}
 		}
-
 		playerData.get(uuid).setWStreak(winStreak);
 	}
 
