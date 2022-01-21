@@ -143,7 +143,7 @@ public class PlayerMatchMakingDataHandler {
 	 */
 	public Map<UhcGamePlayer, Double> getPlayerWithScore(List<UhcGamePlayer> combatPlayers) {
 		Map<UhcGamePlayer, Double> result = new HashMap<>();
-		double k_point_factor = uhcOptions.getFloatOptionValue("k_point_factor");
+		double k_point_factor = uhcOptions.getIntegerOptionValue("k_point_factor");
 		for (UhcGamePlayer player : combatPlayers) {
 			UUID uuid = player.getPlayerUUID();
 			if (!playerData.containsKey(uuid)) {// 检测该玩家是否存在

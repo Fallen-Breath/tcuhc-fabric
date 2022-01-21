@@ -455,7 +455,7 @@ public class UhcPlayerManager {
 				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
 				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 				Map<UhcGamePlayer, Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
-				List<List<UhcGamePlayer>> teamResult = allocator.SamplingMatchmaking(PlayerScores, teamCount,k);
+				List<List<UhcGamePlayer>> teamResult = allocator.SamplingMatchmaking(PlayerScores, teamCount, k);
 
 				for (int i = 0; i < teamCount; i++) {
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));

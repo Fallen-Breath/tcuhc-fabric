@@ -261,6 +261,7 @@ public class UhcGameManager extends Taskable {
 		isGameEnded = true;
 		removeWorldBorder();
 		TaskScoreboard.hideScoreboard();
+		//暂停接受UHC regen的指令,计算和更新pp
 		playerManager.endPlayerCal();
 		bossInfo.ifPresent(info -> info.setVisible(false));
 		bossInfo = Optional.empty();
