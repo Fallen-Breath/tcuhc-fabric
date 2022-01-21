@@ -7,8 +7,6 @@ package me.fallenbreath.tcuhc;
 import com.google.common.collect.Lists;
 import me.fallenbreath.tcuhc.UhcGameManager.EnumMode;
 import me.fallenbreath.tcuhc.UhcGamePlayer.EnumStat;
-import me.fallenbreath.tcuhc.options.Option;
-import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.Task;
 import me.fallenbreath.tcuhc.task.TaskFindPlayer;
 import me.fallenbreath.tcuhc.task.TaskKeepSpectate;
@@ -56,13 +54,12 @@ public class UhcPlayerManager
 	private final List<UhcGamePlayer> combatPlayerList = Lists.newArrayList();
 	private final List<UhcGamePlayer> observePlayerList = Lists.newArrayList();
 	private final List<UhcGameTeam> teams = Lists.newArrayList();
-	private final PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
+	private PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
+	private final double KillRadio = 1.2;
 	private int playersPerTeam;
-	private final Options uhcOptions;
-
+	
 	public UhcPlayerManager(UhcGameManager manager) {
 		gameManager = manager;
-		uhcOptions = Options.instance;
 	}
 	
 	public Optional<ServerPlayerEntity> getPlayerByUUID(UUID id) {
@@ -454,11 +451,11 @@ public class UhcPlayerManager
 			case KING: {
 				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
 				playersPerTeam = combatPlayerList.size()/teamCount+1;
-				int k = uhcOptions.getIntegerOptionValue("matchMakingLevel");
+
 				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
 				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 				Map<UhcGamePlayer,Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
-				List<List<UhcGamePlayer>> teamResult = allocator.SamplingMatchmaking(PlayerScores,teamCount,k);
+				List<List<UhcGamePlayer>> teamResult = allocator.TotalRandomMatchMaking(PlayerScores,teamCount);
 
 				for (int i=0;i<teamCount;i++){
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
@@ -608,7 +605,7 @@ public class UhcPlayerManager
 				damageTake = 1;
 			}
 			double DTRadio = damageDealt/damageTake;
-			double factor = Math.pow(uhcOptions.getFloatOptionValue("k_player_kill"),playerKill);
+			double factor = Math.pow(KillRadio,playerKill);
 
 			Handler.updatePersonalPP( DTRadio*factor, player.getPlayerUUID());
 		}

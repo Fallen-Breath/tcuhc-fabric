@@ -6,8 +6,7 @@ public class PlayerMatchMakingData {
     private UUID UUID;
     private int WStreak;
     private double hisPP;
-
-    public PlayerMatchMakingData(UUID UUID, int WStreak, double hisPP) {
+    public PlayerMatchMakingData(UUID UUID,int WStreak, double hisPP){
         this.UUID = UUID;
         this.WStreak = WStreak;
         this.hisPP = hisPP;
