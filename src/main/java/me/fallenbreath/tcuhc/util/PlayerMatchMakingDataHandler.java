@@ -1,8 +1,6 @@
 package me.fallenbreath.tcuhc.util;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import me.fallenbreath.tcuhc.UhcGamePlayer;
 
 import java.io.*;
@@ -21,6 +19,9 @@ public class PlayerMatchMakingDataHandler {
      *  分数计算 = 系数 * 输出总量
      *
      *  连胜/连败
+     *
+     *
+     *
      *
      * */
     final double k_point_factor = 1.3; // 战力修正值, 越大的话说明战斗力质量越重要.
@@ -59,8 +60,10 @@ public class PlayerMatchMakingDataHandler {
                 playerData.put(data.getUUID(),data);
             }
             in.close();
+            System.out.println("database init successfully");
         }
         catch (IOException e){
+            System.out.println("Fail to init database");
         }
     }
     public void saveData(){
@@ -70,8 +73,10 @@ public class PlayerMatchMakingDataHandler {
                 out.write(pack(playerData.get(s)));
                 out.write("\n");
             }
+            System.out.println("data saved successfully");
             out.close();
         }catch (IOException e){
+            System.out.println("Fail to save database");
         }
     }
     private PlayerMatchMakingData unpack(String str){
@@ -91,16 +96,20 @@ public class PlayerMatchMakingDataHandler {
     }
 
     /**
+     *  pp: 技能分数
+     *  SGPP: 当前pp
+     *  hisPP: 历史pp
+     *  wStreak: 正为连胜 负为连败
+     *  k: 影响系数
      *
-     * Update performance point of single player.
-     * 更新单一玩家的技能分数
+     * 更新所有玩家的技能分数
      *
      */
 
-    public void updatePersonalPP (double SingleGame_PP,UUID uuid){
+    public void updatePersonalPP (double SGPP,UUID uuid){
         double hisPP = playerData.get(uuid).getHisPP();
         int wStreak = playerData.get(uuid).getWStreak();
-        playerData.get(uuid).setHisPP((1-k_singleGame)*hisPP+(k_singleGame*SingleGame_PP*Math.pow(k_wStreak,(wStreak-1))));
+        playerData.get(uuid).setHisPP((1-k_singleGame)*hisPP+(k_singleGame*SGPP*Math.pow(k_wStreak,(wStreak-1))));
     }
 
      /**
@@ -141,5 +150,4 @@ public class PlayerMatchMakingDataHandler {
     public Map<UUID, PlayerMatchMakingData> getPlayerData() {
         return playerData;
     }
-
 }

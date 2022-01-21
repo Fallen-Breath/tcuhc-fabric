@@ -88,8 +88,6 @@ public class Options {
 		addOption(new Option("chestItemFrequency", "Chest Loots", new OptionType.FloatType(0.0f, 10.0f, 0.1f), 1.0f).setNeedToSave().setDescription("Frequency of variable items in bonus chests."));
 		addOption(new Option("mobCount", "Mob Count", new OptionType.IntegerType(10, 300, 10), 70).setNeedToSave().setDescription("Adjust number of monsters in the world."));
 
-		addOption(new Option("matchMakingLevel","SkillBasedMatchMakingLevel",new OptionType.IntegerType(0,10,1),1).setNeedToSave().setDescription("Adjust fairness of skill based matchmaking "));
-
 		loadPropertiesFile();
 		savePropertiesFile();
 	}

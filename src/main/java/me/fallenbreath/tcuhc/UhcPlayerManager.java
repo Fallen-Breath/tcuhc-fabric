@@ -55,7 +55,7 @@ public class UhcPlayerManager
 	private final List<UhcGamePlayer> observePlayerList = Lists.newArrayList();
 	private final List<UhcGameTeam> teams = Lists.newArrayList();
 	private PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
-	private final double KillRadio = 1.2;
+
 	private int playersPerTeam;
 	
 	public UhcPlayerManager(UhcGameManager manager) {
@@ -451,11 +451,10 @@ public class UhcPlayerManager
 			case KING: {
 				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
 				playersPerTeam = combatPlayerList.size()/teamCount+1;
-
 				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
 				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 				Map<UhcGamePlayer,Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
-				List<List<UhcGamePlayer>> teamResult = allocator.TotalRandomMatchMaking(PlayerScores,teamCount);
+				List<List<UhcGamePlayer>> teamResult = allocator.matchMaking(PlayerScores,teamCount);
 
 				for (int i=0;i<teamCount;i++){
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
@@ -597,6 +596,7 @@ public class UhcPlayerManager
 	 * */
 	public void endPlayerCal(){
 		for (UhcGamePlayer player:combatPlayerList){
+			UUID UUID = player.getPlayerUUID();
 			float damageDealt = player.getStat().getFloatStat(EnumStat.DAMAGE_DEALT);
 			float damageTake = player.getStat().getFloatStat(EnumStat.DAMAGE_TAKEN);
 			float playerKill = player.getStat().getFloatStat(EnumStat.PLAYER_KILLED);
@@ -605,9 +605,8 @@ public class UhcPlayerManager
 				damageTake = 1;
 			}
 			double DTRadio = damageDealt/damageTake;
-			double factor = Math.pow(KillRadio,playerKill);
-
-			Handler.updatePersonalPP( DTRadio*factor, player.getPlayerUUID());
+			double factor = Math.pow(1.2,playerKill);
+			Handler.updatePersonalPP( DTRadio*factor,player.getPlayerUUID());
 		}
 		Handler.saveData();
 	}
