@@ -1,18 +1,14 @@
 package me.fallenbreath.tcuhc.util;
 
-import java.util.UUID;
-
 public class PlayerMatchMakingData {
-    private UUID UUID;
+    private String UUID;
     private int WStreak;
-    private double hisPP;
-    public PlayerMatchMakingData(UUID UUID,int WStreak, double hisPP){
+    private int hisPP;
+    public PlayerMatchMakingData(String UUID){
         this.UUID = UUID;
-        this.WStreak = WStreak;
-        this.hisPP = hisPP;
     }
 
-    public double getHisPP() {
+    public int getHisPP() {
         return hisPP;
     }
 
@@ -20,7 +16,7 @@ public class PlayerMatchMakingData {
         return WStreak;
     }
 
-    public UUID getUUID() {
+    public String getUUID() {
         return UUID;
     }
 
@@ -28,7 +24,7 @@ public class PlayerMatchMakingData {
         this.hisPP = hisPP;
     }
 
-    public void setUUID(UUID UUID) {
+    public void setUUID(String UUID) {
         this.UUID = UUID;
     }
 

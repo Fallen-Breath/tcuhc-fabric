@@ -92,10 +92,6 @@ public class UhcGamePlayer extends Taskable {
 		this.getRealPlayer().ifPresent(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 0, true, false)));
 	}
 
-	public UUID getPlayerUUID() {
-		return playerUUID;
-	}
-
 	public enum EnumStat {
 		PLAYER_KILLED("Player Killed"),
 		ENTITY_KILLED("Entity Killed"),
