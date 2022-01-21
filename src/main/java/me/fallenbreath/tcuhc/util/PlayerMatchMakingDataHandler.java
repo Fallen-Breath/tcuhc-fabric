@@ -24,7 +24,6 @@ public class PlayerMatchMakingDataHandler {
      *
      *
      * */
-    final double k_point_factor = 1.3; // 战力修正值, 越大的话说明战斗力质量越重要.
     static double k_singleGame = 0.2; // pp更新常数 越大说明单局游戏的表现影响越高
     static double k_wStreak = 1.025; // 连胜影响系数 越大说明连胜/连败影响越大
     final private String path;
@@ -139,11 +138,12 @@ public class PlayerMatchMakingDataHandler {
         for (UhcGamePlayer player:combatPlayers){
             UUID uuid = player.getPlayerUUID();
             if (playerData.containsKey(uuid)){ // 检测该玩家是否存在
+                result.put(player,playerData.get(uuid).getHisPP());
             }else {
                 playerData.put(uuid,new PlayerMatchMakingData(uuid,0,100)); //初始的PP值为100
+                result.put(player,playerData.get(uuid).getHisPP());
+
             }
-            double MPP = Math.pow(playerData.get(uuid).getHisPP(),k_point_factor);
-            result.put(player,MPP);
         }
         return result;
     }
