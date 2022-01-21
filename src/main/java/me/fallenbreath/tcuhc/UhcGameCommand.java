@@ -30,7 +30,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class UhcGameCommand
 {
 	private static final String PREFIX = "uhc";
-
+	private static boolean regen_confirm = false;
 	private static boolean isOp(ServerCommandSource source)
 	{
 		return source.hasPermissionLevel(2);
@@ -172,7 +172,18 @@ public class UhcGameCommand
 
 	private static int executeRegen(ServerCommandSource sender)
 	{
-		UhcGameManager.regenerateTerrain();
+		if (regen_confirm){
+			regen_confirm = false;
+			UhcGameManager.regenerateTerrain();
+		}else {
+			regen_confirm = true;
+			UhcGameManager gameManager = UhcGameManager.instance;
+			UhcPlayerManager playerManager = gameManager.getUhcPlayerManager();
+			for (UhcGamePlayer UhcPlayer:playerManager.getAllPlayers()){
+				UhcPlayer.getRealPlayer().ifPresent(player->player.sendMessage(new LiteralText(Formatting.RED+"一位服务器管理员正在重新生成地形,请服务器管理员再次输入/uhc regen指令来确认操作"),false));
+			}
+
+		}
 		return 1;
 	}
 
