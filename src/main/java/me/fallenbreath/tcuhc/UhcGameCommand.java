@@ -181,7 +181,7 @@ public class UhcGameCommand
 			UhcGameManager.regenerateTerrain();
 		}else {
 			regen_confirm = true;
-			UhcGameManager.instance.broadcastMessage("一位服务器管理员正在重新生成地形,请服务器管理员再次输入/uhc regen指令来确认操作, 或者/uhc cancelRegen 来取消操作");
+			UhcGameManager.instance.broadcastMessage("An operator is going to regenerate terrain,please enter /uhc regen in order to confirm. or use /uhc cancelRegen to cancel");
 
 		}
 		return 1;
@@ -189,7 +189,7 @@ public class UhcGameCommand
 	private static int executeCancelRegen(ServerCommandSource sender)
 	{
 		regen_confirm = false;
-		UhcGameManager.instance.broadcastMessage("一位管理员已经取消了重新生成地形.");
+		UhcGameManager.instance.broadcastMessage("An operator cancelled regenerating terrain.");
 
 		return 1;
 	}
@@ -201,7 +201,7 @@ public class UhcGameCommand
 			UhcGameManager.instance.startGame(sender.getPlayer());
 		}else {
 			start_confirm = true;
-			UhcGameManager.instance.broadcastMessage("一位服务器管理员准备开始游戏了,请服务器管理员确认参数后再次启动指令来确认操作, 或者/uhc cancelStart 来取消操作");
+			UhcGameManager.instance.broadcastMessage("An operator is going to start the game,please check game config, and start again in order to confirm. or use /uhc cancelStart to cancel");
 
 		}
 		return 1;
@@ -209,7 +209,7 @@ public class UhcGameCommand
 	private static int executeCancelStart(ServerCommandSource sender) throws CommandSyntaxException
 	{
 		start_confirm = false;
-		UhcGameManager.instance.broadcastMessage("一位服务器管理员取消了开始游戏");
+		UhcGameManager.instance.broadcastMessage("An operator abort game start");
 
 		return 1;
 	}
