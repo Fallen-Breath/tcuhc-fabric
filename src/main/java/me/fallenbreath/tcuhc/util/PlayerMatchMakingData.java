@@ -24,7 +24,7 @@ public class PlayerMatchMakingData {
         return UUID;
     }
 
-    public void setHisPP(double hisPP) {
+    public void setHisPP(int hisPP) {
         this.hisPP = hisPP;
     }
 

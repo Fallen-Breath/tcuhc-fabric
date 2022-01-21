@@ -45,10 +45,8 @@ public class UhcGameManager extends Taskable {
 	public static final Logger LOG = LogManager.getLogger("TC UHC");
 	public static UhcGameManager instance;
 	public static final Random rand = new Random();
-	PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
-
+	
 	private final MinecraftServer mcServer;
-	private PlayerMatchMakingDataHandler Handler = PlayerMatchMakingDataHandler.getDataBase();
 
 	private final UhcPlayerManager playerManager;
 	private final UhcConfigManager configManager = new UhcConfigManager();
@@ -251,12 +249,19 @@ public class UhcGameManager extends Taskable {
 		if (isGameEnded || !isGamePlaying) return;
 		int remainTeamCnt = 0;
 		UhcGameTeam winner = null;
+		PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 
 		for (UhcGameTeam team : playerManager.getTeams()) {
 			if (team.getAliveCount() > 0) {
 				remainTeamCnt++;
 				winner = team;
-
+				for (UhcGamePlayer player:team.getPlayers()){ //更新每个玩家的连胜数据
+					dataHandler.processWinStreak(player.getPlayerUUID(),true);
+				}
+			}else {
+				for (UhcGamePlayer player:team.getPlayers()){//更新每个玩家的连胜数据
+					dataHandler.processWinStreak(player.getPlayerUUID(),false);
+				}
 			}
 		}
 		if (remainTeamCnt == 1)
@@ -271,19 +276,7 @@ public class UhcGameManager extends Taskable {
 				player.getStat().setStat(EnumStat.ALIVE_TIME, uhcOptions.getIntegerOptionValue("gameTime") - this.getGameTimeRemaining());
 		}
 		winnerList.setWinner(team.getPlayers());
-		for (UhcGameTeam t:playerManager.getTeams()){
-			if (t == team){
-				for (UhcGamePlayer player:t.getPlayers()){ //更新每个玩家的连胜数据
-					dataHandler.processWinStreak(player.getPlayerUUID(),true);
-					System.out.println("Win: "+player.getPlayerUUID()+"\n");
-				}
-			} else {
-				for (UhcGamePlayer player:t.getPlayers()){//更新每个玩家的连胜数据
-					dataHandler.processWinStreak(player.getPlayerUUID(),false);
-					System.out.println("Lost: "+player.getPlayerUUID()+"\n");
-				}
-			}
-		}
+
 		this.endGame();
 		this.addTask(new TaskBroadcastData(160));
 	}
