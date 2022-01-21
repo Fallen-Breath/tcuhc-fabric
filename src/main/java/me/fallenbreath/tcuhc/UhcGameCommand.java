@@ -31,7 +31,6 @@ public class UhcGameCommand
 {
 	private static final String PREFIX = "uhc";
 	private static boolean regen_confirm = false;
-	private static boolean start_confirm = false;
 	private static boolean isOp(ServerCommandSource source)
 	{
 		return source.hasPermissionLevel(2);
@@ -62,7 +61,6 @@ public class UhcGameCommand
 				).
 				then(literal("regen").requires(UhcGameCommand::isOp).executes(c -> executeRegen(c.getSource()))).
 				then(literal("start").requires(UhcGameCommand::isOp).executes(c -> executeStart(c.getSource()))).
-				then(literal("cancelStart").requires(UhcGameCommand::isOp).executes(c -> executeCancelStart(c.getSource()))).
 				then(literal("stop").requires(UhcGameCommand::isOp).executes(c -> executeStop(c.getSource()))).
 				then(literal("option").
 						requires(UhcGameCommand::isOp).
@@ -74,7 +72,6 @@ public class UhcGameCommand
 								)
 						)
 				).
-				then(literal("cancelRegen").requires(UhcGameCommand::isOp).executes(c-> executeCancelRegen(c.getSource()))).
 				then(literal("adjust").
 						requires(UhcGameCommand::isOp).
 						executes(c -> regiveAdjustBook(c.getSource(), true)).
@@ -175,45 +172,26 @@ public class UhcGameCommand
 
 	private static int executeRegen(ServerCommandSource sender)
 	{
-		if (regen_confirm)
-		{
+		if (regen_confirm){
 			regen_confirm = false;
 			UhcGameManager.regenerateTerrain();
 		}else {
 			regen_confirm = true;
-			UhcGameManager.instance.broadcastMessage("一位服务器管理员正在重新生成地形,请服务器管理员再次输入/uhc regen指令来确认操作, 或者/uhc cancelRegen 来取消操作");
+			UhcGameManager gameManager = UhcGameManager.instance;
+			UhcPlayerManager playerManager = gameManager.getUhcPlayerManager();
+			for (UhcGamePlayer UhcPlayer:playerManager.getAllPlayers()){
+				UhcPlayer.getRealPlayer().ifPresent(player->player.sendMessage(new LiteralText(Formatting.RED+"一位服务器管理员正在重新生成地形,请服务器管理员再次输入/uhc regen指令来确认操作"),false));
+			}
 
 		}
-		return 1;
-	}
-	private static int executeCancelRegen(ServerCommandSource sender)
-	{
-		regen_confirm = false;
-		UhcGameManager.instance.broadcastMessage("一位管理员已经取消了重新生成地形.");
-
 		return 1;
 	}
 
 	private static int executeStart(ServerCommandSource sender) throws CommandSyntaxException
 	{
-		if (start_confirm)
-		{
-			UhcGameManager.instance.startGame(sender.getPlayer());
-		}else {
-			start_confirm = true;
-			UhcGameManager.instance.broadcastMessage("一位服务器管理员准备开始游戏了,请服务器管理员确认参数后再次启动指令来确认操作, 或者/uhc cancelStart 来取消操作");
-
-		}
+		UhcGameManager.instance.startGame(sender.getPlayer());
 		return 1;
 	}
-	private static int executeCancelStart(ServerCommandSource sender) throws CommandSyntaxException
-	{
-		start_confirm = false;
-		UhcGameManager.instance.broadcastMessage("一位服务器管理员取消了开始游戏");
-
-		return 1;
-	}
-
 
 	private static int executeStop(ServerCommandSource sender)
 	{
@@ -229,7 +207,6 @@ public class UhcGameCommand
 			Option option = optional.get();
 			switch (operation)
 			{
-
 				case "add":
 					option.incValue();
 					break;
