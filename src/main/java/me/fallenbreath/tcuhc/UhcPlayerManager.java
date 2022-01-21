@@ -44,7 +44,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -456,7 +455,7 @@ public class UhcPlayerManager {
 				TeamAllocator allocator = TeamAllocator.getTeamAllocator();
 				PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 				Map<UhcGamePlayer, Double> PlayerScores = dataHandler.getPlayerWithScore(combatPlayerList);
-				List<List<UhcGamePlayer>> teamResult = allocator.samplingMatchMaking(PlayerScores, teamCount,k);
+				List<List<UhcGamePlayer>> teamResult = allocator.SamplingMatchmaking(PlayerScores, teamCount,k);
 
 				for (int i = 0; i < teamCount; i++) {
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
@@ -607,8 +606,8 @@ public class UhcPlayerManager {
 			}
 			double DTRadio = damageDealt / damageTake;
 			double factor = Math.pow(uhcOptions.getFloatOptionValue("k_player_kill"), playerKill);
-			UhcGameManager.LOG.log(Level.INFO,"performance_point of "+player.getName()+" is: "+DTRadio*factor*damageDealt);
-			Handler.updatePersonalPP(DTRadio * factor*damageDealt, player.getPlayerUUID());
+
+			Handler.updatePersonalPP(DTRadio * factor *damageDealt, player.getPlayerUUID());
 		}
 		Handler.saveData();
 	}
