@@ -25,20 +25,23 @@ import java.util.stream.Stream;
 public class Options {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Options instance = new Options(new File("uhc.properties"));
-	
+
 	private final Map<String, Option> configOptions = Maps.newHashMap();
 	private final Properties uhcProperties = new Properties();
 	private final File uhcOptionsFile;
-	
+
 	public final Task taskSaveProperties = new Task() {
 		@Override
 		public void onUpdate() {
 			Options.this.savePropertiesFile();
 		}
+
 		@Override
-		public boolean hasFinished() { return false; }
+		public boolean hasFinished() {
+			return false;
+		}
 	};
-	
+
 	public final Task taskReselectTeam = new Task() {
 		@Override
 		public void onUpdate() {
@@ -50,10 +53,13 @@ public class Options {
 				});
 			}
 		}
+
 		@Override
-		public boolean hasFinished() { return false; }
+		public boolean hasFinished() {
+			return false;
+		}
 	};
-	
+
 	private Options(File optionsFile) {
 		instance = this;
 		uhcOptionsFile = optionsFile;
@@ -88,10 +94,16 @@ public class Options {
 		addOption(new Option("chestItemFrequency", "Chest Loots", new OptionType.FloatType(0.0f, 10.0f, 0.1f), 1.0f).setNeedToSave().setDescription("Frequency of variable items in bonus chests."));
 		addOption(new Option("mobCount", "Mob Count", new OptionType.IntegerType(10, 300, 10), 70).setNeedToSave().setDescription("Adjust number of monsters in the world."));
 
+		addOption(new Option("matchMakingLevel", "MMRLevel", new OptionType.IntegerType(0, 10, 1), 1).setNeedToSave().setDescription("Adjust fairness of skill based matchmaking "));
+		addOption(new Option("k_point_factor", "SinglePlayerFactor", new OptionType.FloatType(0.0f, 2.0f, 0.01f), 1.2f).setNeedToSave().setDescription("Adjust importance of single player during the matchmaking"));
+		addOption(new Option("k_singleGame", "SingleGameFactor", new OptionType.FloatType(0.0f, 1.0f, 0.01f), 0.2f).setNeedToSave().setDescription("Adjust importance of single game during the calculation of performance point"));
+		addOption(new Option("k_wStreak", "WinStreakFactor", new OptionType.FloatType(0.0f, 2.0f, 0.01f), 1.2f).setNeedToSave().setDescription("Adjust importance of win streak during calculation of performance point"));
+		addOption(new Option("k_player_kill", "PlayerKillFactor", new OptionType.FloatType(0.0f, 2.0f, 0.01f), 1.2f).setNeedToSave().setDescription("Adjust importance of player kill during calculation of performance point"));
+
 		loadPropertiesFile();
 		savePropertiesFile();
 	}
-	
+
 	public void loadPropertiesFile() {
 		if (uhcOptionsFile.exists()) {
 			try (FileInputStream input = new FileInputStream(uhcOptionsFile)) {
@@ -107,7 +119,7 @@ public class Options {
 			configOptions.get(entry.getKey()).setInitialValue((String) entry.getValue());
 		}
 	}
-	
+
 	public void savePropertiesFile() {
 		try (FileOutputStream output = new FileOutputStream(uhcOptionsFile)) {
 			configOptions.values().forEach(opt -> uhcProperties.setProperty(opt.getId(), opt.getStringValue()));
@@ -116,11 +128,11 @@ public class Options {
 			LOGGER.warn("Failed to save {}", this.uhcOptionsFile, e);
 		}
 	}
-	
+
 	private void addOption(Option option) {
 		configOptions.put(option.getId(), option);
 	}
-	
+
 	public Optional<Option> getOption(String option) {
 		return Optional.ofNullable(configOptions.get(option));
 	}
@@ -128,37 +140,37 @@ public class Options {
 	public Stream<String> getOptionIdStream() {
 		return configOptions.keySet().stream();
 	}
-	
+
 	public void setOptionValue(String option, Object value) {
 		getOption(option).ifPresent(opt -> {
 			opt.setValue(value);
 		});
 	}
-	
+
 	public void incOptionValue(String option) {
 		getOption(option).ifPresent(Option::incValue);
 	}
-	
+
 	public void decOptionValue(String option) {
 		getOption(option).ifPresent(Option::decValue);
 	}
-	
+
 	public Object getOptionValue(String option) {
 		return getOption(option).map(Option::getValue).orElse(null);
 	}
-	
+
 	public int getIntegerOptionValue(String option) {
 		return (int) getOptionValue(option);
 	}
-	
+
 	public float getFloatOptionValue(String option) {
 		return (float) getOptionValue(option);
 	}
-	
+
 	public String getStringOptionValue(String option) {
 		return (String) getOptionValue(option);
 	}
-	
+
 	public boolean getBooleanOptionValue(String option) {
 		return (boolean) getOptionValue(option);
 	}

@@ -10,6 +10,8 @@ import me.fallenbreath.tcuhc.mixins.core.SessionAccessor;
 import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.*;
 import me.fallenbreath.tcuhc.util.*;
+import net.fabricmc.loader.impl.util.log.Log;
+import net.fabricmc.loader.impl.util.log.LogLevel;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -32,6 +34,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,8 +48,8 @@ public class UhcGameManager extends Taskable {
 	public static final Logger LOG = LogManager.getLogger("TC UHC");
 	public static UhcGameManager instance;
 	public static final Random rand = new Random();
-	
 	private final MinecraftServer mcServer;
+	private final PlayerMatchMakingDataHandler dataHandler = PlayerMatchMakingDataHandler.getDataBase();
 
 	private final UhcPlayerManager playerManager;
 	private final UhcConfigManager configManager = new UhcConfigManager();
@@ -54,18 +57,17 @@ public class UhcGameManager extends Taskable {
 
 	private boolean isGamePlaying;
 	private boolean isGameEnded;
-	
+
 	private boolean isPregenerating;
 	private static boolean preloaded;
-	
+
 	public LastWinnerList winnerList;
 	private Optional<ServerBossBar> bossInfo = Optional.empty();
 
 	public final MsptRecorder msptRecorder = new MsptRecorder();
 	private final UhcWorldData worldData;
-	
-	public UhcGameManager(MinecraftServer server)
-	{
+
+	public UhcGameManager(MinecraftServer server) {
 		instance = this;
 		mcServer = server;
 		uhcOptions = Options.instance;
@@ -74,23 +76,47 @@ public class UhcGameManager extends Taskable {
 		worldData = UhcWorldData.load();
 	}
 
-	public MinecraftServer getMinecraftServer() { return mcServer; }
-	public PlayerManager getServerPlayerManager() { return mcServer.getPlayerManager(); }
-	public UhcPlayerManager getUhcPlayerManager() { return playerManager; }
-	public UhcConfigManager getConfigManager() { return configManager; }
-	public Options getOptions() { return uhcOptions; }
-	public boolean isGamePlaying() { return isGamePlaying; }
-	public boolean isConfiguring() { return configManager.isConfiguring(); }
-	public boolean hasGameEnded() { return isGameEnded; }
-	public static EnumMode getGameMode() { return (EnumMode)instance.getOptions().getOptionValue("gameMode"); }
+	public MinecraftServer getMinecraftServer() {
+		return mcServer;
+	}
 
-	public ServerWorld getOverWorld()
-	{
+	public PlayerManager getServerPlayerManager() {
+		return mcServer.getPlayerManager();
+	}
+
+	public UhcPlayerManager getUhcPlayerManager() {
+		return playerManager;
+	}
+
+	public UhcConfigManager getConfigManager() {
+		return configManager;
+	}
+
+	public Options getOptions() {
+		return uhcOptions;
+	}
+
+	public boolean isGamePlaying() {
+		return isGamePlaying;
+	}
+
+	public boolean isConfiguring() {
+		return configManager.isConfiguring();
+	}
+
+	public boolean hasGameEnded() {
+		return isGameEnded;
+	}
+
+	public static EnumMode getGameMode() {
+		return (EnumMode) instance.getOptions().getOptionValue("gameMode");
+	}
+
+	public ServerWorld getOverWorld() {
 		return mcServer.getWorld(World.OVERWORLD);
 	}
 
-	public UhcWorldData getWorldData()
-	{
+	public UhcWorldData getWorldData() {
 		return worldData;
 	}
 
@@ -102,7 +128,7 @@ public class UhcGameManager extends Taskable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean onPlayerChat(ServerPlayerEntity player, String msg) {
 		try {
 			if (configManager.onPlayerChat(player, msg))
@@ -112,7 +138,7 @@ public class UhcGameManager extends Taskable {
 		}
 		return false;
 	}
-	
+
 	public void onPlayerDeath(ServerPlayerEntity player, DamageSource cause) {
 		try {
 			playerManager.onPlayerDeath(player, cause);
@@ -120,7 +146,7 @@ public class UhcGameManager extends Taskable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void onPlayerRespawn(ServerPlayerEntity player) {
 		try {
 			playerManager.onPlayerRespawn(player);
@@ -128,7 +154,7 @@ public class UhcGameManager extends Taskable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void onPlayerDamaged(ServerPlayerEntity player, DamageSource cause, float amount) {
 		try {
 			playerManager.onPlayerDamaged(player, cause, amount);
@@ -136,7 +162,7 @@ public class UhcGameManager extends Taskable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public Entity onPlayerSpectate(ServerPlayerEntity player, Entity target, Entity origin) {
 		try {
 			return playerManager.onPlayerSpectate(player, target, origin);
@@ -145,9 +171,8 @@ public class UhcGameManager extends Taskable {
 		}
 		return target;
 	}
-	
-	public void onServerInited()
-	{
+
+	public void onServerInited() {
 		this.displayHealth();
 		TaskScoreboard.hideScoreboard();
 		if (!preloaded) {
@@ -160,15 +185,15 @@ public class UhcGameManager extends Taskable {
 		SpawnPlatform.generatePlatform(this, getOverWorld());
 		this.addTask(new TaskHUDInfo(mcServer));
 	}
-	
+
 	public void setPregenerateComplete() {
 		isPregenerating = false;
 	}
-	
+
 	public boolean isPregenerating() {
 		return isPregenerating;
 	}
-	
+
 	public float modifyPlayerDamage(float amount) {
 		if (isGamePlaying) {
 			boolean greenHand = uhcOptions.getBooleanOptionValue("greenhandProtect");
@@ -178,7 +203,7 @@ public class UhcGameManager extends Taskable {
 		}
 		return amount;
 	}
-	
+
 	public static void tryUpdateSaveFolder(Path saveFolder) {
 		if (!saveFolder.resolve("preload").toFile().exists()) {
 			LOG.warn("Deleting {} for UHC world regenerate", saveFolder);
@@ -198,19 +223,19 @@ public class UhcGameManager extends Taskable {
 	}
 
 	public static File getPreloadFile() {
-		return ((SessionAccessor)((MinecraftServerAccessor)instance.mcServer).getSession()).getDirectory().resolve("preload").toFile();
+		return ((SessionAccessor) ((MinecraftServerAccessor) instance.mcServer).getSession()).getDirectory().resolve("preload").toFile();
 	}
 
 	public static File getDataFile() {
-		return ((SessionAccessor)((MinecraftServerAccessor)instance.mcServer).getSession()).getDirectory().resolve("uhc.json").toFile();
+		return ((SessionAccessor) ((MinecraftServerAccessor) instance.mcServer).getSession()).getDirectory().resolve("uhc.json").toFile();
 	}
-	
+
 	public static void regenerateTerrain() {
 		File preload = getPreloadFile();
 		if (preload.exists()) preload.delete();
 		instance.mcServer.stop(false);  // TODO: Check param
 	}
-	
+
 	public void startGame(ServerPlayerEntity operator) {
 		if (isGamePlaying || !configManager.isConfiguring()) {
 			operator.sendMessage(new LiteralText("It's not time to start."), false);
@@ -233,30 +258,33 @@ public class UhcGameManager extends Taskable {
 		this.destroySpawnPlatform();
 		this.addTask(new TaskTitleCountDown(10, 80, 20));
 	}
-	
+
 	public void endGame() {
 		if (isGameEnded) return;
 		isGameEnded = true;
 		removeWorldBorder();
 		TaskScoreboard.hideScoreboard();
+		playerManager.endPlayerCal();
 		bossInfo.ifPresent(info -> info.setVisible(false));
 		bossInfo = Optional.empty();
 	}
-	
+
 	public void checkWinner() {
 		if (isGameEnded || !isGamePlaying) return;
 		int remainTeamCnt = 0;
 		UhcGameTeam winner = null;
+
 		for (UhcGameTeam team : playerManager.getTeams()) {
 			if (team.getAliveCount() > 0) {
 				remainTeamCnt++;
 				winner = team;
+
 			}
 		}
 		if (remainTeamCnt == 1)
 			this.onTeamWin(winner);
 	}
-	
+
 	private void onTeamWin(UhcGameTeam team) {
 		TitleUtil.sendTitleToAllPlayers(team.getColorfulTeamName() + " Wins !", "Congratulations !");
 		this.broadcastMessage(team.getColorfulTeamName() + " is the winner !");
@@ -265,10 +293,22 @@ public class UhcGameManager extends Taskable {
 				player.getStat().setStat(EnumStat.ALIVE_TIME, uhcOptions.getIntegerOptionValue("gameTime") - this.getGameTimeRemaining());
 		}
 		winnerList.setWinner(team.getPlayers());
+		for (UhcGameTeam t : playerManager.getTeams()) {
+			if (t == team) {
+				for (UhcGamePlayer player : t.getPlayers()) { //更新每个玩家的连胜数据
+					dataHandler.processWinStreak(player.getPlayerUUID(), true);
+					LOG.log(Level.DEBUG,"win:"+player.getName()+" "+player.getPlayerUUID()+" \n");
+				}
+			} else {
+				for (UhcGamePlayer player : t.getPlayers()) {//更新每个玩家的连胜数据
+					LOG.log(Level.DEBUG,"lost:"+player.getName()+" "+player.getPlayerUUID()+" \n");
+				}
+			}
+		}
 		this.endGame();
 		this.addTask(new TaskBroadcastData(160));
 	}
-	
+
 	private void initWorlds() {
 		boolean daylightCycle = uhcOptions.getBooleanOptionValue("daylightCycle");
 		Difficulty difficulty = (Difficulty) uhcOptions.getOptionValue("difficulty");
@@ -281,13 +321,13 @@ public class UhcGameManager extends Taskable {
 		}
 		mcServer.setDifficulty(difficulty, true);
 	}
-	
+
 	private void removeWorldBorder() {
 		for (ServerWorld world : mcServer.getWorlds()) {
 			world.getWorldBorder().setSize(world.getWorldBorder().getMaxRadius());
 		}
 	}
-	
+
 	public void displayHealth() {
 		Scoreboard scoreboard = getMainScoreboard();
 		String name = "Health";
@@ -298,11 +338,11 @@ public class UhcGameManager extends Taskable {
 		scoreboard.setObjectiveSlot(0, objective);
 		scoreboard.setObjectiveSlot(2, objective);
 	}
-	
+
 	public Scoreboard getMainScoreboard() {
 		return getOverWorld().getScoreboard();
 	}
-	
+
 	public void tick() {
 		try {
 			this.updateTasks();
@@ -329,22 +369,27 @@ public class UhcGameManager extends Taskable {
 			}
 		}
 	}
-	
-	public void generateSpawnPlatform() { SpawnPlatform.generatePlatform(this, getOverWorld()); }
-	public void destroySpawnPlatform() { SpawnPlatform.destroyPlatform(getOverWorld()); }
-	
+
+	public void generateSpawnPlatform() {
+		SpawnPlatform.generatePlatform(this, getOverWorld());
+	}
+
+	public void destroySpawnPlatform() {
+		SpawnPlatform.destroyPlatform(getOverWorld());
+	}
+
 	public void startConfiguration(ServerPlayerEntity operator) {
 		configManager.startConfiguring(playerManager.getGamePlayer(operator));
 		operator.getInventory().insertStack(BookNBT.getConfigBook(this));
 		if (!UhcGameManager.instance.isGamePlaying()) SpawnPlatform.generateSafePlatform(getOverWorld());
 	}
-	
+
 	public void broadcastMessage(String msg) {
 		BaseText text = new LiteralText(msg);
 		getServerPlayerManager().getPlayerList().forEach(player -> player.sendMessage(text, false));
 		LOG.info(msg);
 	}
-	
+
 	public BlockPos buildSmallHouse(BlockPos pos, DyeColor color) {
 		World world = getOverWorld();
 		world.getBlockState(pos);
@@ -371,13 +416,13 @@ public class UhcGameManager extends Taskable {
 		world.setBlockState(pos.up(), Blocks.CHEST.getDefaultState());
 		return pos.up();
 	}
-	
+
 	public int getGameTimeRemaining() {
 		Scoreboard scoreboard = getMainScoreboard();
 		ScoreboardObjective objective = scoreboard.getObjective(TaskScoreboard.scoreName);
 		return scoreboard.getPlayerScore(TaskScoreboard.lines[0], objective).getScore();
 	}
-	
+
 	public static enum EnumMode {
 		NORMAL(true),
 		SOLO(false),
@@ -387,13 +432,11 @@ public class UhcGameManager extends Taskable {
 
 		private final boolean deathRegen;
 
-		EnumMode(boolean deathRegen)
-		{
+		EnumMode(boolean deathRegen) {
 			this.deathRegen = deathRegen;
 		}
 
-		public boolean doDeathRegen()
-		{
+		public boolean doDeathRegen() {
 			return deathRegen;
 		}
 	}
