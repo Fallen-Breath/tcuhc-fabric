@@ -30,7 +30,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class UhcGameCommand
 {
 	private static final String PREFIX = "uhc";
-
+	private static boolean regen_confirm = false;
+	private static boolean start_confirm = false;
 	private static boolean isOp(ServerCommandSource source)
 	{
 		return source.hasPermissionLevel(2);
@@ -61,6 +62,7 @@ public class UhcGameCommand
 				).
 				then(literal("regen").requires(UhcGameCommand::isOp).executes(c -> executeRegen(c.getSource()))).
 				then(literal("start").requires(UhcGameCommand::isOp).executes(c -> executeStart(c.getSource()))).
+				then(literal("cancelStart").requires(UhcGameCommand::isOp).executes(c -> executeCancelStart(c.getSource()))).
 				then(literal("stop").requires(UhcGameCommand::isOp).executes(c -> executeStop(c.getSource()))).
 				then(literal("option").
 						requires(UhcGameCommand::isOp).
@@ -72,6 +74,7 @@ public class UhcGameCommand
 								)
 						)
 				).
+				then(literal("cancelRegen").requires(UhcGameCommand::isOp).executes(c-> executeCancelRegen(c.getSource()))).
 				then(literal("adjust").
 						requires(UhcGameCommand::isOp).
 						executes(c -> regiveAdjustBook(c.getSource(), true)).
@@ -172,15 +175,45 @@ public class UhcGameCommand
 
 	private static int executeRegen(ServerCommandSource sender)
 	{
-		UhcGameManager.regenerateTerrain();
+		if (regen_confirm)
+		{
+			regen_confirm = false;
+			UhcGameManager.regenerateTerrain();
+		}else {
+			regen_confirm = true;
+			UhcGameManager.instance.broadcastMessage("An operator is going to regenerate terrain,please enter /uhc regen in order to confirm. or use /uhc cancelRegen to cancel");
+
+		}
+		return 1;
+	}
+	private static int executeCancelRegen(ServerCommandSource sender)
+	{
+		regen_confirm = false;
+		UhcGameManager.instance.broadcastMessage("An operator cancelled regenerating terrain.");
+
 		return 1;
 	}
 
 	private static int executeStart(ServerCommandSource sender) throws CommandSyntaxException
 	{
-		UhcGameManager.instance.startGame(sender.getPlayer());
+		if (start_confirm)
+		{
+			UhcGameManager.instance.startGame(sender.getPlayer());
+		}else {
+			start_confirm = true;
+			UhcGameManager.instance.broadcastMessage("An operator is going to start the game,please check game config, and start again in order to confirm. or use /uhc cancelStart to cancel");
+
+		}
 		return 1;
 	}
+	private static int executeCancelStart(ServerCommandSource sender) throws CommandSyntaxException
+	{
+		start_confirm = false;
+		UhcGameManager.instance.broadcastMessage("An operator abort game start");
+
+		return 1;
+	}
+
 
 	private static int executeStop(ServerCommandSource sender)
 	{
@@ -196,6 +229,7 @@ public class UhcGameCommand
 			Option option = optional.get();
 			switch (operation)
 			{
+
 				case "add":
 					option.incValue();
 					break;
