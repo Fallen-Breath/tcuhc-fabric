@@ -424,72 +424,9 @@ public class UhcPlayerManager
 	
 	public boolean formTeams(boolean auto) {
 		this.refreshOnlinePlayers();
-		return auto ? this.automaticFormTeams() : this.manuallyFormTeams();
+		return this.manuallyFormTeams();
 	}
-	
-	private boolean automaticFormTeams() {
-		Optional<ServerPlayerEntity> operator = gameManager.getConfigManager().getOperator().getRealPlayer();
-		boolean alright = true;
-		for (UhcGamePlayer gamePlayer : getAllPlayers()) {
-			UhcGameColor color = gamePlayer.getColorSelected().orElse(null);
-			if (color == null) {
-				gamePlayer.getRealPlayer().ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Please select a team to join, others are waiting for you !"), false));
-				operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + gamePlayer.getName()), false));
-				alright = false;
-			} else {
-				if (color == UhcGameColor.WHITE) observePlayerList.add(gamePlayer);
-				else combatPlayerList.add(gamePlayer);
-			}
-		}
-		
-		if (!alright) {
-			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice."), false));
-			return false;
-		}
-		
-		teams.clear();
-		switch (UhcGameManager.getGameMode()) {
-			case NORMAL:
-			case KING: {
-				int playerCount = combatPlayerList.size();
-				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
-				playersPerTeam = playerCount / teamCount + (playerCount % teamCount == 0 ? 0 : 1);
-				int morePlayers = playerCount % teamCount;
-				int[] randomTeam = new int[playerCount];
-				int posCnt = 0;
-				for (int i = 0; i < teamCount; i++) {
-					for (int j = (morePlayers > 0 && i >= morePlayers ? 1 : 0); j < playersPerTeam; j++)
-						randomTeam[posCnt++] = i;
-					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
-				}
-				for (int i = 0; i < playerCount; i++) {
-					int pos = UhcGameManager.rand.nextInt(playerCount - i) + i;
-					int temp = randomTeam[i];
-					randomTeam[i] = randomTeam[pos];
-					randomTeam[pos] = temp;
-					teams.get(randomTeam[i]).addPlayer(combatPlayerList.get(i));
-				}
-				break;
-			}
-			case SOLO:
-			case GHOST: {
-				combatPlayerList.stream().map(player -> new UhcGameTeam().setPlayerTeam(player)).forEach(teams::add);
-				playersPerTeam = 1;
-				break;
-			}
-			case BOSS: {
-				UhcGamePlayer boss = combatPlayerList.get(UhcGameManager.rand.nextInt(combatPlayerList.size()));
-				teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.RED).addPlayer(boss));
-				UhcGameTeam team = new UhcGameTeam().setColorTeam(UhcGameColor.BLUE);
-				combatPlayerList.stream().filter(player -> player != boss).forEach(team::addPlayer);
-				teams.add(team);
-				playersPerTeam = combatPlayerList.size() - 1;
-				break;
-			}
-		}
-		return true;
-	}
-	
+
 	private boolean manuallyFormTeams() {
 		Optional<ServerPlayerEntity> operator = gameManager.getConfigManager().getOperator().getRealPlayer();
 		boolean alright = true;

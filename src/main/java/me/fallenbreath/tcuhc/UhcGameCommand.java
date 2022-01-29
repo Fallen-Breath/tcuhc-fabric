@@ -8,6 +8,7 @@ import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.TaskOnce;
 import me.fallenbreath.tcuhc.util.PlayerItems;
 import me.fallenbreath.tcuhc.util.Position;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -16,6 +17,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -75,6 +78,7 @@ public class UhcGameCommand
 						)
 				).
 				then(literal("cancelRegen").requires(UhcGameCommand::isOp).executes(c-> executeCancelRegen(c.getSource()))).
+				then(literal("randomAssignColor").requires(UhcGameCommand::isOp).executes(c->randomAssignColor())).
 				then(literal("adjust").
 						requires(UhcGameCommand::isOp).
 						executes(c -> regiveAdjustBook(c.getSource(), true)).
@@ -263,6 +267,26 @@ public class UhcGameCommand
 		return 1;
 	}
 
+	private static int randomAssignColor(){
+		List<UhcGamePlayer> players = (List<UhcGamePlayer>) UhcGameManager.instance.getUhcPlayerManager().getCombatPlayers();
+		int teamCount = UhcGameManager.instance.getOptions().getIntegerOptionValue("teamCount");
+		int extraTeamCounter = players.size()%teamCount;
+		int teamPlayerCounter = players.size()/teamCount;
+		Collections.shuffle(players);
+		int k = 0;
+		for (int i=0;i<teamCount;i++){
+			for (int j=0;j<teamPlayerCounter;j++){
+				players.get(k).setColorSelected(UhcGameColor.getColor(i));
+				k++;
+			}
+			if (extraTeamCounter>0){
+				players.get(k).setColorSelected(UhcGameColor.getColor(i));
+				k++;
+				extraTeamCounter--;
+			}
+		}
+		return 1;
+	}
 	private static boolean ensureGameIsPlaying(ServerCommandSource source)
 	{
 		if (UhcGameManager.instance.isGamePlaying())
