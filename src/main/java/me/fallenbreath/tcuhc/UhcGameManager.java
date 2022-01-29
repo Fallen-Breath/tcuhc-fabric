@@ -72,6 +72,7 @@ public class UhcGameManager extends Taskable {
 		playerManager = new UhcPlayerManager(this);
 		winnerList = new LastWinnerList(new File("lastwinners.txt"));
 		worldData = UhcWorldData.load();
+		worldData.save();
 	}
 
 	public MinecraftServer getMinecraftServer() { return mcServer; }
@@ -146,8 +147,7 @@ public class UhcGameManager extends Taskable {
 		return target;
 	}
 	
-	public void onServerInited()
-	{
+	public void onServerInited() {
 		this.displayHealth();
 		TaskScoreboard.hideScoreboard();
 		if (!preloaded) {
@@ -253,8 +253,10 @@ public class UhcGameManager extends Taskable {
 				winner = team;
 			}
 		}
-		if (remainTeamCnt == 1)
+		if (remainTeamCnt == 1) {
+			winner.setTeamRank(1);
 			this.onTeamWin(winner);
+		}
 	}
 	
 	private void onTeamWin(UhcGameTeam team) {
@@ -265,6 +267,7 @@ public class UhcGameManager extends Taskable {
 				player.getStat().setStat(EnumStat.ALIVE_TIME, uhcOptions.getIntegerOptionValue("gameTime") - this.getGameTimeRemaining());
 		}
 		winnerList.setWinner(team.getPlayers());
+		playerManager.updateMMR();
 		this.endGame();
 		this.addTask(new TaskBroadcastData(160));
 	}
@@ -387,13 +390,11 @@ public class UhcGameManager extends Taskable {
 
 		private final boolean deathRegen;
 
-		EnumMode(boolean deathRegen)
-		{
+		EnumMode(boolean deathRegen) {
 			this.deathRegen = deathRegen;
 		}
 
-		public boolean doDeathRegen()
-		{
+		public boolean doDeathRegen() {
 			return deathRegen;
 		}
 	}

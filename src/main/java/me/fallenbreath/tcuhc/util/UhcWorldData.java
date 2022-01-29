@@ -14,7 +14,6 @@ public class UhcWorldData
 
 	private UhcWorldData()
 	{
-		this.save();
 	}
 
 	public boolean isSpawnPlatformHeightValid()
@@ -29,6 +28,7 @@ public class UhcWorldData
 		{
 			UhcWorldData data = new Gson().fromJson(reader, UhcWorldData.class);
 			UhcGameManager.LOG.info("Loaded uhc world data");
+			UhcGameManager.LOG.info("Platform Y = " + data.spawnPlatformHeight);
 			return data;
 		}
 		catch (Exception e)

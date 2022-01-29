@@ -66,6 +66,7 @@ public class BookNBT {
 				.append(createOptionText(options.getOption("gameMode")))
 				.append(createOptionText(options.getOption("randomTeams")))
 				.append(createOptionText(options.getOption("teamCount")))
+				.append(createOptionText(options.getOption("teamSamplingTimes")))
 				.append(createReturn())
 				.append(createOptionText(options.getOption("difficulty")))
 				.append(createOptionText(options.getOption("daylightCycle")))
@@ -102,7 +103,6 @@ public class BookNBT {
 				.append(createTextEvent("       Regenerate\n", "/uhc regen", "Regenerate Terrain", Formatting.LIGHT_PURPLE))
 				.append(createTextEvent("          Start !\n", "/uhc start", "Start the UHC game !", Formatting.LIGHT_PURPLE))
 		);
-		
 		return createWrittenBook("sbGP", "UHC Game Configuration", pages);
 	}
 	

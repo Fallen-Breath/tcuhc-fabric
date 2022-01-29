@@ -26,11 +26,11 @@ public class Options {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String OPTION_FILE_NAME = "uhc.properties";
 	public static Options instance = new Options(new File(OPTION_FILE_NAME));
-	
+
 	private final Map<String, Option> configOptions = Maps.newHashMap();
 	private final Properties uhcProperties = new Properties();
 	private final File uhcOptionsFile;
-	
+
 	public final Task taskSaveProperties = new Task() {
 		@Override
 		public void onUpdate() {
@@ -39,7 +39,7 @@ public class Options {
 		@Override
 		public boolean hasFinished() { return false; }
 	};
-	
+
 	public final Task taskReselectTeam = new Task() {
 		@Override
 		public void onUpdate() {
@@ -54,7 +54,7 @@ public class Options {
 		@Override
 		public boolean hasFinished() { return false; }
 	};
-	
+
 	private Options(File optionsFile) {
 		instance = this;
 		uhcOptionsFile = optionsFile;
@@ -89,10 +89,12 @@ public class Options {
 		addOption(new Option("chestItemFrequency", "Chest Loots", new OptionType.FloatType(0.0f, 10.0f, 0.1f), 1.0f).setNeedToSave().setDescription("Frequency of variable items in bonus chests."));
 		addOption(new Option("mobCount", "Mob Count", new OptionType.IntegerType(10, 300, 10), 70).setNeedToSave().setDescription("Adjust number of monsters in the world."));
 
+		addOption(new Option("teamSamplingTimes", "Sampling Times", new OptionType.IntegerType(1, 10, 1), 1).setNeedToSave().setDescription("Adjust the sampling amount of matchmaking, higher value results in more possibly average team distribution."));
+
 		loadPropertiesFile();
 		savePropertiesFile();
 	}
-	
+
 	public void loadPropertiesFile() {
 		if (uhcOptionsFile.exists()) {
 			try (FileInputStream input = new FileInputStream(uhcOptionsFile)) {
@@ -113,7 +115,7 @@ public class Options {
 			}
 		}
 	}
-	
+
 	public void savePropertiesFile() {
 		try (FileOutputStream output = new FileOutputStream(uhcOptionsFile)) {
 			configOptions.values().forEach(opt -> uhcProperties.setProperty(opt.getId(), opt.getStringValue()));
@@ -122,11 +124,11 @@ public class Options {
 			LOGGER.warn("Failed to save {}", this.uhcOptionsFile, e);
 		}
 	}
-	
+
 	private void addOption(Option option) {
 		configOptions.put(option.getId(), option);
 	}
-	
+
 	public Optional<Option> getOption(String option) {
 		return Optional.ofNullable(configOptions.get(option));
 	}
@@ -134,37 +136,37 @@ public class Options {
 	public Stream<String> getOptionIdStream() {
 		return configOptions.keySet().stream();
 	}
-	
+
 	public void setOptionValue(String option, Object value) {
 		getOption(option).ifPresent(opt -> {
 			opt.setValue(value);
 		});
 	}
-	
+
 	public void incOptionValue(String option) {
 		getOption(option).ifPresent(Option::incValue);
 	}
-	
+
 	public void decOptionValue(String option) {
 		getOption(option).ifPresent(Option::decValue);
 	}
-	
+
 	public Object getOptionValue(String option) {
 		return getOption(option).map(Option::getValue).orElse(null);
 	}
-	
+
 	public int getIntegerOptionValue(String option) {
 		return (int) getOptionValue(option);
 	}
-	
+
 	public float getFloatOptionValue(String option) {
 		return (float) getOptionValue(option);
 	}
-	
+
 	public String getStringOptionValue(String option) {
 		return (String) getOptionValue(option);
 	}
-	
+
 	public boolean getBooleanOptionValue(String option) {
 		return (boolean) getOptionValue(option);
 	}

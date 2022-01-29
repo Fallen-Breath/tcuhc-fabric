@@ -7,11 +7,14 @@ package me.fallenbreath.tcuhc;
 import com.google.common.collect.Lists;
 import me.fallenbreath.tcuhc.UhcGameManager.EnumMode;
 import me.fallenbreath.tcuhc.UhcGamePlayer.EnumStat;
+import me.fallenbreath.tcuhc.options.Options;
 import me.fallenbreath.tcuhc.task.Task;
 import me.fallenbreath.tcuhc.task.TaskFindPlayer;
 import me.fallenbreath.tcuhc.task.TaskKeepSpectate;
 import me.fallenbreath.tcuhc.task.TaskOnce;
 import me.fallenbreath.tcuhc.util.*;
+import me.fallenbreath.tcuhc.util.mmr.MatchMakingRatingHandler;
+import me.fallenbreath.tcuhc.util.mmr.TeamAllocator;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.Entity;
@@ -44,36 +47,35 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class UhcPlayerManager
 {
 	private final UhcGameManager gameManager;
-	
+
 	private final List<UhcGamePlayer> allPlayerList = Lists.newArrayList();
 	private final List<UhcGamePlayer> combatPlayerList = Lists.newArrayList();
 	private final List<UhcGamePlayer> observePlayerList = Lists.newArrayList();
 	private final List<UhcGameTeam> teams = Lists.newArrayList();
-	
+
 	private int playersPerTeam;
-	
+	private final Options uhcOptions;
+
 	public UhcPlayerManager(UhcGameManager manager) {
 		gameManager = manager;
+		uhcOptions = Options.instance;
 	}
-	
+
 	public Optional<ServerPlayerEntity> getPlayerByUUID(UUID id) {
 		return Optional.ofNullable(gameManager.getServerPlayerManager().getPlayer(id));
 	}
-	
+
 	public boolean forceFriendlyView(UhcGamePlayer player) {
 		if (player.isAlive()) return false;
 		if (!gameManager.getOptions().getBooleanOptionValue("forceViewport")) return false;
 		return player.getTeam().getAliveCount() != 0;
 	}
-	
+
 	public UhcGamePlayer getGamePlayer(PlayerEntity player) {
 		for (UhcGamePlayer gamePlayer : allPlayerList) {
 			if (gamePlayer.isSamePlayer(player))
@@ -118,9 +120,9 @@ public class UhcPlayerManager
 			}
 		}
 	}
-	
+
 	public void regiveConfigItems(ServerPlayerEntity player) {
-		if (!gameManager.isGamePlaying()) 
+		if (!gameManager.isGamePlaying())
 			player.getInventory().clear();
 		if (gameManager.getConfigManager().isConfiguring()) {
 			this.getGamePlayer(player).getColorSelected().ifPresent(color -> {
@@ -133,7 +135,7 @@ public class UhcPlayerManager
 			player.getInventory().insertStack(BookNBT.getPlayerBook(gameManager));
 		}
 	}
-	
+
 	public void regiveAdjustBook(ServerPlayerEntity player, boolean force) {
 		Item current = player.getInventory().getMainHandStack().getItem();
 		ItemStack book = BookNBT.getAdjustBook(gameManager);
@@ -141,17 +143,17 @@ public class UhcPlayerManager
 			player.getInventory().setStack(player.getInventory().selectedSlot, book);
 		else if (force) player.getInventory().insertStack(book);
 	}
-	
+
 	public void removeAdjustBook(ServerPlayerEntity player) {
 		Item current = player.getInventory().getMainHandStack().getItem();
 		if (current == Items.WRITTEN_BOOK)
 			player.getInventory().setStack(player.getInventory().selectedSlot, ItemStack.EMPTY);
 	}
-	
+
 	public void refreshConfigBook() {
 		gameManager.getConfigManager().getOperator().getRealPlayer().ifPresent(this::regiveConfigItems);
 	}
-	
+
 	private ItemStack getTeamItem(UhcGameColor color) {
 		ItemStack stack = new ItemStack(Items.LEATHER_CHESTPLATE);
 		float[] rgb = color.dyeColor.getColorComponents();
@@ -162,39 +164,39 @@ public class UhcPlayerManager
 		stack.setCustomName(new LiteralText(color.dyeColor.toString()));
 		return stack;
 	}
-	
+
 	public void randomSpawnPosition(ServerPlayerEntity player) {
 		BlockPos pos = SpawnPlatform.getRandomSpawnPosition(UhcGameManager.rand);
 		player.updatePosition(pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5);
 		player.requestTeleport(player.getPos().getX(), player.getPos().getY(), player.getPos().getZ());
 		player.fallDistance = 0.0f;
 	}
-	
+
 	public void resetHealthAndFood(ServerPlayerEntity player) {
 		player.setHealth(player.getMaxHealth());
 		player.getHungerManager().add(20, 20);
 	}
-	
+
 	public Collection<UhcGamePlayer> getAllPlayers() {
 		return allPlayerList;
 	}
-	
+
 	public Iterable<UhcGamePlayer> getCombatPlayers() {
 		return combatPlayerList;
 	}
-	
+
 	public Iterable<UhcGamePlayer> getObservePlayers() {
 		return observePlayerList;
 	}
-	
+
 	public Iterable<UhcGameTeam> getTeams() {
 		return teams;
 	}
-	
+
 	public boolean isObserver(UhcGamePlayer player) {
 		return observePlayerList.contains(player);
 	}
-	
+
 	public void onPlayerChat(ServerPlayerEntity player, String msg) {
 		if (msg == null) return;
 		if (!gameManager.isGamePlaying()) {
@@ -213,14 +215,14 @@ public class UhcPlayerManager
 		String message = chatMessage(player, msg, true);
 		gamePlayer.getTeam().getPlayers().forEach(other -> other.getRealPlayer().ifPresent(playermp -> playermp.sendMessage(new LiteralText(message), false)));
 	}
-	
+
 	private String chatMessage(PlayerEntity player, String msg, boolean secret) {
 		UhcGamePlayer gamePlayer = getGamePlayer(player);
 		Formatting color = gamePlayer.getTeam() == null ? Formatting.WHITE : gamePlayer.getTeam().getTeamColor().chatColor;
 		return Formatting.AQUA.toString() + "[" + Formatting.GOLD + (secret ? "To Team" : "To All") + Formatting.AQUA.toString() + "]" +
 				color + player.getName().getString() + Formatting.YELLOW + ": " + Formatting.WHITE + msg;
 	}
-	
+
 	public void onPlayerDeath(ServerPlayerEntity player, DamageSource cause) {
 		if (gameManager.isGamePlaying()) {
 			UhcGamePlayer gamePlayer = getGamePlayer(player);
@@ -231,7 +233,7 @@ public class UhcPlayerManager
 					gameManager.addTask(new TaskKeepSpectate(gamePlayer));
 				}
 				if (gamePlayer.getTeam().getAliveCount() == 0) {
-					gameManager.checkWinner();
+					this.onTeamEstimated(gamePlayer.getTeam());
 				} else {
 					this.deadPotionEffects(gamePlayer.getTeam());
 				}
@@ -239,7 +241,7 @@ public class UhcPlayerManager
 				if (UhcGameManager.getGameMode() == EnumMode.KING && gamePlayer.isKing()) {
 					gamePlayer.getTeam().getPlayers().forEach(teamMate -> {
 						if (teamMate.isAlive()) {
-							gameManager.addTask(new TaskOnce(new Task(){
+							gameManager.addTask(new TaskOnce(new Task() {
 								@Override
 								public void onUpdate() {
 									teamMate.getRealPlayer().ifPresent(LivingEntity::kill);
@@ -259,7 +261,13 @@ public class UhcPlayerManager
 			entityitem.setPickupDelay(40);
 		}
 	}
-	
+
+	private void onTeamEstimated(UhcGameTeam team) {
+		int teamRemaining = (int)teams.stream().filter(t -> t.getAliveCount() > 0).count();
+		team.setTeamRank(teams.size() - teamRemaining + 1);
+		gameManager.checkWinner();
+	}
+
 	private void deadPotionEffects(UhcGameTeam team) {
 		if (gameManager.getOptions().getBooleanOptionValue("deathBonus")) {
 			for (UhcGamePlayer player : team.getPlayers()) {
@@ -284,7 +292,7 @@ public class UhcPlayerManager
 			}
 		}
 	}
-	
+
 	public void onPlayerRespawn(ServerPlayerEntity player) {
 		if (gameManager.isGamePlaying()) {
 			UhcGamePlayer gamePlayer = getGamePlayer(player);
@@ -293,7 +301,7 @@ public class UhcPlayerManager
 			}
 		} else this.randomSpawnPosition(player);
 	}
-	
+
 	public void onPlayerDamaged(ServerPlayerEntity player, DamageSource source, float amount) {
 		if (gameManager.isGamePlaying()) {
 			String msg = String.format("You got %.2f damage from ", amount);
@@ -328,7 +336,7 @@ public class UhcPlayerManager
 			}
 		}
 	}
-	
+
 	public Entity onPlayerSpectate(ServerPlayerEntity player, Entity target, Entity origin) {
 		UhcGamePlayer gamePlayer = getGamePlayer(player);
 		if (gamePlayer.isAlive()) return target;
@@ -341,7 +349,7 @@ public class UhcPlayerManager
 	private Optional<UhcGamePlayer> getPlayerByName(String name) {
 		return allPlayerList.stream().filter(player -> player.getName().equals(name)).findFirst();
 	}
-	
+
 	public void killPlayer(String playerName) {
 		getPlayerByName(playerName).ifPresent(player -> {
 			player.setDead(gameManager.getGameTimeRemaining());
@@ -350,7 +358,7 @@ public class UhcPlayerManager
 				gameManager.addTask(new TaskKeepSpectate(player));
 			if (player.getTeam() != null) {
 				if (player.getTeam().getAliveCount() == 0) {
-					gameManager.checkWinner();
+					this.onTeamEstimated(player.getTeam());
 				}
 				else this.deadPotionEffects(player.getTeam());
 				gameManager.broadcastMessage(player.getTeam().getTeamColor().chatColor + player.getName() + Formatting.WHITE + " got -1s.");
@@ -361,7 +369,7 @@ public class UhcPlayerManager
 	/**
 	 * @param respawnPos the position to teleport the player to after respawn
 	 * @return false if the player is alive or player not found
- 	 */
+	 */
 	private boolean resurrectPlayer(String playerName, @Nullable Position respawnPos, boolean cleanInventory, boolean usingMoral) {
 		MutableBoolean ret = new MutableBoolean(false);
 		getPlayerByName(playerName).ifPresent(player -> {
@@ -421,12 +429,12 @@ public class UhcPlayerManager
 	public boolean resurrectPlayerUsingMoral(String playerName, Position respawnPos) {
 		return resurrectPlayer(playerName, respawnPos, true, true);
 	}
-	
+
 	public boolean formTeams(boolean auto) {
 		this.refreshOnlinePlayers();
 		return auto ? this.automaticFormTeams() : this.manuallyFormTeams();
 	}
-	
+
 	private boolean automaticFormTeams() {
 		Optional<ServerPlayerEntity> operator = gameManager.getConfigManager().getOperator().getRealPlayer();
 		boolean alright = true;
@@ -441,12 +449,12 @@ public class UhcPlayerManager
 				else combatPlayerList.add(gamePlayer);
 			}
 		}
-		
+
 		if (!alright) {
 			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice."), false));
 			return false;
 		}
-		
+
 		teams.clear();
 		switch (UhcGameManager.getGameMode()) {
 			case NORMAL:
@@ -454,21 +462,14 @@ public class UhcPlayerManager
 				int playerCount = combatPlayerList.size();
 				int teamCount = gameManager.getOptions().getIntegerOptionValue("teamCount");
 				playersPerTeam = playerCount / teamCount + (playerCount % teamCount == 0 ? 0 : 1);
-				int morePlayers = playerCount % teamCount;
-				int[] randomTeam = new int[playerCount];
-				int posCnt = 0;
+				int k = uhcOptions.getIntegerOptionValue("teamSamplingTimes");
+				Map<UhcGamePlayer, Double> playerScores = MatchMakingRatingHandler.getInstance().getPlayerWithScore(combatPlayerList);
+				Map<UhcGamePlayer, Integer> teamingResult = TeamAllocator.samplingMatching(playerScores, teamCount, k);
+
 				for (int i = 0; i < teamCount; i++) {
-					for (int j = (morePlayers > 0 && i >= morePlayers ? 1 : 0); j < playersPerTeam; j++)
-						randomTeam[posCnt++] = i;
 					teams.add(new UhcGameTeam().setColorTeam(UhcGameColor.getColor(i)));
 				}
-				for (int i = 0; i < playerCount; i++) {
-					int pos = UhcGameManager.rand.nextInt(playerCount - i) + i;
-					int temp = randomTeam[i];
-					randomTeam[i] = randomTeam[pos];
-					randomTeam[pos] = temp;
-					teams.get(randomTeam[i]).addPlayer(combatPlayerList.get(i));
-				}
+				teamingResult.forEach((player, teamId) -> teams.get(teamId).addPlayer(player));
 				break;
 			}
 			case SOLO:
@@ -489,7 +490,7 @@ public class UhcPlayerManager
 		}
 		return true;
 	}
-	
+
 	private boolean manuallyFormTeams() {
 		Optional<ServerPlayerEntity> operator = gameManager.getConfigManager().getOperator().getRealPlayer();
 		boolean alright = true;
@@ -504,12 +505,12 @@ public class UhcPlayerManager
 				else combatPlayerList.add(gamePlayer);
 			}
 		}
-		
+
 		if (!alright) {
 			operator.ifPresent(player -> player.sendMessage(new LiteralText(Formatting.DARK_RED + "Some players has not made a choice."), false));
 			return false;
 		}
-		
+
 		teams.clear();
 		switch (UhcGameManager.getGameMode()) {
 			case NORMAL:
@@ -587,17 +588,28 @@ public class UhcPlayerManager
 				break;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	protected UhcGamePlayer getBossPlayer() {
 		if (UhcGameManager.getGameMode() == EnumMode.BOSS) {
 			return teams.get(0).getPlayers().iterator().next();
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Update MMR after game ends
+	 */
+	public void updateMMR() {
+		MatchMakingRatingHandler mmrHandler = MatchMakingRatingHandler.getInstance();
+		for (UhcGamePlayer player : combatPlayerList) {
+			mmrHandler.updatePlayerMMR(player, teams.size(), player.getTeam().getRank());
+		}
+		mmrHandler.saveData();
+	}
+
 	public void setupIngameTeams() {
 		Scoreboard scoreboard = gameManager.getMainScoreboard();
 		for (Object team : scoreboard.getTeams().toArray())
@@ -618,7 +630,7 @@ public class UhcPlayerManager
 			}
 		}
 	}
-	
+
 	private void addInitialEquipments(BlockPos pos, int playerCnt) {
 		World world = gameManager.getOverWorld();
 		BlockEntity te = world.getBlockEntity(pos);
@@ -629,9 +641,9 @@ public class UhcPlayerManager
 		if (gameManager.getOptions().getBooleanOptionValue("greenhandProtect"))
 			chest.setStack(2, new ItemStack(Items.GOLDEN_APPLE, playerCnt));
 	}
-	
+
 	public void spreadPlayers() {
-		
+
 		class TaskInitPlayer extends TaskFindPlayer {
 			private final BlockPos homePos;
 			private final double health;
@@ -651,7 +663,7 @@ public class UhcPlayerManager
 				player.changeGameMode(GameMode.ADVENTURE);
 			}
 		}
-		
+
 		World world = gameManager.getOverWorld();
 		int borderStart = gameManager.getOptions().getIntegerOptionValue("borderStart");
 		switch (UhcGameManager.getGameMode()) {
@@ -679,12 +691,12 @@ public class UhcPlayerManager
 				break;
 			}
 		}
-		
+
 		for (UhcGamePlayer player : observePlayerList) {
 			player.getRealPlayer().ifPresent(playermp -> playermp.changeGameMode(GameMode.SPECTATOR));
 		}
 	}
-	
+
 	public void refreshOnlinePlayers() {
 		List<UhcGamePlayer> toRemove = Lists.newArrayList();
 		allPlayerList.stream().filter(player -> !player.getRealPlayer().isPresent()).forEach(toRemove::add);
