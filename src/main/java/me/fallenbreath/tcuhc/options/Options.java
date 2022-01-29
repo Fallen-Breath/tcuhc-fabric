@@ -24,7 +24,8 @@ import java.util.stream.Stream;
 
 public class Options {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static Options instance = new Options(new File("uhc.properties"));
+	private static final String OPTION_FILE_NAME = "uhc.properties";
+	public static Options instance = new Options(new File(OPTION_FILE_NAME));
 	
 	private final Map<String, Option> configOptions = Maps.newHashMap();
 	private final Properties uhcProperties = new Properties();
@@ -104,7 +105,12 @@ public class Options {
 		}
 
 		for (Entry<Object, Object> entry : uhcProperties.entrySet()) {
-			configOptions.get(entry.getKey()).setInitialValue((String) entry.getValue());
+			Option option = configOptions.get((String) entry.getKey());
+			if (option != null) {
+				option.setInitialValue((String) entry.getValue());
+			} else {
+				LOGGER.warn("Unknown key {} in {}", entry.getKey(), OPTION_FILE_NAME);
+			}
 		}
 	}
 	
