@@ -17,6 +17,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -268,19 +269,39 @@ public class UhcGameCommand
 	}
 
 	private static int randomAssignColor(){
-		List<UhcGamePlayer> players = (List<UhcGamePlayer>) UhcGameManager.instance.getUhcPlayerManager().getCombatPlayers();
+		List<UhcGamePlayer> allPlayers = (List<UhcGamePlayer>) UhcGameManager.instance.getUhcPlayerManager().getAllPlayers();
+		List<UhcGamePlayer> players = new ArrayList<>();
+		for (UhcGamePlayer player:allPlayers){
+			if (player.getColorSelected().orElse(null)==UhcGameColor.WHITE){
+
+			}else {
+				players.add(player);
+			}
+		}
 		int teamCount = UhcGameManager.instance.getOptions().getIntegerOptionValue("teamCount");
 		int extraTeamCounter = players.size()%teamCount;
 		int teamPlayerCounter = players.size()/teamCount;
 		Collections.shuffle(players);
 		int k = 0;
+
+		UhcGameManager.instance.broadcastMessage("RESULT OF CURRENT MATCHMAKING:");
+
 		for (int i=0;i<teamCount;i++){
+			UhcGameManager.instance.broadcastMessage(UhcGameColor.getColor(i).chatColor + UhcGameColor.getColor(i).name + " Team Members:");
 			for (int j=0;j<teamPlayerCounter;j++){
 				players.get(k).setColorSelected(UhcGameColor.getColor(i));
+				UhcGameManager.instance.getUhcPlayerManager().regiveConfigItems(players.get(k).getRealPlayer().get());
+				String message = "    " + UhcGameColor.getColor(i).chatColor + players.get(k).getName();
+				UhcGameManager.instance.broadcastMessage(message);
 				k++;
 			}
 			if (extraTeamCounter>0){
+
 				players.get(k).setColorSelected(UhcGameColor.getColor(i));
+				UhcGameManager.instance.getUhcPlayerManager().regiveConfigItems(players.get(k).getRealPlayer().get());
+				String message = "    " + UhcGameColor.getColor(i).chatColor + players.get(k).getName();
+				UhcGameManager.instance.broadcastMessage(message);
+
 				k++;
 				extraTeamCounter--;
 			}
